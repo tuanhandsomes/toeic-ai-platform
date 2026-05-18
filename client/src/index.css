@@ -3,6 +3,60 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    /* shadcn semantic tokens (HSL) */
+    --background: 0 0% 100%;
+    --foreground: 222.2 47.4% 11.2%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 47.4% 11.2%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 47.4% 11.2%;
+
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 244 75% 59%;
+
+    --radius: 0.5rem;
+
+    /* Chart colors — khớp palette của app */
+    --chart-1: 244 75% 59%;   /* indigo #4F46E5 — primary */
+    --chart-2: 158 64% 40%;   /* emerald #10B981 — secondary */
+    --chart-3: 20 100% 32%;   /* terracotta #A54100 — tertiary */
+    --chart-4: 35 100% 50%;   /* orange */
+    --chart-5: 280 60% 55%;   /* violet */
+  }
+
+  .dark {
+    --background: 222.2 47.4% 11.2%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 47.4% 11.2%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 47.4% 11.2%;
+    --popover-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 244 75% 59%;
+  }
+}
+
+@layer base {
   html {
     font-family: 'Inter', system-ui, sans-serif;
   }
