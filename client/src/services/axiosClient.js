@@ -15,12 +15,21 @@ axiosClient.interceptors.request.use((config) => {
 let isRefreshing = false;
 let refreshQueue = [];
 
+// 401 from these endpoints means wrong credentials / invalid refresh token,
+// NOT an expired access token — skip the refresh-and-retry flow.
+const AUTH_PATHS = ['/auth/login', '/auth/register', '/auth/refresh'];
+const isAuthEndpoint = (url = '') => AUTH_PATHS.some((p) => url.includes(p));
+
 axiosClient.interceptors.response.use(
   (response) => response.data,
   async (error) => {
     const originalRequest = error.config;
 
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    if (
+      error.response?.status === 401 &&
+      !originalRequest._retry &&
+      !isAuthEndpoint(originalRequest?.url)
+    ) {
       const refreshToken = localStorage.getItem('refreshToken');
       if (!refreshToken) {
         localStorage.clear();

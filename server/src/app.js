@@ -6,11 +6,17 @@ import helmet from 'helmet';
 import morgan from 'morgan';
 import { env } from './config/env.js';
 import { errorHandler, notFound } from './middlewares/errorHandler.js';
+import { generalLimiter } from './middlewares/rateLimit.js';
 import routes from './routes/index.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const app = express();
+
+// Trust 1 hop of reverse proxy (Render/Vercel inject X-Forwarded-For).
+// Required for express-rate-limit to see the real client IP in production.
+// Value 1 (not true) avoids X-Forwarded-For spoofing from arbitrary upstreams.
+app.set('trust proxy', 1);
 
 app.use(
   helmet({
@@ -20,6 +26,10 @@ app.use(
 app.use(cors({ origin: env.CLIENT_URL, credentials: true }));
 app.use(express.json({ limit: '1mb' }));
 app.use(express.urlencoded({ extended: true }));
+
+// Defense-in-depth: 200 req/min/IP cho mọi endpoint. Route-specific limiters
+// (authLimiter, aiLimiter) thắt chặt hơn ở các endpoint nhạy cảm.
+app.use(generalLimiter);
 
 if (env.NODE_ENV === 'development') {
   app.use(morgan('dev'));

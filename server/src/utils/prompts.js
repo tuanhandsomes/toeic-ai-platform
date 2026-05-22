@@ -6,16 +6,16 @@
  * để có thể trace lại analysis nào sinh ra từ prompt nào.
  */
 
-export const PROMPT_VERSION = 'v1.0';
+export const PROMPT_VERSION = "v1.0";
 
 const PART_LABELS = {
-  part1: 'Part 1 — Mô tả tranh (Listening)',
-  part2: 'Part 2 — Hỏi đáp (Listening)',
-  part3: 'Part 3 — Đoạn hội thoại (Listening)',
-  part4: 'Part 4 — Bài nói ngắn (Listening)',
-  part5: 'Part 5 — Hoàn thành câu (Reading)',
-  part6: 'Part 6 — Hoàn thành đoạn văn (Reading)',
-  part7: 'Part 7 — Đọc hiểu (Reading)',
+  part1: "Part 1 — Mô tả tranh (Listening)",
+  part2: "Part 2 — Hỏi đáp (Listening)",
+  part3: "Part 3 — Đoạn hội thoại (Listening)",
+  part4: "Part 4 — Bài nói ngắn (Listening)",
+  part5: "Part 5 — Hoàn thành câu (Reading)",
+  part6: "Part 6 — Hoàn thành đoạn văn (Reading)",
+  part7: "Part 7 — Đọc hiểu (Reading)",
 };
 
 const SYSTEM_PROMPT = `Bạn là một chuyên gia luyện thi TOEIC nhiều năm kinh nghiệm, am hiểu sâu cấu trúc bài thi TOEIC Listening & Reading (200 câu, thang điểm 10-990).
@@ -36,68 +36,73 @@ Quy tắc:
  * Strict mode yêu cầu: additionalProperties=false, mọi field đều required.
  */
 export const ANALYSIS_JSON_SCHEMA = {
-  type: 'json_schema',
+  type: "json_schema",
   json_schema: {
-    name: 'toeic_analysis',
+    name: "toeic_analysis",
     strict: true,
     schema: {
-      type: 'object',
+      type: "object",
       properties: {
         strengths: {
-          type: 'array',
-          description: '3-5 điểm mạnh cụ thể của học viên, mỗi câu 1 ý.',
-          items: { type: 'string' },
+          type: "array",
+          description: "3-5 điểm mạnh cụ thể của học viên, mỗi câu 1 ý.",
+          items: { type: "string" },
         },
         weaknesses: {
-          type: 'array',
-          description: '3-5 điểm yếu cụ thể, mỗi câu 1 ý.',
-          items: { type: 'string' },
+          type: "array",
+          description: "3-5 điểm yếu cụ thể, mỗi câu 1 ý.",
+          items: { type: "string" },
         },
         recommendations: {
-          type: 'array',
-          description: '4-6 gợi ý hành động cụ thể, sắp xếp theo độ ưu tiên.',
+          type: "array",
+          description: "4-6 gợi ý hành động cụ thể, sắp xếp theo độ ưu tiên.",
           items: {
-            type: 'object',
+            type: "object",
             properties: {
               topic: {
-                type: 'string',
+                type: "string",
                 description: 'Chủ đề ngắn (vd: "Part 5 — Ngữ pháp thì").',
               },
               action: {
-                type: 'string',
-                description: 'Hành động cụ thể, đo lường được.',
+                type: "string",
+                description: "Hành động cụ thể, đo lường được.",
               },
               priority: {
-                type: 'string',
-                enum: ['high', 'medium', 'low'],
+                type: "string",
+                enum: ["high", "medium", "low"],
               },
             },
-            required: ['topic', 'action', 'priority'],
+            required: ["topic", "action", "priority"],
             additionalProperties: false,
           },
         },
         estimatedTargetWeeks: {
-          type: 'integer',
-          description: 'Số tuần ước lượng để đạt mục tiêu (0 nếu đã đạt).',
+          type: "integer",
+          description: "Số tuần ước lượng để đạt mục tiêu (0 nếu đã đạt).",
           minimum: 0,
           maximum: 52,
         },
       },
-      required: ['strengths', 'weaknesses', 'recommendations', 'estimatedTargetWeeks'],
+      required: [
+        "strengths",
+        "weaknesses",
+        "recommendations",
+        "estimatedTargetWeeks",
+      ],
       additionalProperties: false,
     },
   },
 };
 
 function formatPartBreakdown(partBreakdown) {
-  if (!partBreakdown) return '(không có dữ liệu)';
+  if (!partBreakdown) return "(không có dữ liệu)";
   return Object.entries(partBreakdown)
     .filter(([, v]) => v && v.total > 0)
     .map(([key, v]) => {
       const pct = v.total > 0 ? Math.round((v.correct / v.total) * 100) : 0;
       return `- ${PART_LABELS[key] || key}: ${v.correct}/${v.total} đúng (${pct}%)`;
     })
-    .join('\n');
+    .join("\n");
 }
 
 /**
@@ -113,7 +118,7 @@ export function buildAnalysisPrompt({ result, user }) {
   const partLines = formatPartBreakdown(result.partBreakdown);
 
   const scoreLine =
-    result.testType === 'full'
+    result.testType === "full"
       ? `- Điểm tổng: ${result.scoreTotal}/990 (Listening: ${result.scoreListening}/495, Reading: ${result.scoreReading}/495)`
       : `- Tỉ lệ đúng: ${result.accuracy}% (${result.correctCount}/${result.totalQuestions} câu)`;
 
@@ -121,7 +126,7 @@ export function buildAnalysisPrompt({ result, user }) {
 
   const userPrompt = `Dữ liệu bài làm của học viên:
 
-- Loại bài: ${result.testType === 'full' ? 'Full Test (200 câu)' : 'Practice'}
+- Loại bài: ${result.testType === "full" ? "Full Test (200 câu)" : "Practice"}
 - Mục tiêu điểm TOEIC: ${targetScore}
 ${scoreLine}
 - Thời gian làm bài: ${durationMin} phút
