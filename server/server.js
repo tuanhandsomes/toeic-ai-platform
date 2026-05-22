@@ -2,16 +2,18 @@ import 'dotenv/config';
 import app from './src/app.js';
 import { connectDB } from './src/config/db.js';
 import { env } from './src/config/env.js';
+import { logger } from './src/utils/logger.js';
 
 const start = async () => {
   await connectDB();
   app.listen(env.PORT, () => {
-    console.log(`✓ Server listening on http://localhost:${env.PORT}`);
-    console.log(`  Environment: ${env.NODE_ENV}`);
+    logger.info(`Server listening on http://localhost:${env.PORT}`, {
+      env: env.NODE_ENV,
+    });
   });
 };
 
 start().catch((err) => {
-  console.error('✗ Failed to start server:', err);
+  logger.error('Failed to start server', { err: err.message, stack: err.stack });
   process.exit(1);
 });

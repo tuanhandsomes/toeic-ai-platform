@@ -22,10 +22,3 @@ export const requireAuth = asyncHandler(async (req, _res, next) => {
   req.user = user;
   next();
 });
-
-export const requireAdmin = (req, _res, next) => {
-  if (!req.user || req.user.role !== 'admin') {
-    return next(ApiError.forbidden('Yêu cầu quyền quản trị viên'));
-  }
-  next();
-};

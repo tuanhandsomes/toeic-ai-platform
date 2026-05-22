@@ -7,6 +7,7 @@ import morgan from 'morgan';
 import { env } from './config/env.js';
 import { errorHandler, notFound } from './middlewares/errorHandler.js';
 import { generalLimiter } from './middlewares/rateLimit.js';
+import { morganStream } from './utils/logger.js';
 import routes from './routes/index.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -31,9 +32,9 @@ app.use(express.urlencoded({ extended: true }));
 // (authLimiter, aiLimiter) thắt chặt hơn ở các endpoint nhạy cảm.
 app.use(generalLimiter);
 
-if (env.NODE_ENV === 'development') {
-  app.use(morgan('dev'));
-}
+// Pipe HTTP request logs through winston so dev + prod use the same logger.
+// 'dev' format in development (colored compact), 'combined' (Apache) in production.
+app.use(morgan(env.NODE_ENV === 'development' ? 'dev' : 'combined', { stream: morganStream }));
 
 // Serve static media files (audio, images) from server/public/
 // URLs: /audio/ets-2026/test-01/E26-T01-01.mp3, /images/ets-2026/test-01/q01.jpg, etc.

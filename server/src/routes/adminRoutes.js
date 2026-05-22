@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { adminController } from '../controllers/adminController.js';
-import { requireAuth, requireAdmin } from '../middlewares/authMiddleware.js';
+import { requireAuth } from '../middlewares/authMiddleware.js';
+import { requireAdmin } from '../middlewares/roleMiddleware.js';
 import { validate, validateQuery } from '../middlewares/validate.js';
 import {
   createQuestionSchema,

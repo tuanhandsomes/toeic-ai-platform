@@ -21,7 +21,10 @@ export const authController = {
     res.json({ success: true, data: { user: req.user } });
   }),
 
-  logout: asyncHandler(async (_req, res) => {
+  logout: asyncHandler(async (req, res) => {
+    // Best-effort revoke. Idempotent — missing or invalid token is fine,
+    // we just want the DB record gone if it exists.
+    await authService.revokeRefreshToken(req.body?.refreshToken);
     res.json({ success: true, message: 'Đăng xuất thành công' });
   }),
 };

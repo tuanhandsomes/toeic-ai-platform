@@ -1,11 +1,12 @@
 import { env } from '../config/env.js';
 import { ApiError } from '../utils/ApiError.js';
+import { logger } from '../utils/logger.js';
 
 export const notFound = (req, _res, next) => {
   next(ApiError.notFound(`Route not found: ${req.method} ${req.originalUrl}`));
 };
 
-export const errorHandler = (err, _req, res, _next) => {
+export const errorHandler = (err, req, res, _next) => {
   const status = err.statusCode || 500;
   const payload = {
     success: false,
@@ -18,7 +19,12 @@ export const errorHandler = (err, _req, res, _next) => {
   }
 
   if (status === 500) {
-    console.error('[500]', err);
+    logger.error('Unhandled error', {
+      method: req.method,
+      url: req.originalUrl,
+      message: err.message,
+      stack: err.stack,
+    });
   }
 
   res.status(status).json(payload);

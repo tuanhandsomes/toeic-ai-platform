@@ -1,5 +1,6 @@
 import { User } from '../models/User.js';
 import { ApiError } from '../utils/ApiError.js';
+import { authService } from './authService.js';
 
 export const userService = {
   async updateProfile(userId, data) {
@@ -22,6 +23,11 @@ export const userService = {
 
     user.passwordHash = await User.hashPassword(newPassword);
     await user.save();
+
+    // Security: kill every existing refresh token so old sessions can't keep
+    // refreshing access tokens after the password is changed.
+    await authService.revokeAllForUser(userId);
+
     return user;
   },
 };

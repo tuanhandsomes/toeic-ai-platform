@@ -3,6 +3,7 @@ import { Result } from '../models/Result.js';
 import { User } from '../models/User.js';
 import { env } from '../config/env.js';
 import { getOpenAIClient } from '../config/openai.js';
+import { logger } from '../utils/logger.js';
 import {
   ANALYSIS_JSON_SCHEMA,
   PROMPT_VERSION,
@@ -100,11 +101,11 @@ async function callOpenAI({ result, user }) {
     const choice = completion.choices?.[0];
     const raw = choice?.message?.content;
     if (!raw) {
-      console.error('[OpenAI] empty content in completion');
+      logger.error('OpenAI returned empty content');
       return null;
     }
     if (choice.finish_reason === 'length') {
-      console.error('[OpenAI] response truncated (finish_reason=length)');
+      logger.error('OpenAI response truncated', { finish_reason: 'length' });
       return null;
     }
 
@@ -115,7 +116,7 @@ async function callOpenAI({ result, user }) {
       rawResponse: raw,
     };
   } catch (err) {
-    console.error('[OpenAI] call failed:', err.message);
+    logger.error('OpenAI call failed', { err: err.message });
     return null;
   }
 }
@@ -163,7 +164,10 @@ export const aiAnalysisService = {
 
       return doc.toObject();
     } catch (err) {
-      console.error(`[aiAnalysisService] generateForResult failed for ${resultId}:`, err.message);
+      logger.error('aiAnalysisService.generateForResult failed', {
+        resultId,
+        err: err.message,
+      });
       return null;
     }
   },
@@ -173,5 +177,18 @@ export const aiAnalysisService = {
    */
   async getByResultId(resultId) {
     return AIAnalysis.findOne({ resultId }).lean();
+  },
+
+  /**
+   * Force a fresh OpenAI call by deleting any existing analysis first.
+   * Used by POST /ai/analyze/:resultId when user wants to retry/refresh.
+   * Burns OpenAI tokens — caller should rate-limit.
+   *
+   * @param {string} resultId
+   * @returns {Promise<Object|null>}
+   */
+  async regenerateForResult(resultId) {
+    await AIAnalysis.deleteOne({ resultId });
+    return this.generateForResult(resultId);
   },
 };

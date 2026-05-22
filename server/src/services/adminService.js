@@ -5,6 +5,7 @@ import { Question } from '../models/Question.js';
 import { Result } from '../models/Result.js';
 import { AIAnalysis } from '../models/AIAnalysis.js';
 import { ApiError } from '../utils/ApiError.js';
+import { authService } from './authService.js';
 
 const PART_TYPE_DEFAULT = {
   1: 'photograph',
@@ -94,6 +95,13 @@ export const adminService = {
     }
     user.isActive = isActive;
     await user.save();
+
+    // Locking a user must kill their refresh tokens — otherwise the locked
+    // user's session keeps refreshing access tokens until 7-day JWT expiry.
+    if (!isActive) {
+      await authService.revokeAllForUser(userId);
+    }
+
     return user.toJSON();
   },
 

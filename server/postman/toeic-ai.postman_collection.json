@@ -1,0 +1,146 @@
+{
+  "info": {
+    "name": "TOEIC AI Platform",
+    "description": "Local API collection. Run Login first to populate {{accessToken}}, then any other request will use it automatically.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:5000/api/v1" },
+    { "key": "accessToken", "value": "" },
+    { "key": "refreshToken", "value": "" },
+    { "key": "resultId", "value": "REPLACE_WITH_FULL_TEST_RESULT_ID" }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }]
+  },
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Logout (revokes refresh token)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/auth/logout", "host": ["{{baseUrl}}"], "path": ["auth", "logout"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Refresh access token",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/auth/refresh", "host": ["{{baseUrl}}"], "path": ["auth", "refresh"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Login (auto-save token)",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/auth/login", "host": ["{{baseUrl}}"], "path": ["auth", "login"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"dokhactuan2808@gmail.com\",\n  \"password\": \"REPLACE_WITH_YOUR_PASSWORD\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json.success && json.data) {",
+                  "  pm.collectionVariables.set('accessToken', json.data.accessToken);",
+                  "  pm.collectionVariables.set('refreshToken', json.data.refreshToken);",
+                  "  console.log('Token saved. User:', json.data.user.email);",
+                  "} else {",
+                  "  console.error('Login failed:', json);",
+                  "}",
+                  "pm.test('Login succeeded', () => pm.expect(json.success).to.be.true);"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Stats",
+      "item": [
+        {
+          "name": "GET /stats/overview",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/stats/overview", "host": ["{{baseUrl}}"], "path": ["stats", "overview"] }
+          }
+        },
+        {
+          "name": "GET /stats/progress (range=30d)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/stats/progress?range=30d",
+              "host": ["{{baseUrl}}"],
+              "path": ["stats", "progress"],
+              "query": [{ "key": "range", "value": "30d", "description": "7d | 30d | 90d | all" }]
+            }
+          }
+        },
+        {
+          "name": "GET /stats/parts (testType=all)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/stats/parts?testType=all",
+              "host": ["{{baseUrl}}"],
+              "path": ["stats", "parts"],
+              "query": [{ "key": "testType", "value": "all", "description": "full | part | all" }]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "AI",
+      "item": [
+        {
+          "name": "POST /ai/analyze/:resultId (regenerate, 5/hour limit)",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{baseUrl}}/ai/analyze/{{resultId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["ai", "analyze", "{{resultId}}"]
+            },
+            "description": "Force-regenerate analysis. Replace {{resultId}} with a real full-test result _id. Rate-limited to 5/hour/user."
+          }
+        },
+        {
+          "name": "GET /ai/analysis/:resultId",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/ai/analysis/{{resultId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["ai", "analysis", "{{resultId}}"]
+            },
+            "description": "Get existing analysis. Lazy-generates if missing and result is full-test."
+          }
+        }
+      ]
+    }
+  ]
+}

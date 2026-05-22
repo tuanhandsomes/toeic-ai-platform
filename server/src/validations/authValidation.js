@@ -19,3 +19,9 @@ export const loginSchema = Joi.object({
 export const refreshSchema = Joi.object({
   refreshToken: Joi.string().required(),
 });
+
+// Optional refreshToken — logout works even without it (client-side clear only),
+// but providing it lets the server revoke the DB record.
+export const logoutSchema = Joi.object({
+  refreshToken: Joi.string().optional(),
+});
