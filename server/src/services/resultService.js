@@ -3,6 +3,7 @@ import { Test } from '../models/Test.js';
 import { Question } from '../models/Question.js';
 import { ApiError } from '../utils/ApiError.js';
 import { gradeTest } from './scoringService.js';
+import { aiAnalysisService } from './aiAnalysisService.js';
 
 export const resultService = {
   /**
@@ -57,6 +58,12 @@ export const resultService = {
       ...graded,
     });
 
+    // Trigger AI analysis only for full tests. Awaited so the client gets analysis
+    // in one round-trip; failures are swallowed inside the service.
+    if (test.type === 'full') {
+      await aiAnalysisService.generateForResult(result._id);
+    }
+
     return result.toObject();
   },
 
@@ -110,6 +117,9 @@ export const resultService = {
       question: questionMap.get(String(a.questionId)) || null,
     }));
 
-    return { ...result, answers: answersWithQuestion };
+    const aiAnalysis =
+      result.testType === 'full' ? await aiAnalysisService.getByResultId(result._id) : null;
+
+    return { ...result, answers: answersWithQuestion, aiAnalysis };
   },
 };

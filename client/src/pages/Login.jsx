@@ -17,8 +17,8 @@ export default function Login() {
     e.preventDefault();
     setError('');
     try {
-      await login(form);
-      navigate(ROUTES.DASHBOARD);
+      const user = await login(form);
+      navigate(user?.role === 'admin' ? ROUTES.ADMIN : ROUTES.DASHBOARD);
     } catch (err) {
       setError(err?.message || 'Đăng nhập thất bại');
     }

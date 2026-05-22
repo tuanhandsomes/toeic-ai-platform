@@ -1,0 +1,82 @@
+{
+  "_comment": "Template để fill ETS 2026 Test 01. Khi xong, đổi tên thành ets-2026-test-01.json rồi chạy: npm run seed:real ets-2026-test-01.json. AudioUrl và imageUrl sẽ tự sinh theo questionNumber nếu không truyền vào.",
+
+  "testInfo": {
+    "title": "ETS 2026 — Full Test 01",
+    "series": "ETS 2026",
+    "year": 2026,
+    "difficulty": "medium",
+    "description": "Đề thi TOEIC L&R chính thức ETS 2026 — Test 1 (200 câu, 120 phút). Đề minh hoạ phục vụ học tập."
+  },
+
+  "questions": [
+    {
+      "_note": "PART 1 — Photograph. Audio + image. Không có text question (đề là listen + chọn đáp án).",
+      "questionNumber": 1,
+      "part": 1,
+      "options": [
+        { "key": "A", "text": "The woman is carrying a tray of food." },
+        { "key": "B", "text": "The woman is wearing a jacket." },
+        { "key": "C", "text": "The woman is tying up her hair." },
+        { "key": "D", "text": "The woman is removing her hat." }
+      ],
+      "correctAnswer": "B",
+      "explanation": "Hình ảnh cho thấy người phụ nữ đang mặc áo khoác. Các đáp án khác không khớp: không có khay thức ăn (A), không buộc tóc (C), không cởi mũ (D).",
+      "vocab": [
+        { "word": "tray", "meaning": "khay (đựng thức ăn)" },
+        { "word": "tie up", "meaning": "buộc/cột (tóc)" }
+      ],
+      "difficulty": "easy"
+    },
+
+    {
+      "_note": "PART 2 — Question-Response. CHỈ 3 đáp án A/B/C (KHÔNG có D). Audio chứa câu hỏi + 3 phản hồi.",
+      "questionNumber": 7,
+      "part": 2,
+      "text": "Where is the meeting taking place?",
+      "options": [
+        { "key": "A", "text": "In the conference room on the third floor." },
+        { "key": "B", "text": "It started at 9 o'clock." },
+        { "key": "C", "text": "Yes, I attended yesterday." }
+      ],
+      "correctAnswer": "A",
+      "explanation": "Câu hỏi WH- 'Where' yêu cầu trả lời địa điểm → 'conference room on the third floor'. B trả lời thời gian, C không liên quan.",
+      "difficulty": "easy"
+    },
+
+    {
+      "_note": "PART 3 — Conversation. 3 câu (32, 33, 34) chung 1 audio file E26-T01-32-34.mp3. Mỗi câu có question text riêng.",
+      "questionNumber": 32,
+      "part": 3,
+      "text": "What are the speakers mainly discussing?",
+      "options": [
+        { "key": "A", "text": "A new product launch" },
+        { "key": "B", "text": "A budget approval" },
+        { "key": "C", "text": "A client meeting" },
+        { "key": "D", "text": "A schedule change" }
+      ],
+      "correctAnswer": "D",
+      "explanation": "Cuộc hội thoại xoay quanh việc thay đổi lịch họp với khách hàng do thời tiết.",
+      "difficulty": "medium"
+    },
+
+    {
+      "_note": "PART 5 — Incomplete Sentence. Chỉ text + 4 options A/B/C/D, không audio.",
+      "questionNumber": 101,
+      "part": 5,
+      "text": "The marketing team _____ a new strategy by the end of next quarter.",
+      "options": [
+        { "key": "A", "text": "develops" },
+        { "key": "B", "text": "will develop" },
+        { "key": "C", "text": "developed" },
+        { "key": "D", "text": "has developed" }
+      ],
+      "correctAnswer": "B",
+      "explanation": "'By the end of next quarter' → thì tương lai. 'Will develop' đúng.",
+      "vocab": [
+        { "word": "strategy", "meaning": "chiến lược" }
+      ],
+      "difficulty": "easy"
+    }
+  ]
+}

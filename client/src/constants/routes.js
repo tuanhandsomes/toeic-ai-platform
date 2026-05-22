@@ -13,4 +13,7 @@ export const ROUTES = {
   STATISTICS: '/statistics',
   PROFILE: '/profile',
   ADMIN: '/admin',
+  ADMIN_USERS: '/admin/users',
+  ADMIN_QUESTIONS: '/admin/questions',
+  ADMIN_TESTS: '/admin/tests',
 };

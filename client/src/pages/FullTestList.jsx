@@ -33,7 +33,7 @@ export default function FullTestList() {
 
   return (
     <AppLayout>
-      <div className="max-w-6xl mx-auto px-8 py-8">
+      <div className="px-6 lg:px-8 py-6">
         <div className="mb-6">
           <h1 className="text-3xl font-heading font-bold mb-2">Tổng hợp đề thi</h1>
           <p className="text-slate-600">

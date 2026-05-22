@@ -35,6 +35,16 @@
     --chart-3: 20 100% 32%;   /* terracotta #A54100 — tertiary */
     --chart-4: 35 100% 50%;   /* orange */
     --chart-5: 280 60% 55%;   /* violet */
+
+    /* shadcn Sidebar tokens */
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 222.2 47.4% 11.2%;
+    --sidebar-primary: 244 75% 59%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 244 100% 96%;            /* primary-50 */
+    --sidebar-accent-foreground: 244 75% 59%;
+    --sidebar-border: 214.3 31.8% 91.4%;
+    --sidebar-ring: 244 75% 59%;
   }
 
   .dark {
@@ -53,6 +63,15 @@
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
     --ring: 244 75% 59%;
+
+    --sidebar-background: 222.2 47.4% 11.2%;
+    --sidebar-foreground: 210 40% 98%;
+    --sidebar-primary: 244 75% 59%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 217.2 32.6% 17.5%;
+    --sidebar-accent-foreground: 210 40% 98%;
+    --sidebar-border: 217.2 32.6% 17.5%;
+    --sidebar-ring: 244 75% 59%;
   }
 }
 

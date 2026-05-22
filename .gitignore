@@ -61,3 +61,13 @@ KE_HOACH_*.md
 
 # CLAUDE
 CLAUDE.md
+
+# Server static media — copyrighted TOEIC materials, do NOT commit to public repo
+server/public/audio/
+server/public/images/
+# Allow tracking folder structure via .gitkeep / README
+!server/public/**/.gitkeep
+!server/public/**/README.md
+
+# Raw source PDFs (ETS đề thi gốc — bản quyền, chỉ dùng local để extract content)
+_raw_pdfs/
