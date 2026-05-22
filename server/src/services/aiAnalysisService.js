@@ -1,6 +1,13 @@
 import { AIAnalysis } from '../models/AIAnalysis.js';
 import { Result } from '../models/Result.js';
+import { User } from '../models/User.js';
 import { env } from '../config/env.js';
+import { getOpenAIClient } from '../config/openai.js';
+import {
+  ANALYSIS_JSON_SCHEMA,
+  PROMPT_VERSION,
+  buildAnalysisPrompt,
+} from '../utils/prompts.js';
 
 const PART_NAMES = {
   1: 'Part 1 — Mô tả tranh',
@@ -65,14 +72,52 @@ function buildHeuristicAnalysis(result) {
 }
 
 /**
- * TODO: implement real OpenAI call when key is wired.
- * For now, returns null to signal fallback.
+ * Call OpenAI Chat Completion with structured output (strict JSON schema).
+ * Returns null on any failure — caller falls back to heuristic.
+ *
+ * @param {Object} params
+ * @param {Object} params.result - Result document (lean)
+ * @param {Object} [params.user] - User document (lean) to read targetScore
+ * @returns {Promise<{ payload: Object, tokensUsed: number, rawResponse: string } | null>}
  */
-async function callOpenAI(_result) {
-  if (!env.OPENAI_API_KEY) return null;
-  // Placeholder — real integration adds OpenAI SDK call here.
-  // Returning null causes heuristic fallback.
-  return null;
+async function callOpenAI({ result, user }) {
+  const client = getOpenAIClient();
+  if (!client) return null;
+
+  const { systemPrompt, userPrompt } = buildAnalysisPrompt({ result, user });
+
+  try {
+    const completion = await client.chat.completions.create({
+      model: env.OPENAI_MODEL,
+      messages: [
+        { role: 'system', content: systemPrompt },
+        { role: 'user', content: userPrompt },
+      ],
+      response_format: ANALYSIS_JSON_SCHEMA,
+      temperature: 0.4,
+    });
+
+    const choice = completion.choices?.[0];
+    const raw = choice?.message?.content;
+    if (!raw) {
+      console.error('[OpenAI] empty content in completion');
+      return null;
+    }
+    if (choice.finish_reason === 'length') {
+      console.error('[OpenAI] response truncated (finish_reason=length)');
+      return null;
+    }
+
+    const payload = JSON.parse(raw); // strict mode guarantees valid JSON
+    return {
+      payload,
+      tokensUsed: completion.usage?.total_tokens || 0,
+      rawResponse: raw,
+    };
+  } catch (err) {
+    console.error('[OpenAI] call failed:', err.message);
+    return null;
+  }
 }
 
 export const aiAnalysisService = {
@@ -93,21 +138,26 @@ export const aiAnalysisService = {
       const existing = await AIAnalysis.findOne({ resultId }).lean();
       if (existing) return existing;
 
-      const aiResponse = await callOpenAI(result);
+      // Fetch user for targetScore — used in prompt to ground recommendations.
+      const user = await User.findById(result.userId)
+        .select('targetScore fullName')
+        .lean();
+
+      const aiResponse = await callOpenAI({ result, user });
       const isFallback = !aiResponse;
-      const payload = aiResponse || buildHeuristicAnalysis(result);
+      const payload = aiResponse?.payload || buildHeuristicAnalysis(result);
 
       const doc = await AIAnalysis.create({
         resultId,
         userId: result.userId,
         model: isFallback ? 'heuristic-v1' : env.OPENAI_MODEL,
-        promptVersion: 'v1.0',
+        promptVersion: PROMPT_VERSION,
         strengths: payload.strengths,
         weaknesses: payload.weaknesses,
         recommendations: payload.recommendations,
         estimatedTargetWeeks: payload.estimatedTargetWeeks,
-        rawResponse: isFallback ? '' : JSON.stringify(aiResponse),
-        tokensUsed: 0,
+        rawResponse: aiResponse?.rawResponse || '',
+        tokensUsed: aiResponse?.tokensUsed || 0,
         isFallback,
       });
 
