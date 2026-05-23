@@ -63,9 +63,13 @@ KE_HOACH_*.md
 CLAUDE.md
 
 # Server static media — copyrighted TOEIC materials, do NOT commit to public repo
-server/public/audio/
-server/public/images/
-# Allow tracking folder structure via .gitkeep / README
+# Ignore CONTENTS of audio/images so .gitkeep can still track folder structure.
+# (Ignoring the directory itself would stop git from descending into it,
+# which would hide the .gitkeep negation pattern below.)
+server/public/audio/**/*
+server/public/images/**/*
+!server/public/audio/**/
+!server/public/images/**/
 !server/public/**/.gitkeep
 !server/public/**/README.md
 
