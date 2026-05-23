@@ -87,7 +87,7 @@ export default function ManageTests() {
     setBusy(true);
     try {
       const res = await adminService.getTest(test._id);
-      const full = res.data.test;
+      const full = res.data;
       setEditing({
         ...blankTest,
         ...full,

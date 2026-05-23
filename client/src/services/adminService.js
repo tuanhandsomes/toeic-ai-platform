@@ -8,12 +8,11 @@ const buildQuery = (params = {}) => {
 };
 
 export const adminService = {
-  // Stats
+  // ─── Stats + Users still live under /admin/* ─────────────────────────────
   stats() {
     return axiosClient.get('/admin/stats');
   },
 
-  // Users
   listUsers(params) {
     return axiosClient.get('/admin/users', { params: buildQuery(params) });
   },
@@ -21,40 +20,42 @@ export const adminService = {
     return axiosClient.patch(`/admin/users/${id}/lock`, { isActive });
   },
 
-  // Questions
+  // ─── Questions moved to /questions (admin-only by route middleware) ──────
   listQuestions(params) {
-    return axiosClient.get('/admin/questions', { params: buildQuery(params) });
+    return axiosClient.get('/questions', { params: buildQuery(params) });
   },
   getQuestion(id) {
-    return axiosClient.get(`/admin/questions/${id}`);
+    return axiosClient.get(`/questions/${id}`);
   },
   createQuestion(payload) {
-    return axiosClient.post('/admin/questions', payload);
+    return axiosClient.post('/questions', payload);
   },
   updateQuestion(id, payload) {
-    return axiosClient.put(`/admin/questions/${id}`, payload);
+    return axiosClient.put(`/questions/${id}`, payload);
   },
   deleteQuestion(id) {
-    return axiosClient.delete(`/admin/questions/${id}`);
+    return axiosClient.delete(`/questions/${id}`);
   },
   importQuestions(payload) {
-    return axiosClient.post('/admin/questions/import', payload);
+    return axiosClient.post('/questions/import', payload);
   },
 
-  // Tests
+  // ─── Tests moved to /tests with adminView=true for unpublished + populate ─
   listTests(params) {
-    return axiosClient.get('/admin/tests', { params: buildQuery(params) });
+    return axiosClient.get('/tests', {
+      params: buildQuery({ ...params, adminView: 'true' }),
+    });
   },
   getTest(id) {
-    return axiosClient.get(`/admin/tests/${id}`);
+    return axiosClient.get(`/tests/${id}`, { params: { adminView: 'true' } });
   },
   createTest(payload) {
-    return axiosClient.post('/admin/tests', payload);
+    return axiosClient.post('/tests', payload);
   },
   updateTest(id, payload) {
-    return axiosClient.put(`/admin/tests/${id}`, payload);
+    return axiosClient.put(`/tests/${id}`, payload);
   },
   deleteTest(id) {
-    return axiosClient.delete(`/admin/tests/${id}`);
+    return axiosClient.delete(`/tests/${id}`);
   },
 };
