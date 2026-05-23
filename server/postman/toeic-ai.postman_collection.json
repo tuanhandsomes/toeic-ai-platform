@@ -141,6 +141,103 @@
           }
         }
       ]
+    },
+    {
+      "name": "Tests",
+      "item": [
+        {
+          "name": "GET /tests (user list, only published)",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/tests?type=full", "host": ["{{baseUrl}}"], "path": ["tests"], "query": [{ "key": "type", "value": "full", "description": "full | part" }] }
+          }
+        },
+        {
+          "name": "GET /tests?adminView=true (admin sees all, populated)",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/tests?adminView=true", "host": ["{{baseUrl}}"], "path": ["tests"], "query": [{ "key": "adminView", "value": "true" }] }
+          }
+        },
+        {
+          "name": "GET /tests/:id (user, taking mode hides answers)",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/tests/REPLACE_TEST_ID", "host": ["{{baseUrl}}"], "path": ["tests", "REPLACE_TEST_ID"] }
+          }
+        },
+        {
+          "name": "POST /tests (admin create)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/tests", "host": ["{{baseUrl}}"], "path": ["tests"] },
+            "body": { "mode": "raw", "raw": "{\n  \"title\": \"Test mới\",\n  \"type\": \"part\",\n  \"part\": 1,\n  \"questionIds\": [],\n  \"durationMinutes\": 30\n}" }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Questions",
+      "item": [
+        {
+          "name": "GET /questions (admin list)",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/questions?part=1&limit=10", "host": ["{{baseUrl}}"], "path": ["questions"], "query": [{ "key": "part", "value": "1" }, { "key": "limit", "value": "10" }] }
+          }
+        },
+        {
+          "name": "POST /questions/import (bulk)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/questions/import", "host": ["{{baseUrl}}"], "path": ["questions", "import"] },
+            "body": { "mode": "raw", "raw": "{\n  \"questions\": [],\n  \"defaultTags\": [\"manual\"]\n}" }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin",
+      "item": [
+        {
+          "name": "GET /admin/stats (system-wide)",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/admin/stats", "host": ["{{baseUrl}}"], "path": ["admin", "stats"] },
+            "description": "System stats: user count, test count, question count, recent results. Admin only."
+          }
+        },
+        {
+          "name": "GET /admin/users (list)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/admin/users?page=1&limit=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "users"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "20" },
+                { "key": "role", "value": "user", "disabled": true, "description": "user | admin" },
+                { "key": "isActive", "value": "true", "disabled": true, "description": "true | false" },
+                { "key": "search", "value": "", "disabled": true, "description": "search by fullName or email" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "PATCH /admin/users/:id/lock (lock or unlock)",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/admin/users/REPLACE_USER_ID/lock", "host": ["{{baseUrl}}"], "path": ["admin", "users", "REPLACE_USER_ID", "lock"] },
+            "body": { "mode": "raw", "raw": "{\n  \"isActive\": false\n}" },
+            "description": "Set isActive=false to lock, true to unlock. Locking also revokes all refresh tokens of that user."
+          }
+        }
+      ]
     }
   ]
 }
