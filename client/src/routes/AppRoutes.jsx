@@ -4,6 +4,8 @@ import { ROUTES } from '../constants/routes.js';
 import ProtectedRoute from './ProtectedRoute.jsx';
 import Login from '../pages/Login.jsx';
 import Register from '../pages/Register.jsx';
+import ForgotPassword from '../pages/ForgotPassword.jsx';
+import ResetPassword from '../pages/ResetPassword.jsx';
 import Dashboard from '../pages/Dashboard.jsx';
 import PracticeList from '../pages/PracticeList.jsx';
 import PracticeDetail from '../pages/PracticeDetail.jsx';
@@ -31,6 +33,8 @@ export default function AppRoutes() {
       <Route path={ROUTES.HOME} element={<Navigate to={homeRedirect} replace />} />
       <Route path={ROUTES.LOGIN} element={<Login />} />
       <Route path={ROUTES.REGISTER} element={<Register />} />
+      <Route path={ROUTES.FORGOT_PASSWORD} element={<ForgotPassword />} />
+      <Route path={ROUTES.RESET_PASSWORD} element={<ResetPassword />} />
 
       <Route element={<ProtectedRoute />}>
         <Route path={ROUTES.DASHBOARD} element={<Dashboard />} />

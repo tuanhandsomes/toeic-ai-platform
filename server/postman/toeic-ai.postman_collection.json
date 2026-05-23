@@ -8,7 +8,8 @@
     { "key": "baseUrl", "value": "http://localhost:5000/api/v1" },
     { "key": "accessToken", "value": "" },
     { "key": "refreshToken", "value": "" },
-    { "key": "resultId", "value": "REPLACE_WITH_FULL_TEST_RESULT_ID" }
+    { "key": "resultId", "value": "REPLACE_WITH_FULL_TEST_RESULT_ID" },
+    { "key": "resetToken", "value": "PASTE_TOKEN_FROM_EMAIL_OR_DB_AFTER_FORGOT" }
   ],
   "auth": {
     "type": "bearer",
@@ -41,6 +42,28 @@
               "mode": "raw",
               "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}"
             }
+          }
+        },
+        {
+          "name": "Forgot password (sends reset email)",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/auth/forgot-password", "host": ["{{baseUrl}}"], "path": ["auth", "forgot-password"] },
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"dokhactuan2808@gmail.com\"\n}" },
+            "description": "Always returns 200 to prevent email enumeration. Check inbox or DB collection passwordresettokens for the actual token."
+          }
+        },
+        {
+          "name": "Reset password (uses token from email)",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/auth/reset-password", "host": ["{{baseUrl}}"], "path": ["auth", "reset-password"] },
+            "body": { "mode": "raw", "raw": "{\n  \"token\": \"{{resetToken}}\",\n  \"newPassword\": \"NewSecret123\"\n}" },
+            "description": "Reset password using the token. Also revokes all refresh tokens of the user."
           }
         },
         {

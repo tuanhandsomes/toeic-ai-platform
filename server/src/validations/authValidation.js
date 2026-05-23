@@ -25,3 +25,17 @@ export const refreshSchema = Joi.object({
 export const logoutSchema = Joi.object({
   refreshToken: Joi.string().optional(),
 });
+
+export const forgotPasswordSchema = Joi.object({
+  email: emailField,
+});
+
+export const resetPasswordSchema = Joi.object({
+  // 32 random bytes rendered as 64 hex chars
+  token: Joi.string().hex().length(64).required(),
+  newPassword: Joi.string().min(6).max(72).required(),
+});
+
+export const verifyResetTokenQuerySchema = Joi.object({
+  token: Joi.string().hex().length(64).required(),
+});

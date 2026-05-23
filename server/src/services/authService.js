@@ -3,7 +3,12 @@ import jwt from 'jsonwebtoken';
 import { env } from '../config/env.js';
 import { User } from '../models/User.js';
 import { RefreshToken } from '../models/RefreshToken.js';
+import { PasswordResetToken } from '../models/PasswordResetToken.js';
 import { ApiError } from '../utils/ApiError.js';
+import { logger } from '../utils/logger.js';
+import { emailService } from './emailService.js';
+
+const PASSWORD_RESET_TTL_MS = 30 * 60 * 1000; // 30 min — spec §8 best practice
 
 const signAccessToken = (user) =>
   jwt.sign({ sub: user._id.toString(), role: user.role }, env.JWT_ACCESS_SECRET, {
@@ -104,5 +109,91 @@ export const authService = {
    */
   async revokeAllForUser(userId) {
     await RefreshToken.deleteMany({ userId });
+  },
+
+  /**
+   * Forgot password flow — generate single-use token, email reset link.
+   *
+   * Security:
+   * - Return success regardless of whether email exists (chống enumeration).
+   * - Store SHA-256 hash, never raw token (DB leak defense).
+   * - 30 min TTL via PasswordResetToken collection.
+   */
+  async forgotPassword(email) {
+    const user = await User.findOne({ email });
+    if (!user || !user.isActive) {
+      // Silently no-op — don't leak which emails are registered
+      logger.info('Forgot password: unknown or inactive email', { email });
+      return;
+    }
+
+    // Generate 32-byte random token (rendered as 64 hex chars in URL)
+    const rawToken = crypto.randomBytes(32).toString('hex');
+    const tokenHash = crypto.createHash('sha256').update(rawToken).digest('hex');
+
+    await PasswordResetToken.create({
+      userId: user._id,
+      tokenHash,
+      expiresAt: new Date(Date.now() + PASSWORD_RESET_TTL_MS),
+    });
+
+    // Best-effort send — emailService logs failure but doesn't throw, so
+    // user always sees "If your email is registered, we sent a link".
+    await emailService.sendPasswordReset({
+      to: user.email,
+      fullName: user.fullName,
+      token: rawToken,
+    });
+  },
+
+  /**
+   * Verify a reset token without consuming it — used by FE on page load to
+   * show invalid/expired UI BEFORE the user types a new password.
+   * Idempotent. Returns true/throws.
+   */
+  async verifyResetToken(rawToken) {
+    const tokenHash = crypto.createHash('sha256').update(rawToken).digest('hex');
+    const record = await PasswordResetToken.findOne({ tokenHash }).lean();
+
+    if (!record || record.expiresAt < new Date()) {
+      throw ApiError.badRequest('Liên kết đặt lại mật khẩu không hợp lệ hoặc đã hết hạn');
+    }
+    return true;
+  },
+
+  /**
+   * Reset password — verify token, set new password, revoke all sessions.
+   */
+  async resetPassword(rawToken, newPassword) {
+    const tokenHash = crypto.createHash('sha256').update(rawToken).digest('hex');
+    const record = await PasswordResetToken.findOne({ tokenHash });
+
+    if (!record) {
+      throw ApiError.badRequest('Liên kết đặt lại mật khẩu không hợp lệ hoặc đã hết hạn');
+    }
+    if (record.expiresAt < new Date()) {
+      // Defensive — TTL index should have cleaned this up, but cleanup runs
+      // every ~60s so there's a small window
+      await record.deleteOne();
+      throw ApiError.badRequest('Liên kết đặt lại mật khẩu đã hết hạn');
+    }
+
+    const user = await User.findById(record.userId).select('+passwordHash');
+    if (!user || !user.isActive) {
+      await record.deleteOne();
+      throw ApiError.badRequest('Tài khoản không tồn tại hoặc đã bị khóa');
+    }
+
+    user.passwordHash = await User.hashPassword(newPassword);
+    await user.save();
+
+    // Single-use: drop the token + all the user's other reset tokens
+    await PasswordResetToken.deleteMany({ userId: user._id });
+
+    // Security: same as change-password — kill every refresh token so
+    // attacker (if any) holding the user's session is locked out.
+    await RefreshToken.deleteMany({ userId: user._id });
+
+    return { userId: user._id };
   },
 };

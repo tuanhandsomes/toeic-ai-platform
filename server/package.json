@@ -24,6 +24,7 @@
     "mongoose": "^8.7.0",
     "morgan": "^1.10.0",
     "openai": "^4.67.0",
+    "resend": "^6.12.3",
     "winston": "^3.19.0"
   },
   "devDependencies": {

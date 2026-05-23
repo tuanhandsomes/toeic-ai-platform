@@ -20,4 +20,16 @@ export const authService = {
   me() {
     return axiosClient.get('/auth/me');
   },
+
+  forgotPassword(email) {
+    return axiosClient.post('/auth/forgot-password', { email });
+  },
+
+  verifyResetToken(token) {
+    return axiosClient.get('/auth/reset-password/verify', { params: { token } });
+  },
+
+  resetPassword(token, newPassword) {
+    return axiosClient.post('/auth/reset-password', { token, newPassword });
+  },
 };

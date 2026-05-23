@@ -14,5 +14,8 @@ export const env = {
   JWT_REFRESH_EXPIRES: process.env.JWT_REFRESH_EXPIRES || '7d',
   OPENAI_API_KEY: process.env.OPENAI_API_KEY || '',
   OPENAI_MODEL: process.env.OPENAI_MODEL || 'gpt-4o-mini',
+  RESEND_API_KEY: process.env.RESEND_API_KEY || '',
+  EMAIL_FROM: process.env.EMAIL_FROM || 'onboarding@resend.dev',
+  EMAIL_FROM_NAME: process.env.EMAIL_FROM_NAME || 'TOEIC AI Platform',
   CLIENT_URL: process.env.CLIENT_URL || 'http://localhost:5173',
 };
