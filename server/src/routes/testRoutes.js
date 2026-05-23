@@ -6,8 +6,8 @@ import { validate, validateQuery } from "../middlewares/validate.js";
 import {
   createTestSchema,
   updateTestSchema,
-  adminListTestsQuerySchema,
-} from "../validations/adminValidation.js";
+  listTestsQuerySchema,
+} from "../validations/testValidation.js";
 
 const router = Router();
 
@@ -15,7 +15,7 @@ const router = Router();
 router.use(requireAuth);
 
 // ─── USER + ADMIN (admin can pass ?adminView=true for fuller data) ─────────
-router.get("/", testController.list);
+router.get("/", validateQuery(listTestsQuerySchema), testController.list);
 router.get("/:id", testController.getById);
 
 // ─── ADMIN ONLY (POST/PUT/DELETE /tests) ────────────────────────
@@ -32,9 +32,5 @@ router.put(
   testController.update,
 );
 router.delete("/:id", requireAdmin, testController.remove);
-
-// Optional admin endpoint kept commented for future use:
-// router.get('/admin/listing', requireAdmin, validateQuery(adminListTestsQuerySchema), ...);
-// Currently the same GET / endpoint with ?adminView=true serves this purpose.
 
 export default router;

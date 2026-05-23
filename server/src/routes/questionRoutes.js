@@ -7,8 +7,8 @@ import {
   createQuestionSchema,
   updateQuestionSchema,
   importQuestionsSchema,
-  adminListQuestionsQuerySchema,
-} from "../validations/adminValidation.js";
+  listQuestionsQuerySchema,
+} from "../validations/questionValidation.js";
 
 const router = Router();
 
@@ -17,7 +17,7 @@ router.use(requireAuth, requireAdmin);
 
 router.get(
   "/",
-  validateQuery(adminListQuestionsQuerySchema),
+  validateQuery(listQuestionsQuerySchema),
   questionController.list,
 );
 router.get("/:id", questionController.getById);

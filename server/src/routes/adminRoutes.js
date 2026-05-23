@@ -5,7 +5,7 @@ import { requireAdmin } from "../middlewares/roleMiddleware.js";
 import { validate, validateQuery } from "../middlewares/validate.js";
 import {
   lockUserSchema,
-  adminListUsersQuerySchema,
+  listUsersQuerySchema,
 } from "../validations/adminValidation.js";
 
 const router = Router();
@@ -18,7 +18,7 @@ router.get("/stats", adminController.stats);
 // Users
 router.get(
   "/users",
-  validateQuery(adminListUsersQuerySchema),
+  validateQuery(listUsersQuerySchema),
   adminController.listUsers,
 );
 router.patch(
