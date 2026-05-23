@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import {
   Plus, Pencil, Trash2, Search, Loader2, Upload, AlertCircle, FileJson,
 } from 'lucide-react';
@@ -17,6 +17,73 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
 import { adminService } from '@/services/adminService';
+import { uploadService } from '@/services/uploadService';
+
+/**
+ * Input URL + nút "Chọn file" upload trực tiếp lên Cloudinary qua BE.
+ * Sau khi upload xong tự fill URL trả về vào input.
+ */
+function MediaUploadField({ label, value, onChange, kind, placeholder }) {
+  const inputRef = useRef(null);
+  const [uploading, setUploading] = useState(false);
+  const [error, setError] = useState('');
+
+  const accept = kind === 'audio' ? 'audio/*' : 'image/*';
+  const uploader = kind === 'audio' ? uploadService.uploadAudio : uploadService.uploadImage;
+
+  const handleFileChange = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setError('');
+    setUploading(true);
+    try {
+      const res = await uploader(file);
+      onChange(res.data.url);
+    } catch (err) {
+      setError(err?.message || 'Upload thất bại');
+    } finally {
+      setUploading(false);
+      // Reset input để có thể upload lại cùng file nếu cần
+      if (inputRef.current) inputRef.current.value = '';
+    }
+  };
+
+  return (
+    <div>
+      <Label>{label}</Label>
+      <div className="flex gap-2">
+        <Input
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder={placeholder}
+          className="flex-1"
+        />
+        <button
+          type="button"
+          onClick={() => inputRef.current?.click()}
+          disabled={uploading}
+          className="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium rounded-md border border-slate-200 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed shrink-0"
+          title={`Upload ${kind} lên Cloudinary`}
+        >
+          {uploading ? (
+            <Loader2 className="w-4 h-4 animate-spin" />
+          ) : (
+            <Upload className="w-4 h-4" />
+          )}
+          {uploading ? 'Đang tải...' : 'Chọn file'}
+        </button>
+        <input
+          ref={inputRef}
+          type="file"
+          accept={accept}
+          onChange={handleFileChange}
+          className="hidden"
+        />
+      </div>
+      {error && <p className="mt-1 text-xs text-red-600">{error}</p>}
+    </div>
+  );
+}
 
 const PART_TYPE_DEFAULT = {
   1: 'photograph',
@@ -26,6 +93,20 @@ const PART_TYPE_DEFAULT = {
   5: 'incomplete_sentence',
   6: 'text_completion',
   7: 'reading_comprehension',
+};
+
+/**
+ * Cấu trúc media TOEIC L&R theo Part — xem docs/02-toeic-structure.md.
+ * required: BẮT BUỘC, optional: có/không cũng được, false: KHÔNG có.
+ */
+const PART_MEDIA = {
+  1: { audio: 'required', image: 'required', note: 'Photo + Audio mô tả' },
+  2: { audio: 'required', image: false, note: 'Audio hỏi-đáp, KHÔNG ảnh' },
+  3: { audio: 'required', image: 'optional', note: 'Audio hội thoại, ảnh chỉ khi có graphic' },
+  4: { audio: 'required', image: 'optional', note: 'Audio bài nói, ảnh chỉ khi có graphic' },
+  5: { audio: false, image: false, note: 'Chỉ text — Hoàn thành câu' },
+  6: { audio: false, image: 'required', note: 'Ảnh đoạn văn (passage), KHÔNG audio' },
+  7: { audio: false, image: 'required', note: 'Ảnh đoạn văn/email/quảng cáo, KHÔNG audio' },
 };
 
 const blankQuestion = (part = 1) => ({
@@ -398,7 +479,7 @@ export default function ManageQuestions() {
 function QuestionEditorDialog({ mode, question, busy, onCancel, onSave }) {
   const [form, setForm] = useState(question);
 
-  // Adjust options array when part toggles between 2 and other
+  // Adjust options + clear media URLs when part toggles between
   const handlePartChange = (newPart) => {
     const part = Number(newPart);
     setForm((f) => {
@@ -407,10 +488,19 @@ function QuestionEditorDialog({ mode, question, busy, onCancel, onSave }) {
       let options = f.options;
       if (needsTrim) options = f.options.slice(0, 3);
       if (needsAdd) options = [...f.options, { key: 'D', text: '' }];
+
+      // Clear media URLs that are no longer valid for the new part — avoid
+      // leaving stale audio links on a Part 5 (text-only) question.
+      const media = PART_MEDIA[part] || { audio: false, image: false };
+      const content = { ...f.content };
+      if (!media.audio) content.audioUrl = '';
+      if (!media.image) content.imageUrl = '';
+
       return {
         ...f,
         part,
         type: PART_TYPE_DEFAULT[part] || f.type,
+        content,
         options,
         correctAnswer: part === 2 && f.correctAnswer === 'D' ? 'A' : f.correctAnswer,
       };
@@ -485,6 +575,9 @@ function QuestionEditorDialog({ mode, question, busy, onCancel, onSave }) {
                   ))}
                 </SelectContent>
               </Select>
+              <p className="text-xs text-slate-500 mt-1">
+                {PART_MEDIA[form.part]?.note}
+              </p>
               {form.part === 2 && (
                 <p className="text-xs text-yellow-700 mt-1">Part 2 chỉ có 3 đáp án A/B/C.</p>
               )}
@@ -518,24 +611,41 @@ function QuestionEditorDialog({ mode, question, busy, onCancel, onSave }) {
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <Label>Audio URL</Label>
-              <Input
-                value={form.content.audioUrl}
-                onChange={(e) => updateContent('audioUrl', e.target.value)}
-                placeholder="/audio/…/file.mp3"
-              />
-            </div>
-            <div>
-              <Label>Image URL</Label>
-              <Input
-                value={form.content.imageUrl}
-                onChange={(e) => updateContent('imageUrl', e.target.value)}
-                placeholder="/images/…/file.png"
-              />
-            </div>
-          </div>
+          {/* Media fields rendered conditionally per PART_MEDIA spec —
+              Part 5 (text-only) sees neither, Part 2 sees only audio, etc. */}
+          {(() => {
+            const media = PART_MEDIA[form.part] || { audio: false, image: false };
+            if (!media.audio && !media.image) {
+              return (
+                <div className="rounded-md bg-slate-50 border border-slate-200 px-3 py-2 text-xs text-slate-600">
+                  Part {form.part} không có audio/ảnh — chỉ cần text câu hỏi và đáp án.
+                </div>
+              );
+            }
+            const cols = media.audio && media.image ? 'grid-cols-2' : 'grid-cols-1';
+            return (
+              <div className={`grid ${cols} gap-3`}>
+                {media.audio && (
+                  <MediaUploadField
+                    label={`Audio URL${media.audio === 'optional' ? ' (tùy chọn)' : ''}`}
+                    kind="audio"
+                    value={form.content.audioUrl}
+                    onChange={(url) => updateContent('audioUrl', url)}
+                    placeholder="https://res.cloudinary.com/.../file.mp3"
+                  />
+                )}
+                {media.image && (
+                  <MediaUploadField
+                    label={`Image URL${media.image === 'optional' ? ' (tùy chọn — graphic)' : ''}`}
+                    kind="image"
+                    value={form.content.imageUrl}
+                    onChange={(url) => updateContent('imageUrl', url)}
+                    placeholder="https://res.cloudinary.com/.../file.png"
+                  />
+                )}
+              </div>
+            );
+          })()}
 
           <div>
             <Label>Đáp án *</Label>

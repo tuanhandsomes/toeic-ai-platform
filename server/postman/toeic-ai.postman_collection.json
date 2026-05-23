@@ -222,6 +222,39 @@
       ]
     },
     {
+      "name": "Upload",
+      "item": [
+        {
+          "name": "POST /upload/audio (admin)",
+          "request": {
+            "method": "POST",
+            "url": { "raw": "{{baseUrl}}/upload/audio", "host": ["{{baseUrl}}"], "path": ["upload", "audio"] },
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "file", "type": "file", "description": "mp3/wav/m4a/ogg, max 10MB" }
+              ]
+            },
+            "description": "Upload an audio file. Returns Cloudinary secure URL to paste into Question.content.audioUrl."
+          }
+        },
+        {
+          "name": "POST /upload/image (admin)",
+          "request": {
+            "method": "POST",
+            "url": { "raw": "{{baseUrl}}/upload/image", "host": ["{{baseUrl}}"], "path": ["upload", "image"] },
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "file", "type": "file", "description": "jpg/png/webp, max 5MB" }
+              ]
+            },
+            "description": "Upload an image. Returns Cloudinary secure URL."
+          }
+        }
+      ]
+    },
+    {
       "name": "Admin",
       "item": [
         {
