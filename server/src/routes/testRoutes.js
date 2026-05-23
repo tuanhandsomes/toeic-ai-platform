@@ -3,10 +3,12 @@ import { testController } from "../controllers/testController.js";
 import { requireAuth } from "../middlewares/authMiddleware.js";
 import { requireAdmin } from "../middlewares/roleMiddleware.js";
 import { validate, validateQuery } from "../middlewares/validate.js";
+import { uploadTestMedia, wrapMulter } from "../middlewares/upload.js";
 import {
   createTestSchema,
   updateTestSchema,
   listTestsQuerySchema,
+  importTestBundleSchema,
 } from "../validations/testValidation.js";
 
 const router = Router();
@@ -20,6 +22,12 @@ router.get("/:id", testController.getById);
 
 // ─── ADMIN ONLY (POST/PUT/DELETE /tests) ────────────────────────
 router.post(
+  "/import",
+  requireAdmin,
+  validate(importTestBundleSchema),
+  testController.importBundle,
+);
+router.post(
   "/",
   requireAdmin,
   validate(createTestSchema),
@@ -32,5 +40,14 @@ router.put(
   testController.update,
 );
 router.delete("/:id", requireAdmin, testController.remove);
+
+// Bulk media upload for a specific test — audio + image files mixed.
+// Multer parses multipart with field name "files".
+router.post(
+  "/:id/upload-media",
+  requireAdmin,
+  wrapMulter(uploadTestMedia),
+  testController.uploadMedia,
+);
 
 export default router;

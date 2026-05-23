@@ -1,6 +1,7 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import {
-  Plus, Pencil, Trash2, Search, Loader2, X, AlertCircle,
+  Plus, Pencil, Trash2, Search, Loader2, X, AlertCircle, Upload, FileJson, CheckCircle2,
+  UploadCloud, FileAudio, FileImage,
 } from 'lucide-react';
 import AdminLayout from '@/components/layout/AdminLayout';
 import { Card, CardContent } from '@/components/ui/card';
@@ -54,6 +55,104 @@ export default function ManageTests() {
 
   const [confirmDelete, setConfirmDelete] = useState(null);
   const [busy, setBusy] = useState(false);
+
+  // ─── Import full test bundle (1-click upload JSON) ──────────────────────
+  const [importOpen, setImportOpen] = useState(false);
+  const [importing, setImporting] = useState(false);
+  const [importError, setImportError] = useState('');
+  const [importResult, setImportResult] = useState(null);
+  const importInputRef = useRef(null);
+
+  const handleImportFile = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setImportError('');
+    setImportResult(null);
+    setImporting(true);
+    try {
+      const text = await file.text();
+      let bundle;
+      try {
+        bundle = JSON.parse(text);
+      } catch {
+        throw new Error('File JSON không hợp lệ — kiểm tra cú pháp.');
+      }
+      if (!bundle.testInfo || !Array.isArray(bundle.questions)) {
+        throw new Error('JSON phải có shape { testInfo, questions }.');
+      }
+      const res = await adminService.importTestBundle(bundle);
+      setImportResult(res.data);
+      await fetchTests(1);
+    } catch (err) {
+      setImportError(err?.message || 'Import thất bại');
+    } finally {
+      setImporting(false);
+      if (importInputRef.current) importInputRef.current.value = '';
+    }
+  };
+
+  const closeImport = () => {
+    if (importing) return;
+    setImportOpen(false);
+    setImportError('');
+    setImportResult(null);
+  };
+
+  // ─── Bulk upload audio + image for 1 test ───────────────────────────────
+  const [mediaTest, setMediaTest] = useState(null); // test đang chọn
+  const [mediaFiles, setMediaFiles] = useState([]);
+  const [mediaUploading, setMediaUploading] = useState(false);
+  const [mediaProgress, setMediaProgress] = useState(0);
+  const [mediaResult, setMediaResult] = useState(null);
+  const [mediaError, setMediaError] = useState('');
+  const mediaInputRef = useRef(null);
+
+  const openMediaDialog = (test) => {
+    setMediaTest(test);
+    setMediaFiles([]);
+    setMediaResult(null);
+    setMediaError('');
+    setMediaProgress(0);
+  };
+
+  const closeMediaDialog = () => {
+    if (mediaUploading) return;
+    setMediaTest(null);
+    setMediaFiles([]);
+    setMediaResult(null);
+    setMediaError('');
+  };
+
+  const handleMediaPick = (e) => {
+    const picked = Array.from(e.target.files || []);
+    if (picked.length === 0) return;
+    // Accumulate — user may pick audio folder then images folder in 2 clicks
+    setMediaFiles((prev) => {
+      const map = new Map(prev.map((f) => [f.name, f]));
+      picked.forEach((f) => map.set(f.name, f));
+      return Array.from(map.values());
+    });
+    if (mediaInputRef.current) mediaInputRef.current.value = '';
+  };
+
+  const removeMediaFile = (name) => {
+    setMediaFiles((prev) => prev.filter((f) => f.name !== name));
+  };
+
+  const handleMediaUpload = async () => {
+    if (mediaFiles.length === 0) return;
+    setMediaUploading(true);
+    setMediaError('');
+    setMediaProgress(0);
+    try {
+      const res = await adminService.uploadTestMedia(mediaTest._id, mediaFiles, setMediaProgress);
+      setMediaResult(res.data);
+    } catch (err) {
+      setMediaError(err?.message || 'Tải lên thất bại');
+    } finally {
+      setMediaUploading(false);
+    }
+  };
 
   const fetchTests = useCallback(
     async (page = 1) => {
@@ -145,9 +244,18 @@ export default function ManageTests() {
               Tạo, sửa, xóa các bài Practice và Full Test.
             </p>
           </div>
-          <button onClick={openCreate} className="btn-primary text-sm">
-            <Plus className="w-4 h-4" /> Tạo đề mới
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setImportOpen(true)}
+              className="btn-secondary text-sm"
+              title="Tải lên cả đề thi từ một file"
+            >
+              <Upload className="w-4 h-4" /> Tải lên cả đề thi
+            </button>
+            <button onClick={openCreate} className="btn-primary text-sm">
+              <Plus className="w-4 h-4" /> Tạo đề mới
+            </button>
+          </div>
         </div>
 
         <Card className="mb-4">
@@ -268,6 +376,16 @@ export default function ManageTests() {
                       </TableCell>
                       <TableCell className="text-right">
                         <div className="flex justify-end gap-2">
+                          {t.type === 'full' && (
+                            <button
+                              type="button"
+                              onClick={() => openMediaDialog(t)}
+                              className="inline-flex items-center gap-1 text-xs font-medium px-2.5 py-1 rounded-md border border-primary-200 text-primary-700 hover:bg-primary-50"
+                              title="Tải lên file âm thanh và hình ảnh cho đề này"
+                            >
+                              <UploadCloud className="w-3 h-3" /> Tải media
+                            </button>
+                          )}
                           <button
                             type="button"
                             onClick={() => openEdit(t)}
@@ -362,6 +480,286 @@ export default function ManageTests() {
               {busy && <Loader2 className="w-4 h-4 animate-spin mr-1" />}
               Xóa
             </button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* TẢI LÊN CẢ ĐỀ THI */}
+      <Dialog open={importOpen} onOpenChange={(o) => (o ? setImportOpen(true) : closeImport())}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <FileJson className="w-5 h-5 text-primary-500" />
+              Tải lên cả đề thi
+            </DialogTitle>
+            <DialogDescription>
+              Chỉ với 1 file, hệ thống sẽ tự tạo cả đề thi đầy đủ (200 câu) và 7 bài luyện tập theo từng Part —
+              bạn không phải chọn từng câu hỏi thủ công.
+            </DialogDescription>
+          </DialogHeader>
+
+          {importResult ? (
+            <div className="rounded-lg bg-secondary-50 border border-secondary-100 text-secondary-700 px-4 py-4 text-sm">
+              <div className="flex items-start gap-3">
+                <CheckCircle2 className="w-5 h-5 flex-shrink-0 mt-0.5" />
+                <div className="space-y-1">
+                  <p className="font-medium">Tải lên thành công</p>
+                  <p>Tên đề thi: <strong>{importResult.test.title}</strong></p>
+                  <p>Số câu hỏi: <strong>{importResult.questionCount}</strong></p>
+                  <p>Số bài luyện tập theo Part: <strong>{importResult.practiceSets.length}</strong></p>
+                  <p className="text-xs text-secondary-700/80 mt-2">
+                    💡 Bước tiếp theo: nếu đề có Part 1-4 (phần Nghe) hoặc Part 6-7 (phần Đọc có ảnh),
+                    hãy nhờ team kỹ thuật tải kho âm thanh và hình ảnh của đề lên hệ thống. Tên file
+                    phải theo quy tắc đã chuẩn bị để tự khớp với câu hỏi.
+                  </p>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <>
+              <div className="rounded-md bg-slate-50 border border-slate-200 px-3 py-3 text-xs text-slate-600 space-y-2">
+                <div>
+                  <p className="font-medium text-slate-700 mb-1">📄 File đề thi cần có gì?</p>
+                  <p>
+                    Một file văn bản đuôi <code className="px-1 py-0.5 bg-slate-200 rounded">.json</code> chứa
+                    đầy đủ thông tin đề (tên, năm, độ khó) và <strong>200 câu hỏi</strong> kèm đáp án, lời giải.
+                    File này được chuẩn bị sẵn theo mẫu cố định — bạn có thể dùng file mẫu đã có trong dự án
+                    làm gốc, hoặc nhờ team kỹ thuật tạo từ file đề PDF.
+                  </p>
+                </div>
+
+                <div>
+                  <p className="font-medium text-slate-700 mb-1">🔊 File âm thanh & hình ảnh thì sao?</p>
+                  <p>
+                    Hệ thống <strong>tự động khớp</strong> từng câu hỏi với file âm thanh/hình ảnh tương ứng
+                    dựa trên tên file (vd câu 1 ghép với <code className="px-1 bg-slate-200 rounded">E26-T02-01.mp3</code>).
+                    Bạn không phải gắn từng câu một. Các file media này được tải lên kho lưu trữ bằng công cụ riêng
+                    (hiện tại do team kỹ thuật thực hiện sau khi tải đề lên).
+                  </p>
+                </div>
+
+                <div>
+                  <p className="font-medium text-slate-700 mb-1">⚠️ Lưu ý:</p>
+                  <p>Nếu đề thi cùng tên đã có trong hệ thống, hãy xóa đề cũ trước khi tải lại.</p>
+                </div>
+              </div>
+
+              {importError && (
+                <div className="mt-3 rounded-lg bg-red-50 border border-red-200 text-red-700 px-3 py-2 text-sm flex items-start gap-2">
+                  <AlertCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />
+                  {importError}
+                </div>
+              )}
+
+              <input
+                ref={importInputRef}
+                type="file"
+                accept="application/json,.json"
+                onChange={handleImportFile}
+                className="hidden"
+              />
+            </>
+          )}
+
+          <DialogFooter>
+            <button type="button" onClick={closeImport} className="btn-ghost text-sm" disabled={importing}>
+              {importResult ? 'Đóng' : 'Hủy'}
+            </button>
+            {!importResult && (
+              <button
+                type="button"
+                onClick={() => importInputRef.current?.click()}
+                disabled={importing}
+                className="btn-primary text-sm"
+              >
+                {importing ? (
+                  <><Loader2 className="w-4 h-4 animate-spin" /> Đang tải lên...</>
+                ) : (
+                  <><Upload className="w-4 h-4" /> Chọn file đề thi</>
+                )}
+              </button>
+            )}
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* TẢI LÊN ÂM THANH & HÌNH ẢNH CHO 1 ĐỀ */}
+      <Dialog open={!!mediaTest} onOpenChange={(o) => (o ? null : closeMediaDialog())}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <UploadCloud className="w-5 h-5 text-primary-500" />
+              Tải lên âm thanh & hình ảnh
+            </DialogTitle>
+            <DialogDescription>
+              Đề: <strong>{mediaTest?.title}</strong>. Chọn cùng lúc các file âm thanh (Part 1-4)
+              và hình ảnh (Part 1, 3, 4, 6, 7) đã chuẩn bị sẵn — hệ thống sẽ tự gắn vào đúng câu hỏi
+              dựa trên tên file.
+            </DialogDescription>
+          </DialogHeader>
+
+          {mediaResult ? (
+            <div className="space-y-3">
+              <div className="rounded-lg bg-secondary-50 border border-secondary-100 text-secondary-700 px-4 py-4 text-sm">
+                <div className="flex items-start gap-3">
+                  <CheckCircle2 className="w-5 h-5 flex-shrink-0 mt-0.5" />
+                  <div className="space-y-1">
+                    <p className="font-medium">Tải lên hoàn tất</p>
+                    <p>Số file tải thành công: <strong>{mediaResult.uploaded.length}</strong></p>
+                    {mediaResult.failed.length > 0 && (
+                      <p className="text-tertiary-700">Số file thất bại: <strong>{mediaResult.failed.length}</strong></p>
+                    )}
+                    <p>Số câu hỏi đã được gắn media: <strong>{mediaResult.linkedQuestions}</strong></p>
+                  </div>
+                </div>
+              </div>
+
+              {mediaResult.failed.length > 0 && (
+                <div className="rounded-md bg-red-50 border border-red-200 text-red-700 px-3 py-2 text-xs">
+                  <p className="font-medium mb-1">Chi tiết file thất bại:</p>
+                  <ul className="space-y-1">
+                    {mediaResult.failed.map((f) => (
+                      <li key={f.filename}>
+                        <code>{f.filename}</code>: {f.reason}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
+          ) : (
+            <>
+              <div className="rounded-md bg-slate-50 border border-slate-200 px-3 py-3 text-xs text-slate-600 space-y-2">
+                <p>
+                  <strong>Quy tắc tên file</strong> — hệ thống dựa vào tên file để gắn đúng câu:
+                </p>
+                <ul className="list-disc pl-5 space-y-0.5">
+                  <li>Âm thanh Part 1, 2: <code>E26-T02-01.mp3</code> đến <code>E26-T02-31.mp3</code></li>
+                  <li>Âm thanh Part 3, 4: <code>E26-T02-32-34.mp3</code>, <code>E26-T02-35-37.mp3</code>...</li>
+                  <li>Ảnh Part 1: <code>01.PNG</code> đến <code>06.PNG</code></li>
+                  <li>Ảnh Part 3, 4 (graphic): <code>graphic-q62-64.PNG</code>...</li>
+                  <li>Ảnh Part 6, 7 (đoạn văn): <code>passage-q131-134.PNG</code>...</li>
+                </ul>
+              </div>
+
+              {/* File picker + accumulated list */}
+              <div className="mt-3 border-2 border-dashed border-slate-200 rounded-lg p-4 text-center">
+                <input
+                  ref={mediaInputRef}
+                  type="file"
+                  accept="audio/*,image/*"
+                  multiple
+                  onChange={handleMediaPick}
+                  className="hidden"
+                />
+                <button
+                  type="button"
+                  onClick={() => mediaInputRef.current?.click()}
+                  disabled={mediaUploading}
+                  className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md border border-slate-300 hover:bg-slate-50"
+                >
+                  <Upload className="w-4 h-4" /> Chọn file (có thể chọn nhiều lần)
+                </button>
+                <p className="mt-2 text-xs text-slate-500">
+                  Có thể chọn cả 1 thư mục bằng Ctrl+A trong File Explorer rồi kéo vào hộp chọn file.
+                </p>
+              </div>
+
+              {/* File list */}
+              {mediaFiles.length > 0 && (
+                <div className="mt-3">
+                  <p className="text-xs font-medium text-slate-700 mb-2">
+                    Đã chọn {mediaFiles.length} file:
+                  </p>
+                  <div className="max-h-48 overflow-y-auto border border-slate-200 rounded-md divide-y divide-slate-100">
+                    {mediaFiles.map((f) => {
+                      const isAudio = f.type.startsWith('audio/');
+                      return (
+                        <div key={f.name} className="flex items-center gap-2 px-3 py-1.5 text-xs">
+                          {isAudio ? (
+                            <FileAudio className="w-3.5 h-3.5 text-primary-500 flex-shrink-0" />
+                          ) : (
+                            <FileImage className="w-3.5 h-3.5 text-secondary-500 flex-shrink-0" />
+                          )}
+                          <span className="font-mono truncate flex-1">{f.name}</span>
+                          <span className="text-slate-400 flex-shrink-0">
+                            {(f.size / 1024).toFixed(0)} KB
+                          </span>
+                          {!mediaUploading && (
+                            <button
+                              type="button"
+                              onClick={() => removeMediaFile(f.name)}
+                              className="text-slate-400 hover:text-tertiary-600 flex-shrink-0"
+                              title="Bỏ file này"
+                            >
+                              <X className="w-3 h-3" />
+                            </button>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {mediaUploading && (
+                <div className="mt-3 space-y-2">
+                  {mediaProgress < 100 ? (
+                    <>
+                      <div className="flex items-center justify-between text-xs text-slate-600">
+                        <span>Đang tải file lên hệ thống...</span>
+                        <span>{mediaProgress}%</span>
+                      </div>
+                      <div className="h-2 bg-slate-200 rounded-full overflow-hidden">
+                        <div
+                          className="h-full bg-primary-500 transition-all"
+                          style={{ width: `${mediaProgress}%` }}
+                        />
+                      </div>
+                    </>
+                  ) : (
+                    <div className="flex items-center gap-2 text-sm text-slate-600 py-2">
+                      <Loader2 className="w-4 h-4 animate-spin text-primary-500" />
+                      <span>
+                        Đang xử lý {mediaFiles.length} file và gắn vào câu hỏi. Mất khoảng 1-2 phút...
+                      </span>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {mediaError && (
+                <div className="mt-3 rounded-lg bg-red-50 border border-red-200 text-red-700 px-3 py-2 text-sm flex items-start gap-2">
+                  <AlertCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />
+                  {mediaError}
+                </div>
+              )}
+            </>
+          )}
+
+          <DialogFooter>
+            <button
+              type="button"
+              onClick={closeMediaDialog}
+              className="btn-ghost text-sm"
+              disabled={mediaUploading}
+            >
+              {mediaResult ? 'Đóng' : 'Hủy'}
+            </button>
+            {!mediaResult && (
+              <button
+                type="button"
+                onClick={handleMediaUpload}
+                disabled={mediaUploading || mediaFiles.length === 0}
+                className="btn-primary text-sm"
+              >
+                {mediaUploading ? (
+                  <><Loader2 className="w-4 h-4 animate-spin" /> Đang tải...</>
+                ) : (
+                  <><UploadCloud className="w-4 h-4" /> Tải lên {mediaFiles.length || ''} file</>
+                )}
+              </button>
+            )}
           </DialogFooter>
         </DialogContent>
       </Dialog>

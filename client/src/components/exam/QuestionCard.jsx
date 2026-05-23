@@ -1,18 +1,9 @@
 import { useEffect, useRef } from 'react';
-import { Check, Flag, Headphones } from 'lucide-react';
+import { Check, Flag, Headphones, Info } from 'lucide-react';
+import { PART_TITLES, PART_DIRECTIONS, parsePassageRange, buildPassagePrompt } from '../../constants/toeic.js';
 
 const MEDIA_BASE = import.meta.env.VITE_MEDIA_URL || '';
 const toMediaUrl = (url) => (url && url.startsWith('/') ? `${MEDIA_BASE}${url}` : url);
-
-const PART_LABELS = {
-  1: 'Part 1 — Mô tả tranh',
-  2: 'Part 2 — Hỏi đáp',
-  3: 'Part 3 — Đoạn hội thoại',
-  4: 'Part 4 — Bài nói ngắn',
-  5: 'Part 5 — Hoàn thành câu',
-  6: 'Part 6 — Hoàn thành đoạn',
-  7: 'Part 7 — Đọc hiểu',
-};
 
 // Part 1-2: hide option text (user hears, picks letter). Part 3-7: show full text.
 const HIDE_OPTION_TEXT_PARTS = new Set([1, 2]);
@@ -32,8 +23,8 @@ function useAutoPlayAudio(audioRef, src) {
 
 export default function QuestionCard({
   question,
-  index,
-  total,
+  globalNumber,
+  isFirstOfPart,
   selected,
   isFlagged,
   onSelect,
@@ -47,6 +38,20 @@ export default function QuestionCard({
 
   const audioRef = useRef(null);
   useAutoPlayAudio(audioRef, content?.audioUrl);
+
+  const passageRange = hasImage ? parsePassageRange(content.imageUrl) : null;
+  const passagePrompt = buildPassagePrompt(passageRange);
+
+  // Khối hướng dẫn Part — chỉ hiện ở câu đầu tiên của Part trong test
+  const partDirectionsBlock = isFirstOfPart && PART_DIRECTIONS[part] ? (
+    <div className="mb-4 rounded-lg border border-primary-100 bg-primary-50/60 px-4 py-3 flex gap-3">
+      <Info className="w-4 h-4 text-primary-600 flex-shrink-0 mt-0.5" />
+      <p className="text-sm text-primary-900 leading-relaxed">
+        <span className="font-semibold">{PART_TITLES[part]}.</span>{' '}
+        {PART_DIRECTIONS[part]}
+      </p>
+    </div>
+  ) : null;
 
   const flagButton = (
     <button
@@ -103,13 +108,15 @@ export default function QuestionCard({
   if (part === 1) {
     return (
       <article className="bg-white rounded-card shadow-card p-6 md:p-8">
+        {partDirectionsBlock}
+
         <div className="flex items-center justify-between mb-4">
           <div>
             <span className="inline-block px-2.5 py-1 rounded-md bg-primary-50 text-primary-700 text-xs font-semibold uppercase tracking-wider">
-              {PART_LABELS[part]}
+              {PART_TITLES[part]}
             </span>
             <h2 className="mt-2 text-xl font-heading font-bold text-slate-900">
-              Câu {index + 1} / {total}
+              Câu {globalNumber}
             </h2>
           </div>
           {flagButton}
@@ -130,7 +137,7 @@ export default function QuestionCard({
               <div className="rounded-lg overflow-hidden bg-slate-100">
                 <img
                   src={toMediaUrl(content.imageUrl)}
-                  alt={`Câu ${index + 1}`}
+                  alt={`Câu ${globalNumber}`}
                   className="w-full h-auto"
                   onError={(e) => {
                     e.target.style.display = 'none';
@@ -143,7 +150,7 @@ export default function QuestionCard({
           {/* RIGHT: options only (no text shown for Part 1) */}
           <div>
             <h3 className="text-base font-semibold text-slate-700 mb-3">
-              Question {index + 1}
+              Chọn đáp án
             </h3>
             {optionList}
           </div>
@@ -155,29 +162,38 @@ export default function QuestionCard({
   // ─── Default layout for Part 2-7 ───
   return (
     <article className="bg-white rounded-card shadow-card p-6 md:p-8">
+      {partDirectionsBlock}
+
       <div className="flex items-center justify-between mb-4">
         <div>
           <span className="inline-block px-2.5 py-1 rounded-md bg-primary-50 text-primary-700 text-xs font-semibold uppercase tracking-wider">
-            {PART_LABELS[part] || `Part ${part}`}
+            {PART_TITLES[part] || `Part ${part}`}
           </span>
           <h2 className="mt-2 text-xl font-heading font-bold text-slate-900">
-            Câu {index + 1} / {total}
+            Câu {globalNumber}
           </h2>
         </div>
         {flagButton}
       </div>
 
       {hasImage && (
-        <div className="mb-5 rounded-lg overflow-hidden bg-slate-100 max-w-2xl">
-          <img
-            src={toMediaUrl(content.imageUrl)}
-            alt={`Câu ${index + 1}`}
-            className="w-full h-auto"
-            onError={(e) => {
-              e.target.style.display = 'none';
-              e.target.parentElement.innerHTML = '<div class="p-12 text-center text-slate-400 flex flex-col items-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="3" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg><span>(Hình ảnh sẽ được cập nhật)</span></div>';
-            }}
-          />
+        <div className="mb-5 max-w-2xl">
+          {passagePrompt && (
+            <p className="text-sm font-medium text-slate-700 mb-2">{passagePrompt}</p>
+          )}
+          <div className="rounded-lg overflow-hidden bg-slate-100">
+            {content.imageUrl.split(';').map((u, i) => (
+              <img
+                key={u + i}
+                src={toMediaUrl(u.trim())}
+                alt={`Đoạn văn câu ${globalNumber}${content.imageUrl.includes(';') ? ` (phần ${i + 1})` : ''}`}
+                className="w-full h-auto"
+                onError={(e) => {
+                  e.target.style.display = 'none';
+                }}
+              />
+            ))}
+          </div>
         </div>
       )}
 

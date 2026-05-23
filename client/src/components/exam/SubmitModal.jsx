@@ -1,7 +1,9 @@
-import { AlertTriangle, X } from 'lucide-react';
+import { AlertTriangle, X, Loader2, AlertCircle } from "lucide-react";
 
 /**
  * Confirmation modal before submitting.
+ * Also doubles as status modal during submit + error display so user doesn't
+ * lose the exam page (and their draft) when submit fails.
  */
 export default function SubmitModal({
   open,
@@ -10,6 +12,7 @@ export default function SubmitModal({
   answeredCount,
   totalCount,
   isSubmitting = false,
+  submitError = "",
 }) {
   if (!open) return null;
   const unanswered = totalCount - answeredCount;
@@ -22,12 +25,16 @@ export default function SubmitModal({
           <div className="flex items-center gap-3">
             <div
               className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                hasUnanswered ? 'bg-tertiary-100 text-tertiary-600' : 'bg-secondary-100 text-secondary-600'
+                hasUnanswered
+                  ? "bg-tertiary-100 text-tertiary-600"
+                  : "bg-secondary-100 text-secondary-600"
               }`}
             >
               <AlertTriangle className="w-5 h-5" />
             </div>
-            <h2 className="text-xl font-heading font-bold">Bạn có chắc muốn nộp bài?</h2>
+            <h2 className="text-xl font-heading font-bold">
+              Bạn có chắc muốn nộp bài?
+            </h2>
           </div>
           <button
             onClick={onCancel}
@@ -41,19 +48,49 @@ export default function SubmitModal({
         <div className="mb-6 space-y-2">
           <div className="flex justify-between text-sm">
             <span className="text-slate-600">Đã làm:</span>
-            <strong className="text-secondary-600">{answeredCount} / {totalCount}</strong>
+            <strong className="text-secondary-600">
+              {answeredCount} / {totalCount}
+            </strong>
           </div>
           <div className="flex justify-between text-sm">
             <span className="text-slate-600">Chưa làm:</span>
-            <strong className={hasUnanswered ? 'text-tertiary-600' : 'text-slate-400'}>
+            <strong
+              className={hasUnanswered ? "text-tertiary-600" : "text-slate-400"}
+            >
               {unanswered}
             </strong>
           </div>
 
-          {hasUnanswered && (
+          {hasUnanswered && !isSubmitting && !submitError && (
             <p className="mt-3 p-3 rounded-lg bg-tertiary-50 text-tertiary-700 text-sm">
-              Bạn còn <strong>{unanswered}</strong> câu chưa trả lời. Các câu này sẽ được tính là sai.
+              Bạn còn <strong>{unanswered}</strong> câu chưa trả lời. Các câu
+              này sẽ được tính là sai.
             </p>
+          )}
+
+          {isSubmitting && (
+            <div className="mt-3 p-3 rounded-lg bg-primary-50 text-primary-700 text-sm flex items-start gap-2">
+              <Loader2 className="w-4 h-4 mt-0.5 animate-spin flex-shrink-0" />
+              <span>
+                Đang chấm bài làm của bạn và phân tích kết quả với AI. Có thể
+                mất khoảng <strong>10-20 giây</strong> — vui lòng không tắt
+                trang.
+              </span>
+            </div>
+          )}
+
+          {submitError && (
+            <div className="mt-3 p-3 rounded-lg bg-red-50 text-red-700 text-sm flex items-start gap-2">
+              <AlertCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />
+              <div>
+                <p className="font-medium">Nộp bài thất bại</p>
+                <p className="mt-1 text-red-700/90">{submitError}</p>
+                <p className="mt-2 text-xs">
+                  Bài làm của bạn vẫn được lưu nháp. Bấm "Nộp lại" để thử lần
+                  nữa.
+                </p>
+              </div>
+            </div>
           )}
         </div>
 
@@ -72,7 +109,11 @@ export default function SubmitModal({
             disabled={isSubmitting}
             className="flex-1 px-4 py-2.5 rounded-lg bg-tertiary-500 text-white font-medium hover:bg-tertiary-600 disabled:opacity-50"
           >
-            {isSubmitting ? 'Đang nộp...' : 'Nộp bài ngay'}
+            {isSubmitting
+              ? "Đang nộp..."
+              : submitError
+                ? "Nộp lại"
+                : "Nộp bài ngay"}
           </button>
         </div>
       </div>

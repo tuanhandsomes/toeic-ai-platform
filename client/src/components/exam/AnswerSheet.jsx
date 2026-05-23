@@ -4,13 +4,14 @@ import { Flag } from 'lucide-react';
  * Answer sheet showing all question circles.
  *
  * @param {Object} props
- * @param {Array} props.questions      Array of question objects (need _id, part)
- * @param {Object} props.answers       { [questionId]: 'A' | 'B' | 'C' | 'D' | null }
- * @param {Set} props.flagged          Set of questionIds flagged for review
- * @param {number} props.currentIndex  Index of current question (0-based)
- * @param {Function} props.onJump      (index) => void
+ * @param {Array} props.questions       Array of question objects (need _id, part)
+ * @param {Array<number>} [props.globalNumbers]  Global TOEIC numbers (1-200) parallel to questions. If omitted, falls back to idx+1.
+ * @param {Object} props.answers        { [questionId]: 'A' | 'B' | 'C' | 'D' | null }
+ * @param {Set} props.flagged           Set of questionIds flagged for review
+ * @param {number} props.currentIndex   Index of current question (0-based)
+ * @param {Function} props.onJump       (index) => void
  */
-export default function AnswerSheet({ questions, answers, flagged, currentIndex, onJump }) {
+export default function AnswerSheet({ questions, globalNumbers, answers, flagged, currentIndex, onJump }) {
   const answered = questions.filter((q) => answers[q._id] != null).length;
   const total = questions.length;
   const flaggedCount = flagged.size;
@@ -41,6 +42,7 @@ export default function AnswerSheet({ questions, answers, flagged, currentIndex,
           const isAnswered = answers[q._id] != null;
           const isCurrent = idx === currentIndex;
           const isFlagged = flagged.has(q._id);
+          const number = globalNumbers?.[idx] ?? idx + 1;
 
           let cls = 'relative w-8 h-8 rounded-lg text-xs font-semibold flex items-center justify-center transition-colors ';
           if (isCurrent) {
@@ -57,9 +59,9 @@ export default function AnswerSheet({ questions, answers, flagged, currentIndex,
               type="button"
               onClick={() => onJump(idx)}
               className={cls}
-              title={`Câu ${idx + 1}`}
+              title={`Câu ${number}`}
             >
-              {idx + 1}
+              {number}
               {isFlagged && (
                 <Flag className="absolute -top-1 -right-1 w-3 h-3 text-tertiary-500 fill-tertiary-500" />
               )}

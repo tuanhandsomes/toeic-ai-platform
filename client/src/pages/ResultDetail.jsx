@@ -1,37 +1,50 @@
-import { useEffect, useMemo, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { useEffect, useMemo, useState } from "react";
+import { Link, useParams } from "react-router-dom";
 import {
-  ArrowLeft, CheckCircle2, XCircle, Loader2, Trophy, BookOpen, Headphones,
-  Lightbulb, RotateCw, Sparkles, TrendingUp, AlertTriangle, Target, Flag,
-} from 'lucide-react';
-import AppLayout from '@/components/layout/AppLayout';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Progress } from '@/components/ui/progress';
-import { resultService } from '@/services/resultService';
-import { formatDuration } from '@/utils/formatTime';
-import { ROUTES } from '@/constants/routes';
-import { cn } from '@/lib/utils';
+  ArrowLeft,
+  CheckCircle2,
+  XCircle,
+  Loader2,
+  Trophy,
+  BookOpen,
+  Headphones,
+  Lightbulb,
+  RotateCw,
+  Sparkles,
+  TrendingUp,
+  AlertTriangle,
+  Target,
+  Flag,
+} from "lucide-react";
+import AppLayout from "@/components/layout/AppLayout";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Progress } from "@/components/ui/progress";
+import { resultService } from "@/services/resultService";
+import { formatDuration } from "@/utils/formatTime";
+import { ROUTES } from "@/constants/routes";
+import { cn } from "@/lib/utils";
 
-const MEDIA_BASE = import.meta.env.VITE_MEDIA_URL || '';
-const toMediaUrl = (url) => (url && url.startsWith('/') ? `${MEDIA_BASE}${url}` : url);
+const MEDIA_BASE = import.meta.env.VITE_MEDIA_URL || "";
+const toMediaUrl = (url) =>
+  url && url.startsWith("/") ? `${MEDIA_BASE}${url}` : url;
 
 const PART_NAMES = {
-  1: 'Part 1 — Mô tả tranh',
-  2: 'Part 2 — Hỏi đáp',
-  3: 'Part 3 — Đoạn hội thoại',
-  4: 'Part 4 — Bài nói ngắn',
-  5: 'Part 5 — Hoàn thành câu',
-  6: 'Part 6 — Hoàn thành đoạn',
-  7: 'Part 7 — Đọc hiểu',
+  1: "Part 1 — Mô tả tranh",
+  2: "Part 2 — Hỏi đáp",
+  3: "Part 3 — Đoạn hội thoại",
+  4: "Part 4 — Bài nói ngắn",
+  5: "Part 5 — Hoàn thành câu",
+  6: "Part 6 — Hoàn thành đoạn",
+  7: "Part 7 — Đọc hiểu",
 };
 
 export default function ResultDetail() {
   const { id } = useParams();
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
   useEffect(() => {
     let cancelled = false;
@@ -42,7 +55,7 @@ export default function ResultDetail() {
         if (!cancelled) setResult(res.data.result);
       })
       .catch((err) => {
-        if (!cancelled) setError(err?.message || 'Không tải được kết quả');
+        if (!cancelled) setError(err?.message || "Không tải được kết quả");
       })
       .finally(() => {
         if (!cancelled) setLoading(false);
@@ -69,7 +82,7 @@ export default function ResultDetail() {
           <Card>
             <CardContent className="p-6">
               <h2 className="font-heading font-bold mb-2">Lỗi</h2>
-              <p className="text-slate-600">{error || 'Không có dữ liệu'}</p>
+              <p className="text-slate-600">{error || "Không có dữ liệu"}</p>
             </CardContent>
           </Card>
         </div>
@@ -77,9 +90,9 @@ export default function ResultDetail() {
     );
   }
 
-  const isFullTest = result.testType === 'full';
+  const isFullTest = result.testType === "full";
   const test = result.testId;
-  const submittedDate = new Date(result.submittedAt).toLocaleString('vi-VN');
+  const submittedDate = new Date(result.submittedAt).toLocaleString("vi-VN");
 
   return (
     <AppLayout>
@@ -96,13 +109,20 @@ export default function ResultDetail() {
 
         <div className="mb-4 flex items-center justify-between flex-wrap gap-3">
           <div>
-            <h1 className="text-2xl font-heading font-bold">{test?.title || 'Kết quả bài làm'}</h1>
+            <h1 className="text-2xl font-heading font-bold">
+              {test?.title || "Kết quả bài làm"}
+            </h1>
             <p className="text-sm text-slate-600">
-              Nộp lúc {submittedDate} • Thời gian làm: {formatDuration(result.durationSec)}
+              Nộp lúc {submittedDate} • Thời gian làm:{" "}
+              {formatDuration(result.durationSec)}
             </p>
           </div>
           <Link
-            to={test?.type === 'full' ? `/full-test/${test._id}` : `/practice/${test._id}`}
+            to={
+              test?.type === "full"
+                ? `/full-test/${test._id}`
+                : `/practice/${test._id}`
+            }
             className="btn-secondary text-sm"
           >
             <RotateCw className="w-4 h-4" /> Làm lại đề này
@@ -115,7 +135,7 @@ export default function ResultDetail() {
             {isFullTest && result.aiAnalysis && (
               <TabsTrigger value="ai">
                 <Sparkles className="w-4 h-4 mr-1.5" />
-                Phân tích AI
+                Phân tích với AI
               </TabsTrigger>
             )}
             <TabsTrigger value="review">
@@ -153,7 +173,8 @@ function ScoreBanner({ result, isFullTest }) {
                 Tổng điểm TOEIC
               </p>
               <p className="font-mono text-6xl font-bold">
-                {result.scoreTotal} <span className="text-2xl text-primary-200">/ 990</span>
+                {result.scoreTotal}{" "}
+                <span className="text-2xl text-primary-200">/ 990</span>
               </p>
             </div>
             <div className="flex gap-6">
@@ -161,14 +182,18 @@ function ScoreBanner({ result, isFullTest }) {
                 <Headphones className="w-5 h-5" />
                 <div>
                   <p className="text-xs text-primary-100">Listening</p>
-                  <p className="font-mono text-2xl font-bold">{result.scoreListening}</p>
+                  <p className="font-mono text-2xl font-bold">
+                    {result.scoreListening}
+                  </p>
                 </div>
               </div>
               <div className="flex items-center gap-2">
                 <BookOpen className="w-5 h-5" />
                 <div>
                   <p className="text-xs text-primary-100">Reading</p>
-                  <p className="font-mono text-2xl font-bold">{result.scoreReading}</p>
+                  <p className="font-mono text-2xl font-bold">
+                    {result.scoreReading}
+                  </p>
                 </div>
               </div>
             </div>
@@ -188,12 +213,17 @@ function ScoreBanner({ result, isFullTest }) {
             </p>
             <p className="font-mono text-5xl font-bold text-slate-900">
               {result.correctCount}
-              <span className="text-2xl text-slate-400"> / {result.totalQuestions}</span>
+              <span className="text-2xl text-slate-400">
+                {" "}
+                / {result.totalQuestions}
+              </span>
             </p>
             <p className="text-sm text-slate-600 mt-1">Số câu đúng</p>
           </div>
           <div className="text-right">
-            <p className="font-mono text-5xl font-bold text-secondary-600">{result.accuracy}%</p>
+            <p className="font-mono text-5xl font-bold text-secondary-600">
+              {result.accuracy}%
+            </p>
             <p className="text-sm text-slate-600 mt-1">Tỷ lệ chính xác</p>
           </div>
         </div>
@@ -207,7 +237,7 @@ function OverviewTab({ result }) {
     .filter(([, v]) => v.total > 0)
     .map(([key, v]) => ({
       key,
-      part: Number(key.replace('part', '')),
+      part: Number(key.replace("part", "")),
       ...v,
       accuracy: v.total > 0 ? Math.round((v.correct / v.total) * 100) : 0,
     }))
@@ -227,7 +257,9 @@ function OverviewTab({ result }) {
             {parts.map((p) => (
               <div key={p.key}>
                 <div className="flex items-center justify-between text-sm mb-1.5">
-                  <span className="text-slate-700">{PART_NAMES[p.part] || `Part ${p.part}`}</span>
+                  <span className="text-slate-700">
+                    {PART_NAMES[p.part] || `Part ${p.part}`}
+                  </span>
                   <span className="font-mono font-semibold">
                     {p.correct}/{p.total} • {p.accuracy}%
                   </span>
@@ -235,10 +267,12 @@ function OverviewTab({ result }) {
                 <Progress
                   value={p.accuracy}
                   className={cn(
-                    'h-2',
-                    p.accuracy >= 80 && '[&>div]:bg-secondary-500',
-                    p.accuracy >= 60 && p.accuracy < 80 && '[&>div]:bg-yellow-400',
-                    p.accuracy < 60 && '[&>div]:bg-tertiary-500',
+                    "h-2",
+                    p.accuracy >= 80 && "[&>div]:bg-secondary-500",
+                    p.accuracy >= 60 &&
+                      p.accuracy < 80 &&
+                      "[&>div]:bg-yellow-400",
+                    p.accuracy < 60 && "[&>div]:bg-tertiary-500",
                   )}
                 />
               </div>
@@ -259,7 +293,9 @@ function OverviewTab({ result }) {
             </div>
             <div className="flex justify-between">
               <span className="text-slate-600">Số câu đúng</span>
-              <strong className="text-secondary-600">{result.correctCount}</strong>
+              <strong className="text-secondary-600">
+                {result.correctCount}
+              </strong>
             </div>
             <div className="flex justify-between">
               <span className="text-slate-600">Số câu sai / bỏ qua</span>
@@ -283,20 +319,35 @@ function OverviewTab({ result }) {
 }
 
 const PRIORITY_META = {
-  high: { label: 'Ưu tiên cao', className: 'bg-tertiary-100 text-tertiary-700 border-tertiary-200' },
-  medium: { label: 'Ưu tiên vừa', className: 'bg-yellow-100 text-yellow-800 border-yellow-200' },
-  low: { label: 'Ưu tiên thấp', className: 'bg-slate-100 text-slate-700 border-slate-200' },
+  high: {
+    label: "Ưu tiên cao",
+    className: "bg-tertiary-100 text-tertiary-700 border-tertiary-200",
+  },
+  medium: {
+    label: "Ưu tiên vừa",
+    className: "bg-yellow-100 text-yellow-800 border-yellow-200",
+  },
+  low: {
+    label: "Ưu tiên thấp",
+    className: "bg-slate-100 text-slate-700 border-slate-200",
+  },
 };
 
 function AIAnalysisTab({ analysis }) {
-  const { strengths, weaknesses, recommendations, estimatedTargetWeeks, isFallback } = analysis;
+  const {
+    strengths,
+    weaknesses,
+    recommendations,
+    estimatedTargetWeeks,
+    isFallback,
+  } = analysis;
 
   return (
     <div className="space-y-6">
       {isFallback && (
         <div className="rounded-lg bg-yellow-50 border border-yellow-200 px-4 py-3 text-sm text-yellow-900">
-          Phân tích đang dùng thuật toán nội bộ (chưa có OpenAI). Khi key sẵn sàng, phân tích sẽ chi
-          tiết hơn dựa trên LLM.
+          Phân tích đang dùng thuật toán nội bộ (chưa có OpenAI). Khi key sẵn
+          sàng, phân tích sẽ chi tiết hơn dựa trên LLM.
         </div>
       )}
 
@@ -372,24 +423,29 @@ function AIAnalysisTab({ analysis }) {
           <CardContent>
             <div className="space-y-3">
               {recommendations.map((rec, i) => {
-                const meta = PRIORITY_META[rec.priority] || PRIORITY_META.medium;
+                const meta =
+                  PRIORITY_META[rec.priority] || PRIORITY_META.medium;
                 return (
                   <div
                     key={i}
                     className="rounded-lg border border-slate-200 p-4 hover:border-primary-300 transition-colors"
                   >
                     <div className="flex items-center justify-between gap-3 mb-1.5">
-                      <h4 className="font-semibold text-slate-900">{rec.topic}</h4>
+                      <h4 className="font-semibold text-slate-900">
+                        {rec.topic}
+                      </h4>
                       <span
                         className={cn(
-                          'text-xs px-2 py-0.5 rounded-full border font-medium',
+                          "text-xs px-2 py-0.5 rounded-full border font-medium",
                           meta.className,
                         )}
                       >
                         {meta.label}
                       </span>
                     </div>
-                    <p className="text-sm text-slate-600 leading-relaxed">{rec.action}</p>
+                    <p className="text-sm text-slate-600 leading-relaxed">
+                      {rec.action}
+                    </p>
                   </div>
                 );
               })}
@@ -402,8 +458,13 @@ function AIAnalysisTab({ analysis }) {
 }
 
 const PART_TITLE = {
-  1: 'Part 1', 2: 'Part 2', 3: 'Part 3', 4: 'Part 4',
-  5: 'Part 5', 6: 'Part 6', 7: 'Part 7',
+  1: "Part 1",
+  2: "Part 2",
+  3: "Part 3",
+  4: "Part 4",
+  5: "Part 5",
+  6: "Part 6",
+  7: "Part 7",
 };
 
 // Part 1-2: audio + (image for P1) + options-only-letter + blue explanation box
@@ -418,7 +479,7 @@ function ReviewTab({ result, isFullTest }) {
     return [...set].sort((a, b) => a - b);
   }, [answers]);
 
-  const [viewMode, setViewMode] = useState('part'); // 'part' | 'all'
+  const [viewMode, setViewMode] = useState("part"); // 'part' | 'all'
   const [activePart, setActivePart] = useState(parts[0] || 1);
 
   // Index global theo thứ tự câu hỏi để Navigator highlight đúng
@@ -429,13 +490,13 @@ function ReviewTab({ result, isFullTest }) {
   }, [answers]);
 
   const displayedAnswers = useMemo(() => {
-    if (viewMode === 'all') return answers;
+    if (viewMode === "all") return answers;
     return answers.filter((a) => a.question.part === activePart);
   }, [answers, viewMode, activePart]);
 
   const handleJump = (questionId) => {
     const el = document.getElementById(`review-q-${questionId}`);
-    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
   return (
@@ -456,22 +517,22 @@ function ReviewTab({ result, isFullTest }) {
         />
 
         <div className="space-y-6 mt-4">
-          {viewMode === 'all'
-            ? parts.map((p) => (
-                <ReviewPartSection
-                  key={p}
-                  part={p}
-                  answers={answers.filter((a) => a.question.part === p)}
-                  globalIndex={globalIndex}
-                />
-              ))
-            : (
+          {viewMode === "all" ? (
+            parts.map((p) => (
               <ReviewPartSection
-                part={activePart}
-                answers={displayedAnswers}
+                key={p}
+                part={p}
+                answers={answers.filter((a) => a.question.part === p)}
                 globalIndex={globalIndex}
               />
-            )}
+            ))
+          ) : (
+            <ReviewPartSection
+              part={activePart}
+              answers={displayedAnswers}
+              globalIndex={globalIndex}
+            />
+          )}
         </div>
       </div>
 
@@ -479,7 +540,7 @@ function ReviewTab({ result, isFullTest }) {
         <div className="sticky top-4">
           <ReviewNavigator
             answers={answers}
-            activePart={viewMode === 'all' ? null : activePart}
+            activePart={viewMode === "all" ? null : activePart}
             onJump={handleJump}
           />
         </div>
@@ -489,16 +550,21 @@ function ReviewTab({ result, isFullTest }) {
 }
 
 function ReviewSidebar({ result, isFullTest }) {
-  const scoreLabel = isFullTest ? 'Điểm TOEIC' : 'Số câu đúng';
+  const scoreLabel = isFullTest ? "Điểm TOEIC" : "Số câu đúng";
   const scoreValue = isFullTest ? result.scoreTotal : result.correctCount;
   const scoreTotal = isFullTest ? 990 : result.totalQuestions;
 
   return (
     <div className="space-y-3">
       <div className="bg-white rounded-card shadow-card p-5 text-center">
-        <Flag className="w-7 h-7 text-yellow-500 mx-auto mb-1.5" fill="currentColor" />
+        <Flag
+          className="w-7 h-7 text-yellow-500 mx-auto mb-1.5"
+          fill="currentColor"
+        />
         <p className="text-xs text-slate-500 uppercase tracking-wider">Điểm</p>
-        <p className="font-mono text-4xl font-bold text-slate-900 mt-1">{scoreValue}</p>
+        <p className="font-mono text-4xl font-bold text-slate-900 mt-1">
+          {scoreValue}
+        </p>
         <p className="text-xs text-slate-500 mt-0.5">/ {scoreTotal}</p>
       </div>
 
@@ -515,7 +581,9 @@ function ReviewSidebar({ result, isFullTest }) {
             </div>
             <div className="flex justify-between border-t border-slate-200 pt-2">
               <span className="text-slate-600">Trả lời đúng</span>
-              <strong className="font-mono">{result.correctCount}/{result.totalQuestions}</strong>
+              <strong className="font-mono">
+                {result.correctCount}/{result.totalQuestions}
+              </strong>
             </div>
             <div className="flex justify-between">
               <span className="text-slate-600">Tỷ lệ</span>
@@ -536,7 +604,9 @@ function ReviewSidebar({ result, isFullTest }) {
             </div>
             <div className="flex justify-between">
               <span className="text-slate-600">Thời gian</span>
-              <strong className="font-mono">{formatDuration(result.durationSec)}</strong>
+              <strong className="font-mono">
+                {formatDuration(result.durationSec)}
+              </strong>
             </div>
           </div>
         )}
@@ -545,47 +615,60 @@ function ReviewSidebar({ result, isFullTest }) {
   );
 }
 
-function PartFilterBar({ parts, activePart, onSelectPart, viewMode, onViewModeChange }) {
+function PartFilterBar({
+  parts,
+  activePart,
+  onSelectPart,
+  viewMode,
+  onViewModeChange,
+}) {
   return (
     <div className="bg-white rounded-card shadow-card p-3 flex flex-wrap items-center justify-between gap-2">
       <div className="flex items-center gap-1.5 flex-wrap">
-        {viewMode === 'part' && parts.map((p) => (
-          <button
-            key={p}
-            type="button"
-            onClick={() => onSelectPart(p)}
-            className={cn(
-              'text-xs font-semibold px-3 py-1.5 rounded-md transition-colors',
-              activePart === p
-                ? 'bg-primary-500 text-white'
-                : 'bg-slate-100 text-slate-700 hover:bg-slate-200',
-            )}
-          >
-            Part {p}
-          </button>
-        ))}
-        {viewMode === 'all' && (
-          <span className="text-xs text-slate-500 font-medium px-2">Hiển thị tất cả các Part</span>
+        {viewMode === "part" &&
+          parts.map((p) => (
+            <button
+              key={p}
+              type="button"
+              onClick={() => onSelectPart(p)}
+              className={cn(
+                "text-xs font-semibold px-3 py-1.5 rounded-md transition-colors",
+                activePart === p
+                  ? "bg-primary-500 text-white"
+                  : "bg-slate-100 text-slate-700 hover:bg-slate-200",
+              )}
+            >
+              Part {p}
+            </button>
+          ))}
+        {viewMode === "all" && (
+          <span className="text-xs text-slate-500 font-medium px-2">
+            Hiển thị tất cả các Part
+          </span>
         )}
       </div>
 
       <div className="inline-flex rounded-md border border-slate-200 overflow-hidden text-xs">
         <button
           type="button"
-          onClick={() => onViewModeChange('part')}
+          onClick={() => onViewModeChange("part")}
           className={cn(
-            'px-3 py-1.5 font-medium transition-colors',
-            viewMode === 'part' ? 'bg-slate-900 text-white' : 'bg-white text-slate-700 hover:bg-slate-50',
+            "px-3 py-1.5 font-medium transition-colors",
+            viewMode === "part"
+              ? "bg-slate-900 text-white"
+              : "bg-white text-slate-700 hover:bg-slate-50",
           )}
         >
           Xem một phần
         </button>
         <button
           type="button"
-          onClick={() => onViewModeChange('all')}
+          onClick={() => onViewModeChange("all")}
           className={cn(
-            'px-3 py-1.5 font-medium border-l border-slate-200 transition-colors',
-            viewMode === 'all' ? 'bg-slate-900 text-white' : 'bg-white text-slate-700 hover:bg-slate-50',
+            "px-3 py-1.5 font-medium border-l border-slate-200 transition-colors",
+            viewMode === "all"
+              ? "bg-slate-900 text-white"
+              : "bg-white text-slate-700 hover:bg-slate-50",
           )}
         >
           Xem toàn bộ
@@ -602,7 +685,9 @@ function ReviewPartSection({ part, answers, globalIndex }) {
   return (
     <section>
       <div className="flex items-center justify-between bg-primary-50 border border-primary-100 rounded-lg px-4 py-2.5 mb-4">
-        <h3 className="font-heading font-bold text-primary-700">{PART_TITLE[part]}</h3>
+        <h3 className="font-heading font-bold text-primary-700">
+          {PART_TITLE[part]}
+        </h3>
         <span className="text-xs font-mono text-primary-700">
           {correctInPart}/{answers.length} câu đúng
         </span>
@@ -660,20 +745,24 @@ function ReviewQuestion({ ans, index }) {
 
       {hasImage && (
         <div className="mb-4 rounded-lg overflow-hidden bg-slate-100 max-w-2xl">
-          {q.content.imageUrl.split(';').map((url, i) => (
+          {q.content.imageUrl.split(";").map((url, i) => (
             <img
               key={i}
               src={toMediaUrl(url.trim())}
               alt={`Passage ${i + 1}`}
               className="w-full h-auto"
-              onError={(e) => { e.target.style.display = 'none'; }}
+              onError={(e) => {
+                e.target.style.display = "none";
+              }}
             />
           ))}
         </div>
       )}
 
       {hasText && !hideOptionText && (
-        <p className="text-slate-900 mb-3 whitespace-pre-wrap leading-relaxed">{q.content.text}</p>
+        <p className="text-slate-900 mb-3 whitespace-pre-wrap leading-relaxed">
+          {q.content.text}
+        </p>
       )}
 
       <div className="space-y-2 mb-4">
@@ -684,24 +773,29 @@ function ReviewQuestion({ ans, index }) {
             <div
               key={opt.key}
               className={cn(
-                'flex items-center gap-3 px-3 py-2.5 rounded-lg border transition-colors',
-                isAnswerKey && 'border-secondary-300 bg-secondary-50',
-                !isAnswerKey && isUser && 'border-tertiary-300 bg-tertiary-50',
-                !isAnswerKey && !isUser && 'border-slate-200',
+                "flex items-center gap-3 px-3 py-2.5 rounded-lg border transition-colors",
+                isAnswerKey && "border-secondary-300 bg-secondary-50",
+                !isAnswerKey && isUser && "border-tertiary-300 bg-tertiary-50",
+                !isAnswerKey && !isUser && "border-slate-200",
               )}
             >
               <span
                 className={cn(
-                  'w-6 h-6 rounded-full border-2 flex items-center justify-center text-xs font-semibold flex-shrink-0',
-                  isAnswerKey && 'border-secondary-500 bg-secondary-500 text-white',
-                  !isAnswerKey && isUser && 'border-tertiary-500 bg-tertiary-500 text-white',
-                  !isAnswerKey && !isUser && 'border-slate-300 text-slate-500',
+                  "w-6 h-6 rounded-full border-2 flex items-center justify-center text-xs font-semibold flex-shrink-0",
+                  isAnswerKey &&
+                    "border-secondary-500 bg-secondary-500 text-white",
+                  !isAnswerKey &&
+                    isUser &&
+                    "border-tertiary-500 bg-tertiary-500 text-white",
+                  !isAnswerKey && !isUser && "border-slate-300 text-slate-500",
                 )}
               >
-                {isAnswerKey || isUser ? '●' : ''}
+                {isAnswerKey || isUser ? "●" : ""}
               </span>
               <span className="flex-1 text-slate-900">
-                {hideOptionText ? `(${opt.key})` : (
+                {hideOptionText ? (
+                  `(${opt.key})`
+                ) : (
                   <>
                     <span className="font-medium mr-1">({opt.key})</span>
                     {opt.text}
@@ -722,7 +816,9 @@ function ReviewQuestion({ ans, index }) {
           );
         })}
         {userChose == null && (
-          <p className="text-xs text-slate-500 italic">Bạn không trả lời câu này.</p>
+          <p className="text-xs text-slate-500 italic">
+            Bạn không trả lời câu này.
+          </p>
         )}
       </div>
 
@@ -738,8 +834,8 @@ function ReviewQuestion({ ans, index }) {
             <li
               key={opt.key}
               className={cn(
-                'text-slate-700',
-                opt.key === correct && 'font-bold text-slate-900',
+                "text-slate-700",
+                opt.key === correct && "font-bold text-slate-900",
               )}
             >
               ({opt.key}) {opt.text}
@@ -760,7 +856,9 @@ function ReviewQuestion({ ans, index }) {
 
         {q.vocab && q.vocab.length > 0 && (
           <div className="border-t border-primary-100 pt-3 mt-2">
-            <p className="text-xs font-semibold text-primary-700 mb-1.5">Từ vựng cần nhớ:</p>
+            <p className="text-xs font-semibold text-primary-700 mb-1.5">
+              Từ vựng cần nhớ:
+            </p>
             <ul className="text-xs text-slate-700 space-y-0.5">
               {q.vocab.map((v, i) => (
                 <li key={i}>
@@ -792,8 +890,10 @@ function ReviewNavigator({ answers, activePart, onJump }) {
         {[...grouped.entries()].map(([part, items]) => {
           const dimmed = activePart != null && activePart !== part;
           return (
-            <div key={part} className={cn(dimmed && 'opacity-40')}>
-              <p className="text-xs font-semibold text-slate-700 mb-2">Part {part}</p>
+            <div key={part} className={cn(dimmed && "opacity-40")}>
+              <p className="text-xs font-semibold text-slate-700 mb-2">
+                Part {part}
+              </p>
               <div className="grid grid-cols-5 gap-1.5">
                 {items.map(({ ans, idx }) => (
                   <button
@@ -801,12 +901,12 @@ function ReviewNavigator({ answers, activePart, onJump }) {
                     type="button"
                     onClick={() => onJump(ans.questionId)}
                     className={cn(
-                      'h-8 text-xs font-semibold rounded border transition-colors',
+                      "h-8 text-xs font-semibold rounded border transition-colors",
                       ans.isCorrect
-                        ? 'bg-secondary-50 border-secondary-300 text-secondary-700 hover:bg-secondary-100'
+                        ? "bg-secondary-50 border-secondary-300 text-secondary-700 hover:bg-secondary-100"
                         : ans.selected
-                          ? 'bg-tertiary-50 border-tertiary-300 text-tertiary-700 hover:bg-tertiary-100'
-                          : 'bg-slate-50 border-slate-300 text-slate-500 hover:bg-slate-100',
+                          ? "bg-tertiary-50 border-tertiary-300 text-tertiary-700 hover:bg-tertiary-100"
+                          : "bg-slate-50 border-slate-300 text-slate-500 hover:bg-slate-100",
                     )}
                   >
                     {idx + 1}

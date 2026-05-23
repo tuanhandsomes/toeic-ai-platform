@@ -46,6 +46,19 @@ export const uploadImage = multer({
   fileFilter: makeFilter(ALLOWED_IMAGE, 'image'),
 }).single('file');
 
+const ALLOWED_TEST_MEDIA = new Set([...ALLOWED_AUDIO, ...ALLOWED_IMAGE]);
+
+/**
+ * Bulk upload for test media (audio + image mixed). Accepts up to 200 files
+ * per request (a full test has ~92, so 200 leaves headroom for partial retries).
+ * Per-file limit 10 MB (audio largest).
+ */
+export const uploadTestMedia = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 10 * 1024 * 1024, files: 200 },
+  fileFilter: makeFilter(ALLOWED_TEST_MEDIA, 'media'),
+}).array('files');
+
 /**
  * Wrap multer middleware to convert its MulterError into ApiError so it flows
  * through our normal errorHandler. Default multer throws raw errors that the

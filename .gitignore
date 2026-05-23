@@ -74,4 +74,8 @@ server/public/images/**/*
 !server/public/**/README.md
 
 # Raw source PDFs (ETS đề thi gốc — bản quyền, chỉ dùng local để extract content)
-_raw_pdfs/
+# Same pattern as server/public: ignore CONTENTS, allow folders + select .md files
+_raw_pdfs/**/*
+!_raw_pdfs/**/
+!_raw_pdfs/README.md
+!_raw_pdfs/**/IMAGE_CHECKLIST.md

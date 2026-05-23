@@ -37,6 +37,48 @@ export const updateTestSchema = Joi.object({
   isPublished: testBase.isPublished.optional(),
 }).min(1);
 
+/**
+ * Schema cho POST /tests/import — bundle upload (testInfo + questions).
+ * KHÔNG require option count chính xác theo Part vì đã có Mongoose validator
+ * (Part 2 = 3 options, khác = 4). Chỉ validate shape cơ bản ở đây.
+ */
+const importQuestionItem = Joi.object({
+  questionNumber: Joi.number().integer().min(1).max(200).required(),
+  part: Joi.number().integer().min(1).max(7).required(),
+  text: Joi.string().allow('').optional(),
+  audioUrl: Joi.string().allow('').optional(),
+  imageUrl: Joi.string().allow('').optional(),
+  options: Joi.array()
+    .items(
+      Joi.object({
+        key: Joi.string().valid('A', 'B', 'C', 'D').required(),
+        text: Joi.string().required(),
+      }),
+    )
+    .min(3)
+    .max(4)
+    .required(),
+  correctAnswer: Joi.string().valid('A', 'B', 'C', 'D').required(),
+  explanation: Joi.string().allow('').optional(),
+  vocab: Joi.array()
+    .items(Joi.object({ word: Joi.string().required(), meaning: Joi.string().required() }))
+    .optional(),
+  difficulty: Joi.string().valid('easy', 'medium', 'hard').optional(),
+  tags: Joi.array().items(Joi.string()).optional(),
+}).unknown(true); // tolerate extra fields like _note from template files
+
+export const importTestBundleSchema = Joi.object({
+  testInfo: Joi.object({
+    title: Joi.string().min(2).max(200).required(),
+    series: Joi.string().required(),
+    year: Joi.number().integer().min(2000).max(2100).optional(),
+    difficulty: Joi.string().valid('easy', 'medium', 'hard').optional(),
+    description: Joi.string().allow('').optional(),
+    testCode: Joi.string().pattern(/^T\d{2}$/i).optional(),
+  }).unknown(true).required(),
+  questions: Joi.array().items(importQuestionItem).min(1).required(),
+}).unknown(true);
+
 export const listTestsQuerySchema = Joi.object({
   type: Joi.string().valid('full', 'part'),
   part: Joi.number().integer().min(1).max(7),

@@ -8,6 +8,7 @@ import SubmitModal from '../components/exam/SubmitModal.jsx';
 import { testService } from '../services/testService.js';
 import { resultService } from '../services/resultService.js';
 import { useAuthStore } from '../store/authStore.js';
+import { computeGlobalNumbers } from '../constants/toeic.js';
 
 const draftKey = (userId, testId) => `exam-draft:${userId}:${testId}`;
 
@@ -25,6 +26,7 @@ export default function PracticeDetail() {
   const [startedAt, setStartedAt] = useState(null);
   const [submitOpen, setSubmitOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState('');
   const [lastSavedAt, setLastSavedAt] = useState(null);
 
   // Per-question time tracking
@@ -84,6 +86,16 @@ export default function PracticeDetail() {
 
   const questions = test?.questions || [];
   const currentQuestion = questions[currentIndex];
+
+  // Compute global TOEIC question numbers (1-200) for every question in this test.
+  // Works for both Full Test (sequential 1-200) and Practice Part X (offset by part start).
+  const globalNumbers = useMemo(() => computeGlobalNumbers(questions), [questions]);
+  const currentGlobalNumber = globalNumbers[currentIndex];
+
+  // Hiển thị block hướng dẫn Part chỉ ở câu đầu tiên của Part đó trong test.
+  // Full Test: hiện 7 lần (đầu Part 1, 2, 3, 4, 5, 6, 7). Practice: hiện 1 lần.
+  const isFirstOfPart =
+    currentIndex === 0 || questions[currentIndex - 1]?.part !== currentQuestion?.part;
   const totalCount = questions.length;
   const answeredCount = useMemo(
     () => Object.values(answers).filter((v) => v != null).length,
@@ -147,6 +159,7 @@ export default function PracticeDetail() {
   // 5. Submit
   const handleSubmit = useCallback(async () => {
     if (isSubmitting || !test || !startedAt) return;
+    setSubmitError('');
     setIsSubmitting(true);
 
     // Flush current question's time tracking
@@ -173,9 +186,14 @@ export default function PracticeDetail() {
       // Navigate to result detail
       navigate(`/results/${res.data.result._id}`);
     } catch (err) {
-      setError(err?.message || 'Nộp bài thất bại');
+      // Giữ user trên trang exam + hiện lỗi trong SubmitModal để retry,
+      // không setError (gây replace trang) — bài làm vẫn còn nguyên trong state + draft.
+      const msg = err?.code === 'ECONNABORTED' || /timeout/i.test(err?.message || '')
+        ? 'Mạng hoặc AI phân tích đang chậm. Bài làm của bạn được giữ — thử bấm "Nộp lại".'
+        : err?.message || 'Nộp bài thất bại. Vui lòng thử lại.';
+      setSubmitError(msg);
       setIsSubmitting(false);
-      setSubmitOpen(false);
+      // Giữ SubmitModal mở để user thấy error + retry
     }
   }, [isSubmitting, test, startedAt, currentQuestion, testId, questions, answers, userId, navigate]);
 
@@ -244,7 +262,8 @@ export default function PracticeDetail() {
             <Timer
               durationSec={test.durationMinutes * 60}
               startedAt={startedAt}
-              onExpire={handleExpire}
+              onExpire={test.type === 'full' ? handleExpire : undefined}
+              mode={test.type === 'full' ? 'countdown' : 'elapsed'}
             />
             <button
               type="button"
@@ -262,8 +281,8 @@ export default function PracticeDetail() {
         <div>
           <QuestionCard
             question={currentQuestion}
-            index={currentIndex}
-            total={totalCount}
+            globalNumber={currentGlobalNumber}
+            isFirstOfPart={isFirstOfPart}
             selected={answers[currentQuestion._id] ?? null}
             isFlagged={flagged.has(currentQuestion._id)}
             onSelect={handleSelect}
@@ -302,6 +321,7 @@ export default function PracticeDetail() {
 
         <AnswerSheet
           questions={questions}
+          globalNumbers={globalNumbers}
           answers={answers}
           flagged={flagged}
           currentIndex={currentIndex}
@@ -311,11 +331,16 @@ export default function PracticeDetail() {
 
       <SubmitModal
         open={submitOpen}
-        onCancel={() => setSubmitOpen(false)}
+        onCancel={() => {
+          if (isSubmitting) return;
+          setSubmitOpen(false);
+          setSubmitError('');
+        }}
         onConfirm={handleSubmit}
         answeredCount={answeredCount}
         totalCount={totalCount}
         isSubmitting={isSubmitting}
+        submitError={submitError}
       />
     </div>
   );

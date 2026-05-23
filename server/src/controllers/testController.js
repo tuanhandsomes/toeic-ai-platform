@@ -1,5 +1,8 @@
 import { testService } from '../services/testService.js';
+import { testImportService } from '../services/testImportService.js';
+import { testMediaService } from '../services/testMediaService.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
+import { ApiError } from '../utils/ApiError.js';
 
 /**
  * adminView is enabled only when the caller is admin AND explicitly asks via
@@ -37,5 +40,28 @@ export const testController = {
   remove: asyncHandler(async (req, res) => {
     const data = await testService.remove(req.params.id);
     res.json({ success: true, data });
+  }),
+
+  /**
+   * POST /tests/import — 1-click import of a full test bundle
+   * (testInfo + 200 questions). Creates the Full Test + 7 Practice Sets +
+   * inserts every question with audioUrl/imageUrl auto-filled per convention.
+   */
+  importBundle: asyncHandler(async (req, res) => {
+    const data = await testImportService.importBundle(req.body, req.user._id);
+    res.status(201).json({ success: true, data });
+  }),
+
+  /**
+   * POST /tests/:id/upload-media — bulk upload audio + image files for a test.
+   * BE uploads each file to Cloudinary then relinks the Question docs in this
+   * test so audioUrl / imageUrl point at the CDN URLs.
+   */
+  uploadMedia: asyncHandler(async (req, res) => {
+    if (!req.files || req.files.length === 0) {
+      throw ApiError.badRequest('Vui lòng chọn ít nhất 1 file để tải lên.');
+    }
+    const data = await testMediaService.uploadForTest(req.params.id, req.files);
+    res.status(201).json({ success: true, data });
   }),
 };
