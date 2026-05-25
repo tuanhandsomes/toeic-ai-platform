@@ -79,3 +79,6 @@ _raw_pdfs/**/*
 !_raw_pdfs/**/
 !_raw_pdfs/README.md
 !_raw_pdfs/**/IMAGE_CHECKLIST.md
+
+# Local dev tools (PlantUML jar ~22MB — script in URL tải khi thiếu file)
+tools/

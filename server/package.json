@@ -12,7 +12,9 @@
     "seed:real": "node seeds/seedRealTest.js",
     "seed:admin": "node seeds/seedAdminUser.js",
     "migrate:cloudinary": "node scripts/migrateToCloudinary.js",
-    "migrate:cloudinary:dry": "node scripts/migrateToCloudinary.js --dry-run"
+    "migrate:cloudinary:dry": "node scripts/migrateToCloudinary.js --dry-run",
+    "diagrams": "node scripts/renderDiagrams.js",
+    "diagrams:svg": "node scripts/renderDiagrams.js --svg"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
