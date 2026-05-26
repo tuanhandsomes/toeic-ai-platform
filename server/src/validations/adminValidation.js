@@ -1,4 +1,5 @@
 import Joi from "joi";
+import { passwordSchema } from "./passwordRules.js";
 
 /**
  * Admin validation:
@@ -22,7 +23,7 @@ export const listUsersQuerySchema = Joi.object({
 export const createUserSchema = Joi.object({
   fullName: Joi.string().trim().min(2).max(100).required(),
   email: emailField.required(),
-  password: Joi.string().min(6).max(72).required(),
+  password: passwordSchema,
   role: Joi.string().valid("user", "admin").default("user"),
   targetScore: Joi.number().integer().min(10).max(990).default(700),
   isActive: Joi.boolean().default(true),
@@ -42,5 +43,5 @@ export const lockUserSchema = Joi.object({
 });
 
 export const resetUserPasswordSchema = Joi.object({
-  newPassword: Joi.string().min(6).max(72).required(),
+  newPassword: passwordSchema,
 });

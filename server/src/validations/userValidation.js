@@ -1,4 +1,5 @@
 import Joi from 'joi';
+import { passwordSchema } from './passwordRules.js';
 
 export const updateProfileSchema = Joi.object({
   fullName: Joi.string().trim().min(2).max(100),
@@ -8,5 +9,5 @@ export const updateProfileSchema = Joi.object({
 
 export const changePasswordSchema = Joi.object({
   currentPassword: Joi.string().required(),
-  newPassword: Joi.string().min(6).max(72).required(),
+  newPassword: passwordSchema,
 });
