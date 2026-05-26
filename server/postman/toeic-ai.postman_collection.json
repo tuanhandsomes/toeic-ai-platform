@@ -284,13 +284,59 @@
           }
         },
         {
+          "name": "GET /admin/users/:id (detail)",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/admin/users/REPLACE_USER_ID", "host": ["{{baseUrl}}"], "path": ["admin", "users", "REPLACE_USER_ID"] },
+            "description": "Get full user detail by ID. Admin only."
+          }
+        },
+        {
+          "name": "POST /admin/users (create)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/admin/users", "host": ["{{baseUrl}}"], "path": ["admin", "users"] },
+            "body": { "mode": "raw", "raw": "{\n  \"fullName\": \"Nguyễn Văn A\",\n  \"email\": \"newuser@example.com\",\n  \"password\": \"secret123\",\n  \"role\": \"user\",\n  \"targetScore\": 700,\n  \"isActive\": true\n}" },
+            "description": "Create a new user (or admin). role defaults to 'user', targetScore to 700, isActive to true. Email must be unique."
+          }
+        },
+        {
+          "name": "PATCH /admin/users/:id (update)",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/admin/users/REPLACE_USER_ID", "host": ["{{baseUrl}}"], "path": ["admin", "users", "REPLACE_USER_ID"] },
+            "body": { "mode": "raw", "raw": "{\n  \"fullName\": \"Nguyễn Văn A (updated)\",\n  \"targetScore\": 800,\n  \"role\": \"user\"\n}" },
+            "description": "Partial update. Allowed fields: fullName, email, targetScore, role. Body must have ≥1 field. Changing role revokes all refresh tokens of that user. Cannot change own role. Cannot demote the last active admin."
+          }
+        },
+        {
+          "name": "DELETE /admin/users/:id",
+          "request": {
+            "method": "DELETE",
+            "url": { "raw": "{{baseUrl}}/admin/users/REPLACE_USER_ID", "host": ["{{baseUrl}}"], "path": ["admin", "users", "REPLACE_USER_ID"] },
+            "description": "Hard delete user + cascade Result, AIAnalysis, RefreshToken, PasswordResetToken. Cannot delete self. Cannot delete the last active admin."
+          }
+        },
+        {
           "name": "PATCH /admin/users/:id/lock (lock or unlock)",
           "request": {
             "method": "PATCH",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
             "url": { "raw": "{{baseUrl}}/admin/users/REPLACE_USER_ID/lock", "host": ["{{baseUrl}}"], "path": ["admin", "users", "REPLACE_USER_ID", "lock"] },
             "body": { "mode": "raw", "raw": "{\n  \"isActive\": false\n}" },
-            "description": "Set isActive=false to lock, true to unlock. Locking also revokes all refresh tokens of that user."
+            "description": "Set isActive=false to lock, true to unlock. Locking also revokes all refresh tokens of that user. Cannot lock the last active admin."
+          }
+        },
+        {
+          "name": "PATCH /admin/users/:id/reset-password",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/admin/users/REPLACE_USER_ID/reset-password", "host": ["{{baseUrl}}"], "path": ["admin", "users", "REPLACE_USER_ID", "reset-password"] },
+            "body": { "mode": "raw", "raw": "{\n  \"newPassword\": \"newSecret123\"\n}" },
+            "description": "Admin force-resets a user's password. Revokes all refresh tokens of that user to force re-login."
           }
         }
       ]

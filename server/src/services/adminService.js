@@ -3,13 +3,30 @@ import { Test } from "../models/Test.js";
 import { Question } from "../models/Question.js";
 import { Result } from "../models/Result.js";
 import { AIAnalysis } from "../models/AIAnalysis.js";
+import { RefreshToken } from "../models/RefreshToken.js";
+import { PasswordResetToken } from "../models/PasswordResetToken.js";
 import { ApiError } from "../utils/ApiError.js";
 import { authService } from "./authService.js";
+
+// Đảm bảo luôn còn ≥1 admin active sau thao tác demote/delete/lock.
+// Throws nếu hành động sẽ làm hệ thống mất admin cuối cùng.
+async function ensureNotLastAdmin(userId, action) {
+  const activeAdmins = await User.countDocuments({
+    role: "admin",
+    isActive: true,
+    _id: { $ne: userId },
+  });
+  if (activeAdmins === 0) {
+    throw ApiError.badRequest(
+      `Không thể ${action} admin cuối cùng của hệ thống`,
+    );
+  }
+}
 
 /**
  * Admin service:
  *   - system-wide stats
- *   - user management (list, lock)
+ *   - user management (list, CRUD, lock, reset password)
  *
  * Question + Test CRUD moved out to questionService.js + testService.js
  */
@@ -83,6 +100,101 @@ export const adminService = {
     };
   },
 
+  async getUser(userId) {
+    const user = await User.findById(userId).lean();
+    if (!user) throw ApiError.notFound("Không tìm thấy người dùng");
+    delete user.passwordHash;
+    return user;
+  },
+
+  async createUser({ fullName, email, password, role, targetScore, isActive }) {
+    const existing = await User.findOne({ email });
+    if (existing) throw ApiError.conflict("Email này đã được đăng ký");
+
+    const passwordHash = await User.hashPassword(password);
+    const user = await User.create({
+      fullName,
+      email,
+      passwordHash,
+      role,
+      targetScore,
+      isActive,
+    });
+    return user.toJSON();
+  },
+
+  async updateUser(userId, payload, currentUserId) {
+    const user = await User.findById(userId);
+    if (!user) throw ApiError.notFound("Không tìm thấy người dùng");
+
+    const isSelf = String(userId) === String(currentUserId);
+    const roleChanging = payload.role && payload.role !== user.role;
+
+    if (roleChanging) {
+      if (isSelf) {
+        throw ApiError.badRequest("Không thể tự thay đổi vai trò của chính mình");
+      }
+      // Demote admin → user: phải đảm bảo còn admin khác active
+      if (user.role === "admin" && payload.role === "user") {
+        await ensureNotLastAdmin(userId, "hạ quyền");
+      }
+    }
+
+    if (payload.email && payload.email !== user.email) {
+      const existing = await User.findOne({ email: payload.email });
+      if (existing) throw ApiError.conflict("Email này đã được đăng ký");
+      user.email = payload.email;
+    }
+    if (payload.fullName !== undefined) user.fullName = payload.fullName;
+    if (payload.targetScore !== undefined) user.targetScore = payload.targetScore;
+    if (payload.role !== undefined) user.role = payload.role;
+
+    await user.save();
+
+    // Đổi role → JWT cũ còn claim role cũ, phải force re-login
+    if (roleChanging) {
+      await authService.revokeAllForUser(userId);
+    }
+
+    return user.toJSON();
+  },
+
+  async deleteUser(userId, currentUserId) {
+    if (String(userId) === String(currentUserId)) {
+      throw ApiError.badRequest("Không thể tự xóa chính mình");
+    }
+    const user = await User.findById(userId);
+    if (!user) throw ApiError.notFound("Không tìm thấy người dùng");
+
+    if (user.role === "admin") {
+      await ensureNotLastAdmin(userId, "xóa");
+    }
+
+    // Cascade — xóa toàn bộ dữ liệu liên quan trước khi xóa user
+    await Promise.all([
+      Result.deleteMany({ userId }),
+      AIAnalysis.deleteMany({ userId }),
+      RefreshToken.deleteMany({ userId }),
+      PasswordResetToken.deleteMany({ userId }),
+    ]);
+    await user.deleteOne();
+
+    return { _id: userId };
+  },
+
+  async resetUserPassword(userId, newPassword) {
+    const user = await User.findById(userId).select("+passwordHash");
+    if (!user) throw ApiError.notFound("Không tìm thấy người dùng");
+
+    user.passwordHash = await User.hashPassword(newPassword);
+    await user.save();
+
+    // Đổi mật khẩu → revoke mọi session để ép re-login
+    await authService.revokeAllForUser(userId);
+
+    return { _id: userId };
+  },
+
   async toggleUserLock(userId, isActive, currentUserId) {
     if (String(userId) === String(currentUserId)) {
       throw ApiError.badRequest("Không thể tự khóa chính mình");
@@ -90,7 +202,7 @@ export const adminService = {
     const user = await User.findById(userId);
     if (!user) throw ApiError.notFound("Không tìm thấy người dùng");
     if (user.role === "admin" && !isActive) {
-      throw ApiError.badRequest("Không thể khóa tài khoản admin khác");
+      await ensureNotLastAdmin(userId, "khóa");
     }
     user.isActive = isActive;
     await user.save();

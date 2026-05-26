@@ -16,8 +16,23 @@ export const adminService = {
   listUsers(params) {
     return axiosClient.get('/admin/users', { params: buildQuery(params) });
   },
+  getUser(id) {
+    return axiosClient.get(`/admin/users/${id}`);
+  },
+  createUser(payload) {
+    return axiosClient.post('/admin/users', payload);
+  },
+  updateUser(id, payload) {
+    return axiosClient.patch(`/admin/users/${id}`, payload);
+  },
+  deleteUser(id) {
+    return axiosClient.delete(`/admin/users/${id}`);
+  },
   toggleUserLock(id, isActive) {
     return axiosClient.patch(`/admin/users/${id}/lock`, { isActive });
+  },
+  resetUserPassword(id, newPassword) {
+    return axiosClient.patch(`/admin/users/${id}/reset-password`, { newPassword });
   },
 
   // ─── Questions moved to /questions (admin-only by route middleware) ──────

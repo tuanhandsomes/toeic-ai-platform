@@ -14,6 +14,35 @@ export const adminController = {
     res.json({ success: true, data });
   }),
 
+  getUser: asyncHandler(async (req, res) => {
+    const user = await adminService.getUser(req.params.id);
+    res.json({ success: true, data: { user } });
+  }),
+
+  createUser: asyncHandler(async (req, res) => {
+    const user = await adminService.createUser(req.body);
+    res.status(201).json({ success: true, data: { user } });
+  }),
+
+  updateUser: asyncHandler(async (req, res) => {
+    const user = await adminService.updateUser(
+      req.params.id,
+      req.body,
+      req.user._id,
+    );
+    res.json({ success: true, data: { user } });
+  }),
+
+  deleteUser: asyncHandler(async (req, res) => {
+    await adminService.deleteUser(req.params.id, req.user._id);
+    res.json({ success: true, message: 'Đã xóa người dùng' });
+  }),
+
+  resetUserPassword: asyncHandler(async (req, res) => {
+    await adminService.resetUserPassword(req.params.id, req.body.newPassword);
+    res.json({ success: true, message: 'Đã đặt lại mật khẩu' });
+  }),
+
   toggleUserLock: asyncHandler(async (req, res) => {
     const user = await adminService.toggleUserLock(
       req.params.id,

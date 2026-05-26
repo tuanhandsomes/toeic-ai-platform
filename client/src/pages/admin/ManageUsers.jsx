@@ -1,5 +1,8 @@
 import { useEffect, useState, useCallback } from 'react';
-import { Lock, Unlock, Search, Loader2, ShieldCheck } from 'lucide-react';
+import {
+  Lock, Unlock, Search, Loader2, ShieldCheck, MoreHorizontal, Plus,
+  Pencil, KeyRound, Trash2,
+} from 'lucide-react';
 import AdminLayout from '@/components/layout/AdminLayout';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -13,6 +16,13 @@ import {
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
+import {
+  DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import {
+  UserFormDialog, ResetPasswordDialog, DeleteUserDialog,
+} from '@/components/admin/UserDialogs';
 import { adminService } from '@/services/adminService';
 import { useAuthStore } from '@/store/authStore';
 
@@ -24,8 +34,13 @@ export default function ManageUsers() {
   const [loading, setLoading] = useState(false);
   const [filters, setFilters] = useState({ role: 'all', isActive: 'all', search: '' });
   const [searchInput, setSearchInput] = useState('');
-  const [confirmTarget, setConfirmTarget] = useState(null);
-  const [busy, setBusy] = useState(false);
+
+  // Dialog states
+  const [formDialog, setFormDialog] = useState({ open: false, mode: 'create', user: null });
+  const [lockTarget, setLockTarget] = useState(null);
+  const [resetTarget, setResetTarget] = useState(null);
+  const [deleteTarget, setDeleteTarget] = useState(null);
+  const [lockBusy, setLockBusy] = useState(false);
 
   const fetchUsers = useCallback(
     async (page = 1) => {
@@ -54,28 +69,63 @@ export default function ManageUsers() {
     setFilters((f) => ({ ...f, search: searchInput }));
   };
 
+  const handleCreate = async (payload) => {
+    await adminService.createUser(payload);
+    setFormDialog({ open: false, mode: 'create', user: null });
+    await fetchUsers(1);
+  };
+
+  const handleEdit = async (payload) => {
+    await adminService.updateUser(formDialog.user._id, payload);
+    setFormDialog({ open: false, mode: 'create', user: null });
+    await fetchUsers(pagination.page);
+  };
+
+  const handleResetPassword = async (newPassword) => {
+    await adminService.resetUserPassword(resetTarget._id, newPassword);
+    setResetTarget(null);
+  };
+
+  const handleDelete = async () => {
+    await adminService.deleteUser(deleteTarget._id);
+    setDeleteTarget(null);
+    // Nếu xóa user cuối trang hiện tại, lùi về trang trước
+    const remaining = items.length - 1;
+    const nextPage = remaining === 0 && pagination.page > 1 ? pagination.page - 1 : pagination.page;
+    await fetchUsers(nextPage);
+  };
+
   const handleToggleLock = async () => {
-    if (!confirmTarget) return;
-    setBusy(true);
+    if (!lockTarget) return;
+    setLockBusy(true);
     try {
-      await adminService.toggleUserLock(confirmTarget._id, !confirmTarget.isActive);
-      setConfirmTarget(null);
+      await adminService.toggleUserLock(lockTarget._id, !lockTarget.isActive);
+      setLockTarget(null);
       await fetchUsers(pagination.page);
     } catch (err) {
       alert(err?.message || 'Thao tác thất bại');
     } finally {
-      setBusy(false);
+      setLockBusy(false);
     }
   };
 
   return (
     <AdminLayout>
       <div className="px-6 lg:px-8 py-6">
-        <div className="mb-6">
-          <h1 className="text-2xl font-heading font-bold text-slate-900">Quản lý người dùng</h1>
-          <p className="text-sm text-slate-600 mt-1">
-            Xem danh sách, lọc theo vai trò/trạng thái, và khóa/mở khóa tài khoản.
-          </p>
+        <div className="mb-6 flex items-start justify-between gap-4">
+          <div>
+            <h1 className="text-2xl font-heading font-bold text-slate-900">Quản lý người dùng</h1>
+            <p className="text-sm text-slate-600 mt-1">
+              Tạo, sửa, xóa, khóa/mở khóa và đặt lại mật khẩu cho tài khoản.
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={() => setFormDialog({ open: true, mode: 'create', user: null })}
+            className="btn text-sm text-white bg-primary-500 hover:bg-primary-600 inline-flex items-center gap-1.5"
+          >
+            <Plus className="w-4 h-4" /> Tạo người dùng
+          </button>
         </div>
 
         <Card className="mb-4">
@@ -192,25 +242,47 @@ export default function ManageUsers() {
                           {isSelf ? (
                             <span className="text-xs text-slate-400 italic">Bạn</span>
                           ) : (
-                            <button
-                              type="button"
-                              onClick={() => setConfirmTarget(u)}
-                              className={`inline-flex items-center gap-1 text-xs font-medium px-2.5 py-1 rounded-md border transition-colors ${
-                                u.isActive
-                                  ? 'border-tertiary-200 text-tertiary-700 hover:bg-tertiary-50'
-                                  : 'border-secondary-200 text-secondary-700 hover:bg-secondary-50'
-                              }`}
-                            >
-                              {u.isActive ? (
-                                <>
-                                  <Lock className="w-3 h-3" /> Khóa
-                                </>
-                              ) : (
-                                <>
-                                  <Unlock className="w-3 h-3" /> Mở khóa
-                                </>
-                              )}
-                            </button>
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <button
+                                  type="button"
+                                  className="inline-flex items-center justify-center w-8 h-8 rounded-md hover:bg-slate-100 text-slate-600"
+                                  aria-label="Hành động"
+                                >
+                                  <MoreHorizontal className="w-4 h-4" />
+                                </button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="end" className="w-44">
+                                <DropdownMenuItem
+                                  onSelect={() =>
+                                    setFormDialog({ open: true, mode: 'edit', user: u })
+                                  }
+                                >
+                                  <Pencil className="w-4 h-4 mr-2" /> Sửa
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onSelect={() => setResetTarget(u)}>
+                                  <KeyRound className="w-4 h-4 mr-2" /> Đặt lại mật khẩu
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onSelect={() => setLockTarget(u)}>
+                                  {u.isActive ? (
+                                    <>
+                                      <Lock className="w-4 h-4 mr-2" /> Khóa
+                                    </>
+                                  ) : (
+                                    <>
+                                      <Unlock className="w-4 h-4 mr-2" /> Mở khóa
+                                    </>
+                                  )}
+                                </DropdownMenuItem>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem
+                                  onSelect={() => setDeleteTarget(u)}
+                                  className="text-tertiary-700 focus:text-tertiary-700 focus:bg-tertiary-50"
+                                >
+                                  <Trash2 className="w-4 h-4 mr-2" /> Xóa
+                                </DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
                           )}
                         </TableCell>
                       </TableRow>
@@ -249,39 +321,61 @@ export default function ManageUsers() {
         )}
       </div>
 
-      <Dialog open={!!confirmTarget} onOpenChange={(open) => !open && setConfirmTarget(null)}>
+      <UserFormDialog
+        open={formDialog.open}
+        mode={formDialog.mode}
+        initialUser={formDialog.user}
+        onClose={() => setFormDialog({ open: false, mode: 'create', user: null })}
+        onSubmit={formDialog.mode === 'create' ? handleCreate : handleEdit}
+      />
+
+      <ResetPasswordDialog
+        open={!!resetTarget}
+        user={resetTarget}
+        onClose={() => setResetTarget(null)}
+        onSubmit={handleResetPassword}
+      />
+
+      <DeleteUserDialog
+        open={!!deleteTarget}
+        user={deleteTarget}
+        onClose={() => setDeleteTarget(null)}
+        onConfirm={handleDelete}
+      />
+
+      <Dialog open={!!lockTarget} onOpenChange={(open) => !open && setLockTarget(null)}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>
-              {confirmTarget?.isActive ? 'Khóa tài khoản?' : 'Mở khóa tài khoản?'}
+              {lockTarget?.isActive ? 'Khóa tài khoản?' : 'Mở khóa tài khoản?'}
             </DialogTitle>
             <DialogDescription>
-              {confirmTarget?.isActive
-                ? `Người dùng ${confirmTarget?.fullName} (${confirmTarget?.email}) sẽ không đăng nhập được nữa cho đến khi mở khóa.`
-                : `Mở khóa tài khoản ${confirmTarget?.fullName} (${confirmTarget?.email}).`}
+              {lockTarget?.isActive
+                ? `Người dùng ${lockTarget?.fullName} (${lockTarget?.email}) sẽ không đăng nhập được nữa cho đến khi mở khóa.`
+                : `Mở khóa tài khoản ${lockTarget?.fullName} (${lockTarget?.email}).`}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <button
               type="button"
-              onClick={() => setConfirmTarget(null)}
+              onClick={() => setLockTarget(null)}
               className="btn-ghost text-sm"
-              disabled={busy}
+              disabled={lockBusy}
             >
               Hủy
             </button>
             <button
               type="button"
               onClick={handleToggleLock}
-              disabled={busy}
+              disabled={lockBusy}
               className={`btn text-sm text-white ${
-                confirmTarget?.isActive
+                lockTarget?.isActive
                   ? 'bg-tertiary-500 hover:bg-tertiary-600'
                   : 'bg-secondary-500 hover:bg-secondary-600'
               }`}
             >
-              {busy && <Loader2 className="w-4 h-4 animate-spin mr-1" />}
-              {confirmTarget?.isActive ? 'Khóa' : 'Mở khóa'}
+              {lockBusy && <Loader2 className="w-4 h-4 animate-spin mr-1" />}
+              {lockTarget?.isActive ? 'Khóa' : 'Mở khóa'}
             </button>
           </DialogFooter>
         </DialogContent>
