@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 import {
   Shield,
@@ -6,12 +7,19 @@ import {
   ClipboardList,
   FileQuestion,
   Users,
-  ExternalLink,
   ChevronsUpDown,
   User,
 } from "lucide-react";
 import { useAuthStore } from "@/store/authStore";
 import { ROUTES } from "@/constants/routes";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import {
   Sidebar,
   SidebarContent,
@@ -48,9 +56,17 @@ export default function AdminLayout({ children }) {
   const user = useAuthStore((s) => s.user);
   const logout = useAuthStore((s) => s.logout);
 
+  const [logoutOpen, setLogoutOpen] = useState(false);
+  const [loggingOut, setLoggingOut] = useState(false);
+
   const handleLogout = async () => {
-    await logout();
-    navigate(ROUTES.LOGIN);
+    setLoggingOut(true);
+    try {
+      await logout();
+      navigate(ROUTES.LOGIN);
+    } finally {
+      setLoggingOut(false);
+    }
   };
 
   const initial = user?.fullName?.charAt(0).toUpperCase() || "A";
@@ -74,16 +90,6 @@ export default function AdminLayout({ children }) {
           </div>
         </Link>
 
-        <div className="flex items-center gap-3">
-          <Link
-            to={ROUTES.DASHBOARD}
-            className="flex items-center gap-2 px-3 h-9 rounded-md text-sm text-slate-600 hover:bg-slate-100 transition-colors"
-            title="Mở app người dùng"
-          >
-            <ExternalLink className="w-4 h-4" />
-            <span className="hidden sm:inline">Mở app user</span>
-          </Link>
-        </div>
       </header>
 
       {/* SIDEBAR + CONTENT (below header) */}
@@ -91,7 +97,10 @@ export default function AdminLayout({ children }) {
         <Sidebar
           variant="floating"
           collapsible="icon"
-          style={{ top: HEADER_HEIGHT, height: `calc(100svh - ${HEADER_HEIGHT})` }}
+          style={{
+            top: HEADER_HEIGHT,
+            height: `calc(100svh - ${HEADER_HEIGHT})`,
+          }}
         >
           <SidebarContent>
             <SidebarGroup>
@@ -166,14 +175,9 @@ export default function AdminLayout({ children }) {
                     <DropdownMenuItem onClick={() => navigate(ROUTES.PROFILE)}>
                       <User /> Hồ sơ cá nhân
                     </DropdownMenuItem>
-                    <DropdownMenuItem
-                      onClick={() => navigate(ROUTES.DASHBOARD)}
-                    >
-                      <ExternalLink /> Mở app user
-                    </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem
-                      onClick={handleLogout}
+                      onClick={() => setLogoutOpen(true)}
                       className="text-tertiary-600 focus:text-tertiary-700"
                     >
                       <LogOut /> Đăng xuất
@@ -189,6 +193,39 @@ export default function AdminLayout({ children }) {
 
         <main className="flex-1 overflow-auto py-4 pr-4">{children}</main>
       </SidebarProvider>
+
+      <Dialog
+        open={logoutOpen}
+        onOpenChange={(o) => !loggingOut && setLogoutOpen(o)}
+      >
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle>Đăng xuất khỏi trang quản trị?</DialogTitle>
+            <DialogDescription>
+              Bạn có chắc chắn muốn đăng xuất không?
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <button
+              type="button"
+              onClick={() => setLogoutOpen(false)}
+              disabled={loggingOut}
+              className="btn-ghost text-sm"
+            >
+              Hủy
+            </button>
+            <button
+              type="button"
+              onClick={handleLogout}
+              disabled={loggingOut}
+              className="btn text-sm text-white bg-tertiary-500 hover:bg-tertiary-600"
+            >
+              <LogOut className="w-4 h-4" />
+              {loggingOut ? "Đang đăng xuất…" : "Đăng xuất"}
+            </button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

@@ -8,6 +8,9 @@ import { Label } from '@/components/ui/label';
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select';
+import PasswordChecklist from '@/components/common/PasswordChecklist';
+import PasswordInput from '@/components/common/PasswordInput';
+import { isValidPassword } from '@/utils/passwordRules';
 
 /**
  * Pattern: state-holding form là child component được render bên trong DialogContent.
@@ -44,10 +47,17 @@ function UserForm({ mode, initialUser, onClose, onSubmit }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setErr('');
+    if (isCreate && !isValidPassword(form.password)) {
+      setErr('Mật khẩu chưa đủ mạnh. Vui lòng kiểm tra các yêu cầu bên dưới.');
+      return;
+    }
     setBusy(true);
     try {
+      // Đọc fullName từ FormData vì field này uncontrolled (defaultValue + name)
+      // để tránh bug controlled input "ăn" ký tự khi gõ tiếng Việt có dấu.
+      const fd = new FormData(e.currentTarget);
       const payload = {
-        fullName: form.fullName.trim(),
+        fullName: (fd.get('fullName') || '').toString().trim(),
         email: form.email.trim().toLowerCase(),
         role: form.role,
         targetScore: Number(form.targetScore),
@@ -77,11 +87,11 @@ function UserForm({ mode, initialUser, onClose, onSubmit }) {
           <Label htmlFor="fullName">Họ tên</Label>
           <Input
             id="fullName"
+            name="fullName"
             required
             minLength={2}
             maxLength={100}
-            value={form.fullName}
-            onChange={(e) => setField('fullName', e.target.value)}
+            defaultValue={isCreate ? '' : initialUser?.fullName || ''}
           />
         </div>
 
@@ -99,20 +109,20 @@ function UserForm({ mode, initialUser, onClose, onSubmit }) {
         {isCreate && (
           <div>
             <Label htmlFor="password">Mật khẩu</Label>
-            <Input
+            <PasswordInput
               id="password"
-              type="password"
               required
-              minLength={6}
+              minLength={8}
               maxLength={72}
               value={form.password}
               onChange={(e) => setField('password', e.target.value)}
             />
-            <p className="text-xs text-slate-500 mt-1">Tối thiểu 6 ký tự.</p>
+            <PasswordChecklist value={form.password} />
           </div>
         )}
 
-        <div className="grid grid-cols-2 gap-3">
+        {/* Admin không làm bài thi nên không cần mục tiêu điểm — chỉ hiện cho user */}
+        <div className={form.role === 'admin' ? '' : 'grid grid-cols-2 gap-3'}>
           <div>
             <Label htmlFor="role">Vai trò</Label>
             <Select value={form.role} onValueChange={(v) => setField('role', v)}>
@@ -125,18 +135,20 @@ function UserForm({ mode, initialUser, onClose, onSubmit }) {
               </SelectContent>
             </Select>
           </div>
-          <div>
-            <Label htmlFor="targetScore">Mục tiêu điểm</Label>
-            <Input
-              id="targetScore"
-              type="number"
-              min={10}
-              max={990}
-              required
-              value={form.targetScore}
-              onChange={(e) => setField('targetScore', e.target.value)}
-            />
-          </div>
+          {form.role !== 'admin' && (
+            <div>
+              <Label htmlFor="targetScore">Mục tiêu điểm</Label>
+              <Input
+                id="targetScore"
+                type="number"
+                min={10}
+                max={990}
+                required
+                value={form.targetScore}
+                onChange={(e) => setField('targetScore', e.target.value)}
+              />
+            </div>
+          )}
         </div>
 
         {err && (
@@ -193,6 +205,10 @@ function ResetPasswordForm({ user, onClose, onSubmit }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setErr('');
+    if (!isValidPassword(password)) {
+      setErr('Mật khẩu chưa đủ mạnh. Vui lòng kiểm tra các yêu cầu bên dưới.');
+      return;
+    }
     setBusy(true);
     try {
       await onSubmit(password);
@@ -217,16 +233,15 @@ function ResetPasswordForm({ user, onClose, onSubmit }) {
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <Label htmlFor="newPassword">Mật khẩu mới</Label>
-          <Input
+          <PasswordInput
             id="newPassword"
-            type="password"
             required
-            minLength={6}
+            minLength={8}
             maxLength={72}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
-          <p className="text-xs text-slate-500 mt-1">Tối thiểu 6 ký tự.</p>
+          <PasswordChecklist value={password} />
         </div>
 
         {err && (

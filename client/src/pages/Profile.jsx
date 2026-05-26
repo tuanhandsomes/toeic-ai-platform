@@ -1,5 +1,7 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import AppLayout from '@/components/layout/AppLayout';
+import AdminLayout from '@/components/layout/AdminLayout';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -8,13 +10,22 @@ import { Badge } from '@/components/ui/badge';
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select';
+import {
+  Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle,
+} from '@/components/ui/dialog';
 import { StatusBanner } from '@/components/common/StatusBanner';
+import PasswordChecklist from '@/components/common/PasswordChecklist';
+import PasswordInput from '@/components/common/PasswordInput';
 import { useAuthStore } from '@/store/authStore';
 import { userService } from '@/services/userService';
+import { ROUTES } from '@/constants/routes';
+import { isValidPassword } from '@/utils/passwordRules';
 
 export default function Profile() {
+  const navigate = useNavigate();
   const user = useAuthStore((s) => s.user);
   const loadUser = useAuthStore((s) => s.loadUser);
+  const logout = useAuthStore((s) => s.logout);
 
   const [profileForm, setProfileForm] = useState({
     fullName: user?.fullName || '',
@@ -31,12 +42,40 @@ export default function Profile() {
   const [savingProfile, setSavingProfile] = useState(false);
   const [savingPassword, setSavingPassword] = useState(false);
 
+  // Modal hiện sau khi đổi mật khẩu thành công → user phải đăng nhập lại.
+  // Có countdown 5s tự động redirect, user có thể bấm nút để đi ngay.
+  const [postChangeOpen, setPostChangeOpen] = useState(false);
+  const [redirectCountdown, setRedirectCountdown] = useState(5);
+
+  // Khi modal mở → đếm ngược 5s → tự logout + redirect login
+  useEffect(() => {
+    if (!postChangeOpen) return;
+    setRedirectCountdown(5);
+    const tick = setInterval(() => {
+      setRedirectCountdown((c) => {
+        if (c <= 1) {
+          clearInterval(tick);
+          // logout + redirect ngay khi tới 0
+          logout().then(() => navigate(ROUTES.LOGIN));
+          return 0;
+        }
+        return c - 1;
+      });
+    }, 1000);
+    return () => clearInterval(tick);
+  }, [postChangeOpen, logout, navigate]);
+
   const handleSaveProfile = async (e) => {
     e.preventDefault();
     setProfileStatus(null);
     setSavingProfile(true);
     try {
-      await userService.updateProfile(profileForm);
+      // Admin không có field targetScore → chỉ gửi fullName
+      const payload =
+        user?.role === 'admin'
+          ? { fullName: profileForm.fullName }
+          : profileForm;
+      await userService.updateProfile(payload);
       await loadUser();
       setProfileStatus({ variant: 'success', message: 'Cập nhật thông tin thành công' });
     } catch (err) {
@@ -54,16 +93,21 @@ export default function Profile() {
       setPasswordStatus({ variant: 'error', message: 'Mật khẩu xác nhận không khớp' });
       return;
     }
-    if (passwordForm.newPassword.length < 6) {
-      setPasswordStatus({ variant: 'error', message: 'Mật khẩu mới phải có ít nhất 6 ký tự' });
+    if (!isValidPassword(passwordForm.newPassword)) {
+      setPasswordStatus({
+        variant: 'error',
+        message: 'Mật khẩu chưa đủ mạnh. Vui lòng kiểm tra các yêu cầu bên dưới.',
+      });
       return;
     }
 
     setSavingPassword(true);
     try {
       await userService.changePassword(passwordForm.currentPassword, passwordForm.newPassword);
-      setPasswordStatus({ variant: 'success', message: 'Đổi mật khẩu thành công' });
       setPasswordForm({ currentPassword: '', newPassword: '', confirmPassword: '' });
+      // BE đã revoke refresh tokens. FE cần ép logout + redirect — access token
+      // hiện tại vẫn hợp lệ ~15 phút nên user phải đăng nhập lại với mật khẩu mới.
+      setPostChangeOpen(true);
     } catch (err) {
       setPasswordStatus({ variant: 'error', message: err?.message || 'Đổi mật khẩu thất bại' });
     } finally {
@@ -71,8 +115,17 @@ export default function Profile() {
     }
   };
 
+  const handleConfirmReLogin = async () => {
+    await logout();
+    navigate(ROUTES.LOGIN);
+  };
+
+  // Admin xem Profile trong AdminLayout (không lộ sidebar user app),
+  // user thường xem trong AppLayout như cũ.
+  const Layout = user?.role === 'admin' ? AdminLayout : AppLayout;
+
   return (
-    <AppLayout>
+    <Layout>
       <div className="max-w-3xl mx-auto px-8 py-8">
         <div className="mb-6">
           <h1 className="text-3xl font-heading font-bold mb-2">Hồ sơ cá nhân</h1>
@@ -117,24 +170,27 @@ export default function Profile() {
                 <p className="text-xs text-slate-500">Email không thể thay đổi.</p>
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="targetScore">Mục tiêu điểm TOEIC</Label>
-                <Select
-                  value={String(profileForm.targetScore)}
-                  onValueChange={(v) => setProfileForm({ ...profileForm, targetScore: Number(v) })}
-                >
-                  <SelectTrigger id="targetScore">
-                    <SelectValue placeholder="Chọn mục tiêu" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {[500, 600, 700, 750, 800, 850, 900, 990].map((s) => (
-                      <SelectItem key={s} value={String(s)}>
-                        {s} điểm
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+              {/* Admin không làm bài thi → không cần mục tiêu điểm */}
+              {user?.role !== 'admin' && (
+                <div className="space-y-2">
+                  <Label htmlFor="targetScore">Mục tiêu điểm TOEIC</Label>
+                  <Select
+                    value={String(profileForm.targetScore)}
+                    onValueChange={(v) => setProfileForm({ ...profileForm, targetScore: Number(v) })}
+                  >
+                    <SelectTrigger id="targetScore">
+                      <SelectValue placeholder="Chọn mục tiêu" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {[500, 600, 700, 750, 800, 850, 900, 990].map((s) => (
+                        <SelectItem key={s} value={String(s)}>
+                          {s} điểm
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
 
               {profileStatus && <StatusBanner {...profileStatus} />}
 
@@ -155,9 +211,8 @@ export default function Profile() {
             <form onSubmit={handleChangePassword} className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="currentPassword">Mật khẩu hiện tại</Label>
-                <Input
+                <PasswordInput
                   id="currentPassword"
-                  type="password"
                   value={passwordForm.currentPassword}
                   onChange={(e) =>
                     setPasswordForm({ ...passwordForm, currentPassword: e.target.value })
@@ -168,24 +223,23 @@ export default function Profile() {
 
               <div className="space-y-2">
                 <Label htmlFor="newPassword">Mật khẩu mới</Label>
-                <Input
+                <PasswordInput
                   id="newPassword"
-                  type="password"
                   value={passwordForm.newPassword}
                   onChange={(e) =>
                     setPasswordForm({ ...passwordForm, newPassword: e.target.value })
                   }
-                  minLength={6}
+                  minLength={8}
+                  maxLength={72}
                   required
                 />
-                <p className="text-xs text-slate-500">Tối thiểu 6 ký tự.</p>
+                <PasswordChecklist value={passwordForm.newPassword} />
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="confirmPassword">Xác nhận mật khẩu mới</Label>
-                <Input
+                <PasswordInput
                   id="confirmPassword"
-                  type="password"
                   value={passwordForm.confirmPassword}
                   onChange={(e) =>
                     setPasswordForm({ ...passwordForm, confirmPassword: e.target.value })
@@ -203,6 +257,43 @@ export default function Profile() {
           </CardContent>
         </Card>
       </div>
-    </AppLayout>
+
+      {/* Modal bắt buộc đăng nhập lại sau khi đổi mật khẩu thành công.
+          Không cho đóng bằng overlay/ESC — phải bấm nút "Đăng nhập lại". */}
+      <Dialog
+        open={postChangeOpen}
+        onOpenChange={() => {
+          /* chặn đóng — buộc bấm nút bên dưới */
+        }}
+      >
+        <DialogContent
+          className="max-w-md"
+          onPointerDownOutside={(e) => e.preventDefault()}
+          onEscapeKeyDown={(e) => e.preventDefault()}
+        >
+          <DialogHeader>
+            <DialogTitle>Đổi mật khẩu thành công</DialogTitle>
+            <DialogDescription className="pt-2 leading-relaxed">
+              Mật khẩu của bạn đã được cập nhật. Để đảm bảo an toàn, hệ thống sẽ
+              đăng xuất khỏi tất cả thiết bị. Tự động chuyển về trang đăng nhập
+              sau{' '}
+              <span className="font-semibold text-slate-900">
+                {redirectCountdown}s
+              </span>
+              …
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <button
+              type="button"
+              onClick={handleConfirmReLogin}
+              className="btn-primary text-sm"
+            >
+              Đăng nhập lại ngay
+            </button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </Layout>
   );
 }

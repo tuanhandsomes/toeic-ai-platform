@@ -1,17 +1,29 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { Mail, Lock, Eye, EyeOff, Sparkles } from 'lucide-react';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { Mail, Lock, Sparkles, AlertCircle } from 'lucide-react';
 import { useAuthStore } from '../store/authStore.js';
 import { ROUTES } from '../constants/routes.js';
+import PasswordInput from '../components/common/PasswordInput.jsx';
+
+// Message tiếng Việt cho các lý do redirect về login từ axios interceptor
+const REASON_MESSAGES = {
+  'session-expired':
+    'Phiên đăng nhập của bạn đã kết thúc. Vui lòng đăng nhập lại để tiếp tục.',
+};
 
 export default function Login() {
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const login = useAuthStore((s) => s.login);
   const isLoading = useAuthStore((s) => s.isLoading);
 
   const [form, setForm] = useState({ email: '', password: '' });
-  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
+
+  // Đọc query param `reason` (ví dụ /login?reason=session-expired) và map sang
+  // message tiếng Việt. Hiển thị banner phía trên form.
+  const reason = searchParams.get('reason');
+  const reasonMessage = reason ? REASON_MESSAGES[reason] : null;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -21,6 +33,15 @@ export default function Login() {
       navigate(user?.role === 'admin' ? ROUTES.ADMIN : ROUTES.DASHBOARD);
     } catch (err) {
       setError(err?.message || 'Đăng nhập thất bại');
+    }
+  };
+
+  // Xóa `?reason=` khỏi URL khi user bắt đầu nhập (để refresh trang không
+  // hiển thị lại banner đã đọc).
+  const clearReason = () => {
+    if (reason) {
+      searchParams.delete('reason');
+      setSearchParams(searchParams, { replace: true });
     }
   };
 
@@ -53,6 +74,13 @@ export default function Login() {
           <h2 className="text-3xl font-heading font-bold mb-2">Đăng nhập</h2>
           <p className="text-slate-600 mb-8">Tiếp tục hành trình luyện TOEIC của bạn</p>
 
+          {reasonMessage && !error && (
+            <div className="mb-4 rounded-lg bg-yellow-50 border border-yellow-200 text-yellow-900 px-4 py-3 text-sm flex items-start gap-2">
+              <AlertCircle className="w-4 h-4 mt-0.5 flex-shrink-0 text-yellow-600" />
+              <span>{reasonMessage}</span>
+            </div>
+          )}
+
           {error && (
             <div className="mb-4 rounded-lg bg-red-50 border border-red-200 text-red-700 px-4 py-3 text-sm">
               {error}
@@ -69,7 +97,10 @@ export default function Login() {
                   className="input pl-10"
                   placeholder="ban@email.com"
                   value={form.email}
-                  onChange={(e) => setForm({ ...form, email: e.target.value })}
+                  onChange={(e) => {
+                    clearReason();
+                    setForm({ ...form, email: e.target.value });
+                  }}
                   required
                 />
               </div>
@@ -82,24 +113,17 @@ export default function Login() {
                   Quên mật khẩu?
                 </Link>
               </div>
-              <div className="relative">
-                <Lock className="absolute left-3 top-3 w-5 h-5 text-slate-400" />
-                <input
-                  type={showPassword ? 'text' : 'password'}
-                  className="input pl-10 pr-10"
-                  placeholder="••••••••"
-                  value={form.password}
-                  onChange={(e) => setForm({ ...form, password: e.target.value })}
-                  required
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-3 text-slate-400 hover:text-slate-600"
-                >
-                  {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                </button>
-              </div>
+              <PasswordInput
+                native
+                leftIcon={<Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />}
+                placeholder="••••••••"
+                value={form.password}
+                onChange={(e) => {
+                  clearReason();
+                  setForm({ ...form, password: e.target.value });
+                }}
+                required
+              />
             </div>
 
             <button type="submit" disabled={isLoading} className="btn-primary w-full">
