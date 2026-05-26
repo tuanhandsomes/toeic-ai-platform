@@ -2,6 +2,7 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore.js';
 import { ROUTES } from '../constants/routes.js';
 import ProtectedRoute from './ProtectedRoute.jsx';
+import LandingPage from '../pages/LandingPage.jsx';
 import Login from '../pages/Login.jsx';
 import Register from '../pages/Register.jsx';
 import ForgotPassword from '../pages/ForgotPassword.jsx';
@@ -22,15 +23,16 @@ import ManageUsers from '../pages/admin/ManageUsers.jsx';
 export default function AppRoutes() {
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
   const user = useAuthStore((s) => s.user);
-  const homeRedirect = !isAuthenticated
-    ? ROUTES.LOGIN
-    : user?.role === 'admin'
-      ? ROUTES.ADMIN
-      : ROUTES.DASHBOARD;
+  // Guest → landing page (marketing). Authenticated → đi thẳng vào app.
+  const homeElement = !isAuthenticated ? (
+    <LandingPage />
+  ) : (
+    <Navigate to={user?.role === 'admin' ? ROUTES.ADMIN : ROUTES.DASHBOARD} replace />
+  );
 
   return (
     <Routes>
-      <Route path={ROUTES.HOME} element={<Navigate to={homeRedirect} replace />} />
+      <Route path={ROUTES.HOME} element={homeElement} />
       <Route path={ROUTES.LOGIN} element={<Login />} />
       <Route path={ROUTES.REGISTER} element={<Register />} />
       <Route path={ROUTES.FORGOT_PASSWORD} element={<ForgotPassword />} />
