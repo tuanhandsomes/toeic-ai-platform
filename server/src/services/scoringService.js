@@ -90,12 +90,9 @@ export const gradeTest = ({ gradedAnswers, testType }) => {
   let scoreReading = 0;
   let scoreTotal = 0;
 
-  // Chỉ tính scaled score cho Full Test (200 câu).
-  // Practice test thì giữ scoreListening/Reading = 0, dùng accuracy thay.
   if (testType === 'full') {
-    // Quy đổi từ raw correct sang thang 100 câu chuẩn của mỗi section,
-    // rồi tra bảng. Nếu Full Test có số câu khác chuẩn (vd demo 50 câu),
-    // scale tỷ lệ.
+    // Full Test (200 câu) — dùng bảng quy đổi ETS (non-linear curve).
+    // Quy đổi raw correct sang thang 100 câu chuẩn của mỗi section rồi tra bảng.
     const listeningNormalized = listeningTotal > 0
       ? Math.round((listeningCorrect / listeningTotal) * 100)
       : 0;
@@ -105,6 +102,22 @@ export const gradeTest = ({ gradedAnswers, testType }) => {
 
     scoreListening = lookupScore(LISTENING_TABLE, listeningNormalized);
     scoreReading = lookupScore(READING_TABLE, readingNormalized);
+    scoreTotal = scoreListening + scoreReading;
+  } else {
+    // Practice (1 Part) — công thức tuyến tính 5 điểm/câu, đồng bộ với max
+    // proportional của Part (Part X câu chuẩn × 5 ≈ Part X / 100 × 495 Listening
+    // hoặc Reading).
+    //
+    // Ví dụ:
+    //   Part 1 (max 30):   1/6 → 5đ,  3/6 → 15đ,  6/6 → 30đ
+    //   Part 7 (max 270):  20/54 → 100đ,  40/54 → 200đ
+    //
+    // KHÔNG dùng lookup ETS như Full Test vì:
+    //   - Không đủ data 100 câu để curve có ý nghĩa
+    //   - Curve phi tuyến + scale × % → kết quả phản trực giác (vd 1/6 → 2đ)
+    //   - User quen tính nhẩm "1 câu = 5 điểm"
+    scoreListening = listeningCorrect * 5;
+    scoreReading = readingCorrect * 5;
     scoreTotal = scoreListening + scoreReading;
   }
 

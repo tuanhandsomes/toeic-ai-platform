@@ -52,6 +52,7 @@ export default function PracticeDetail() {
         let draftCurrentIndex = 0;
         let draftTimeSpent = {};
 
+        let draftElapsedSec = 0;
         if (draftRaw) {
           try {
             const draft = JSON.parse(draftRaw);
@@ -60,12 +61,27 @@ export default function PracticeDetail() {
             draftFlagged = draft.flagged || [];
             draftCurrentIndex = draft.currentIndex || 0;
             draftTimeSpent = draft.timeSpent || {};
+            draftElapsedSec = draft.elapsedSec || 0;
           } catch {
             // ignore corrupt draft
           }
         }
 
-        const startTime = draftStartedAt ? new Date(draftStartedAt) : new Date();
+        // Practice (elapsed): timer chỉ đếm thời gian user thực sự đang ở trang.
+        // Khôi phục startedAt = NOW - elapsedSec đã lưu → Timer wall-clock liền
+        // mạch với thời lượng đã làm trước đó, KHÔNG cộng dồn thời gian rời trang.
+        //
+        // Full Test (countdown): giữ nguyên startedAt gốc — thi thật vẫn phải
+        // đếm cả khi user rời tab (auto-submit nếu hết giờ).
+        const isFullTest = t.type === 'full';
+        let startTime;
+        if (isFullTest) {
+          startTime = draftStartedAt ? new Date(draftStartedAt) : new Date();
+        } else if (draftRaw && draftElapsedSec > 0) {
+          startTime = new Date(Date.now() - draftElapsedSec * 1000);
+        } else {
+          startTime = new Date();
+        }
         setStartedAt(startTime);
         setAnswers(draftAnswers);
         setFlagged(new Set(draftFlagged));
@@ -118,8 +134,16 @@ export default function PracticeDetail() {
   useEffect(() => {
     if (!test || !startedAt || !userId) return;
     const saveDraft = () => {
+      // elapsedSec = thời lượng tích lũy hiện tại (NOW - startedAt).
+      // Khi user quay lại sau, mount sẽ reconstruct startedAt từ giá trị này
+      // → đảm bảo Timer (Practice mode) pause-on-leave behavior.
+      const elapsedSec = Math.max(
+        0,
+        Math.floor((Date.now() - startedAt.getTime()) / 1000),
+      );
       const draft = {
         startedAt: startedAt.toISOString(),
+        elapsedSec,
         answers,
         flagged: [...flagged],
         currentIndex,
@@ -130,7 +154,12 @@ export default function PracticeDetail() {
     };
     saveDraft(); // save immediately on any change
     const id = setInterval(saveDraft, 10000);
-    return () => clearInterval(id);
+    // Save 1 lần nữa khi unmount (user navigate đi) để giảm độ trễ giữa 2 lần
+    // autosave 10s. Tránh trường hợp user làm thêm 5s rồi back ra → chỉ mất 5s.
+    return () => {
+      clearInterval(id);
+      saveDraft();
+    };
   }, [test, startedAt, answers, flagged, currentIndex, testId, userId]);
 
   // 4. Handlers

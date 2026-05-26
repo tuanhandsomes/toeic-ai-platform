@@ -6,15 +6,12 @@ import {
   XCircle,
   Loader2,
   Trophy,
-  BookOpen,
-  Headphones,
   Lightbulb,
   RotateCw,
   Sparkles,
   TrendingUp,
   AlertTriangle,
   Target,
-  Flag,
 } from "lucide-react";
 import AppLayout from "@/components/layout/AppLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -35,6 +32,7 @@ import { useAuthStore } from "@/store/authStore";
 import { formatDuration } from "@/utils/formatTime";
 import { ROUTES } from "@/constants/routes";
 import { cn } from "@/lib/utils";
+import ScoreCard from "@/components/result/ScoreCard";
 
 const MEDIA_BASE = import.meta.env.VITE_MEDIA_URL || "";
 const toMediaUrl = (url) =>
@@ -175,77 +173,9 @@ export default function ResultDetail() {
   );
 }
 
-function ScoreBanner({ result, isFullTest }) {
-  if (isFullTest) {
-    return (
-      <Card className="bg-gradient-to-br from-primary-500 to-primary-700 text-white border-0">
-        <CardContent className="p-8">
-          <div className="flex items-center justify-between flex-wrap gap-6">
-            <div>
-              <p className="text-primary-100 text-sm uppercase tracking-wider mb-1">
-                Tổng điểm TOEIC
-              </p>
-              <p className="font-mono text-6xl font-bold">
-                {result.scoreTotal}{" "}
-                <span className="text-2xl text-primary-200">/ 990</span>
-              </p>
-            </div>
-            <div className="flex gap-6">
-              <div className="flex items-center gap-2">
-                <Headphones className="w-5 h-5" />
-                <div>
-                  <p className="text-xs text-primary-100">Listening</p>
-                  <p className="font-mono text-2xl font-bold">
-                    {result.scoreListening}
-                  </p>
-                </div>
-              </div>
-              <div className="flex items-center gap-2">
-                <BookOpen className="w-5 h-5" />
-                <div>
-                  <p className="text-xs text-primary-100">Reading</p>
-                  <p className="font-mono text-2xl font-bold">
-                    {result.scoreReading}
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-    );
-  }
-
-  return (
-    <Card className="border-l-4 border-l-primary-500">
-      <CardContent className="p-8">
-        <div className="flex items-center justify-between flex-wrap gap-4">
-          <div>
-            <p className="text-sm text-slate-500 uppercase tracking-wider mb-1">
-              Kết quả luyện tập
-            </p>
-            <p className="font-mono text-5xl font-bold text-slate-900">
-              {result.correctCount}
-              <span className="text-2xl text-slate-400">
-                {" "}
-                / {result.totalQuestions}
-              </span>
-            </p>
-            <p className="text-sm text-slate-600 mt-1">Số câu đúng</p>
-          </div>
-          <div className="text-right">
-            <p className="font-mono text-5xl font-bold text-secondary-600">
-              {result.accuracy}%
-            </p>
-            <p className="text-sm text-slate-600 mt-1">Tỷ lệ chính xác</p>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
-  );
-}
-
 function OverviewTab({ result }) {
+  const isFullTest = result.testType === "full";
+
   const parts = Object.entries(result.partBreakdown || {})
     .filter(([, v]) => v.total > 0)
     .map(([key, v]) => ({
@@ -257,76 +187,81 @@ function OverviewTab({ result }) {
     .sort((a, b) => a.part - b.part);
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-base">
-            <Trophy className="w-5 h-5 text-primary-500" />
-            Phân tích theo Part
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            {parts.map((p) => (
-              <div key={p.key}>
-                <div className="flex items-center justify-between text-sm mb-1.5">
-                  <span className="text-slate-700">
-                    {PART_NAMES[p.part] || `Part ${p.part}`}
-                  </span>
-                  <span className="font-mono font-semibold">
-                    {p.correct}/{p.total} • {p.accuracy}%
-                  </span>
-                </div>
-                <Progress
-                  value={p.accuracy}
-                  className={cn(
-                    "h-2",
-                    p.accuracy >= 80 && "[&>div]:bg-secondary-500",
-                    p.accuracy >= 60 &&
-                      p.accuracy < 80 &&
-                      "[&>div]:bg-yellow-400",
-                    p.accuracy < 60 && "[&>div]:bg-tertiary-500",
-                  )}
-                />
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
+    <div className="space-y-6">
+      {/* Score card full width ở trên cùng */}
+      <ScoreCard result={result} isFullTest={isFullTest} />
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base">Thống kê chung</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-3 text-sm">
-            <div className="flex justify-between">
-              <span className="text-slate-600">Tổng số câu</span>
-              <strong>{result.totalQuestions}</strong>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-base">
+              <Trophy className="w-5 h-5 text-primary-500" />
+              Phân tích theo Part
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {parts.map((p) => (
+                <div key={p.key}>
+                  <div className="flex items-center justify-between text-sm mb-1.5">
+                    <span className="text-slate-700">
+                      {PART_NAMES[p.part] || `Part ${p.part}`}
+                    </span>
+                    <span className="font-mono font-semibold">
+                      {p.correct}/{p.total} • {p.accuracy}%
+                    </span>
+                  </div>
+                  <Progress
+                    value={p.accuracy}
+                    className={cn(
+                      "h-2",
+                      p.accuracy >= 80 && "[&>div]:bg-secondary-500",
+                      p.accuracy >= 60 &&
+                        p.accuracy < 80 &&
+                        "[&>div]:bg-yellow-400",
+                      p.accuracy < 60 && "[&>div]:bg-tertiary-500",
+                    )}
+                  />
+                </div>
+              ))}
             </div>
-            <div className="flex justify-between">
-              <span className="text-slate-600">Số câu đúng</span>
-              <strong className="text-secondary-600">
-                {result.correctCount}
-              </strong>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">Thống kê chung</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3 text-sm">
+              <div className="flex justify-between">
+                <span className="text-slate-600">Tổng số câu</span>
+                <strong>{result.totalQuestions}</strong>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-slate-600">Số câu đúng</span>
+                <strong className="text-secondary-600">
+                  {result.correctCount}
+                </strong>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-slate-600">Số câu sai / bỏ qua</span>
+                <strong className="text-tertiary-600">
+                  {result.totalQuestions - result.correctCount}
+                </strong>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-slate-600">Tỷ lệ chính xác</span>
+                <strong>{result.accuracy}%</strong>
+              </div>
+              <div className="flex justify-between border-t border-slate-100 pt-3">
+                <span className="text-slate-600">Thời gian làm bài</span>
+                <strong>{formatDuration(result.durationSec)}</strong>
+              </div>
             </div>
-            <div className="flex justify-between">
-              <span className="text-slate-600">Số câu sai / bỏ qua</span>
-              <strong className="text-tertiary-600">
-                {result.totalQuestions - result.correctCount}
-              </strong>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-slate-600">Tỷ lệ chính xác</span>
-              <strong>{result.accuracy}%</strong>
-            </div>
-            <div className="flex justify-between border-t border-slate-100 pt-3">
-              <span className="text-slate-600">Thời gian làm bài</span>
-              <strong>{formatDuration(result.durationSec)}</strong>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }
@@ -366,9 +301,7 @@ function AIAnalysisPanel({ resultId, testType, analysis, onAnalysisUpdate }) {
     }
   };
 
-  const errorModal = (
-    <AIErrorModal err={err} onClose={() => setErr("")} />
-  );
+  const errorModal = <AIErrorModal err={err} onClose={() => setErr("")} />;
 
   // Chưa có analysis → empty state với CTA
   if (!analysis) {
@@ -455,8 +388,7 @@ function AIAnalysisPanel({ resultId, testType, analysis, onAnalysisUpdate }) {
 function AIErrorModal({ err, onClose }) {
   // Detect rate limit qua keyword đặc trưng trong message từ BE
   const isRateLimit =
-    err &&
-    (err.includes("giới hạn") || err.includes("nhiều yêu cầu"));
+    err && (err.includes("giới hạn") || err.includes("nhiều yêu cầu"));
 
   const title = isRateLimit
     ? "Đã đạt giới hạn phân tích AI"
@@ -717,66 +649,22 @@ function ReviewTab({ result, isFullTest }) {
 }
 
 function ReviewSidebar({ result, isFullTest }) {
-  const scoreLabel = isFullTest ? "Điểm TOEIC" : "Số câu đúng";
-  const scoreValue = isFullTest ? result.scoreTotal : result.correctCount;
-  const scoreTotal = isFullTest ? 990 : result.totalQuestions;
-
   return (
     <div className="space-y-3">
-      <div className="bg-white rounded-card shadow-card p-5 text-center">
-        <Flag
-          className="w-7 h-7 text-yellow-500 mx-auto mb-1.5"
-          fill="currentColor"
-        />
-        <p className="text-xs text-slate-500 uppercase tracking-wider">Điểm</p>
-        <p className="font-mono text-4xl font-bold text-slate-900 mt-1">
-          {scoreValue}
-        </p>
-        <p className="text-xs text-slate-500 mt-0.5">/ {scoreTotal}</p>
-      </div>
+      <ScoreCard result={result} isFullTest={isFullTest} compact />
 
-      <div className="bg-slate-50 rounded-card border border-slate-200 p-4 text-sm">
-        {isFullTest ? (
-          <div className="space-y-3">
-            <div className="flex justify-between">
-              <span className="text-slate-600">Listening</span>
-              <strong className="font-mono">{result.scoreListening}/495</strong>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-slate-600">Reading</span>
-              <strong className="font-mono">{result.scoreReading}/495</strong>
-            </div>
-            <div className="flex justify-between border-t border-slate-200 pt-2">
-              <span className="text-slate-600">Trả lời đúng</span>
-              <strong className="font-mono">
-                {result.correctCount}/{result.totalQuestions}
-              </strong>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-slate-600">Tỷ lệ</span>
-              <strong className="font-mono">{result.accuracy}%</strong>
-            </div>
-          </div>
-        ) : (
-          <div className="space-y-2">
-            <p className="text-center text-slate-600 text-xs uppercase tracking-wider">
-              {scoreLabel}
-            </p>
-            <p className="text-center font-mono text-2xl font-bold">
-              {result.correctCount}/{result.totalQuestions}
-            </p>
-            <div className="border-t border-slate-200 pt-2 flex justify-between">
-              <span className="text-slate-600">Tỷ lệ</span>
-              <strong className="font-mono">{result.accuracy}%</strong>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-slate-600">Thời gian</span>
-              <strong className="font-mono">
-                {formatDuration(result.durationSec)}
-              </strong>
-            </div>
-          </div>
-        )}
+      {/* Block phụ — tỷ lệ + thời gian (data không có trong ScoreCard) */}
+      <div className="bg-slate-50 rounded-card border border-slate-200 p-4 text-sm space-y-2">
+        <div className="flex justify-between">
+          <span className="text-slate-600">Tỷ lệ chính xác</span>
+          <strong className="font-mono">{result.accuracy}%</strong>
+        </div>
+        <div className="flex justify-between">
+          <span className="text-slate-600">Thời gian làm bài</span>
+          <strong className="font-mono">
+            {formatDuration(result.durationSec)}
+          </strong>
+        </div>
       </div>
     </div>
   );
