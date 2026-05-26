@@ -18,6 +18,7 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
 import { adminService } from '@/services/adminService';
+import { toast } from 'sonner';
 
 const PART_LABEL = (p) =>
   p === 1 ? 'Part 1 — Tranh'
@@ -196,7 +197,7 @@ export default function ManageTests() {
       setEditorMode('edit');
       setEditorOpen(true);
     } catch (err) {
-      alert(err?.message || 'Không tải được đề');
+      toast.error(err?.message || 'Không tải được đề');
     } finally {
       setBusy(false);
     }
@@ -204,8 +205,9 @@ export default function ManageTests() {
 
   const handleSave = async (payload) => {
     setBusy(true);
+    const isCreate = editorMode === 'create';
     try {
-      if (editorMode === 'create') {
+      if (isCreate) {
         await adminService.createTest(payload);
       } else {
         await adminService.updateTest(editing._id, payload);
@@ -213,8 +215,9 @@ export default function ManageTests() {
       setEditorOpen(false);
       setEditing(null);
       await fetchTests(pagination.page);
+      toast.success(isCreate ? `Đã tạo đề "${payload.title}"` : `Đã cập nhật đề "${payload.title}"`);
     } catch (err) {
-      alert(err?.message || 'Lưu thất bại');
+      toast.error(err?.message || 'Lưu thất bại');
     } finally {
       setBusy(false);
     }
@@ -222,13 +225,15 @@ export default function ManageTests() {
 
   const handleDelete = async () => {
     if (!confirmDelete) return;
+    const target = confirmDelete;
     setBusy(true);
     try {
-      await adminService.deleteTest(confirmDelete._id);
+      await adminService.deleteTest(target._id);
       setConfirmDelete(null);
       await fetchTests(pagination.page);
+      toast.success(`Đã xóa đề "${target.title}"`);
     } catch (err) {
-      alert(err?.message || 'Xóa thất bại');
+      toast.error(err?.message || 'Xóa thất bại');
     } finally {
       setBusy(false);
     }
@@ -815,7 +820,7 @@ function TestEditorDialog({ mode, test, busy, onCancel, onSave }) {
       isPublished: form.isPublished,
     };
     if (!payload.title || payload.questionIds.length === 0) {
-      alert('Vui lòng nhập tiêu đề và chọn ít nhất 1 câu hỏi.');
+      toast.warning('Vui lòng nhập tiêu đề và chọn ít nhất 1 câu hỏi.');
       return;
     }
     onSave(payload);

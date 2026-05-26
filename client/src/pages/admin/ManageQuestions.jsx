@@ -18,6 +18,7 @@ import {
 } from '@/components/ui/table';
 import { adminService } from '@/services/adminService';
 import { uploadService } from '@/services/uploadService';
+import { toast } from 'sonner';
 
 /**
  * Input URL + nút "Chọn file" upload trực tiếp lên Cloudinary qua BE.
@@ -184,7 +185,7 @@ export default function ManageQuestions() {
       setEditorMode('edit');
       setEditorOpen(true);
     } catch (err) {
-      alert(err?.message || 'Không tải được câu hỏi');
+      toast.error(err?.message || 'Không tải được câu hỏi');
     } finally {
       setBusy(false);
     }
@@ -192,8 +193,9 @@ export default function ManageQuestions() {
 
   const handleSave = async (payload) => {
     setBusy(true);
+    const isCreate = editorMode === 'create';
     try {
-      if (editorMode === 'create') {
+      if (isCreate) {
         await adminService.createQuestion(payload);
       } else {
         await adminService.updateQuestion(editing._id, payload);
@@ -201,8 +203,9 @@ export default function ManageQuestions() {
       setEditorOpen(false);
       setEditing(null);
       await fetchQuestions(pagination.page);
+      toast.success(isCreate ? 'Đã tạo câu hỏi mới' : 'Đã cập nhật câu hỏi');
     } catch (err) {
-      alert(err?.message || 'Lưu thất bại');
+      toast.error(err?.message || 'Lưu thất bại');
     } finally {
       setBusy(false);
     }
@@ -215,8 +218,9 @@ export default function ManageQuestions() {
       await adminService.deleteQuestion(confirmDelete._id);
       setConfirmDelete(null);
       await fetchQuestions(pagination.page);
+      toast.success('Đã xóa câu hỏi');
     } catch (err) {
-      alert(err?.message || 'Xóa thất bại');
+      toast.error(err?.message || 'Xóa thất bại');
     } finally {
       setBusy(false);
     }
@@ -531,7 +535,7 @@ function QuestionEditorDialog({ mode, question, busy, onCancel, onSave }) {
     // Basic validation
     const allOptionsFilled = form.options.every((o) => o.text.trim().length > 0);
     if (!allOptionsFilled) {
-      alert('Vui lòng nhập nội dung cho tất cả đáp án.');
+      toast.warning('Vui lòng nhập nội dung cho tất cả đáp án.');
       return;
     }
     const payload = {

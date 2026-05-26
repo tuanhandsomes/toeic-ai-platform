@@ -1,42 +1,82 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback } from "react";
 import {
-  Lock, Unlock, Search, Loader2, ShieldCheck, MoreHorizontal, Plus,
-  Pencil, KeyRound, Trash2,
-} from 'lucide-react';
-import AdminLayout from '@/components/layout/AdminLayout';
-import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
+  Lock,
+  Unlock,
+  Search,
+  Loader2,
+  ShieldCheck,
+  MoreHorizontal,
+  Plus,
+  Pencil,
+  KeyRound,
+  Trash2,
+} from "lucide-react";
+import AdminLayout from "@/components/layout/AdminLayout";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
 import {
-  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
-} from '@/components/ui/select';
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
-  Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle,
-} from '@/components/ui/dialog';
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import {
-  Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
-} from '@/components/ui/table';
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import {
-  DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+} from "@/components/ui/dropdown-menu";
 import {
-  UserFormDialog, ResetPasswordDialog, DeleteUserDialog,
-} from '@/components/admin/UserDialogs';
-import { adminService } from '@/services/adminService';
-import { useAuthStore } from '@/store/authStore';
+  UserFormDialog,
+  ResetPasswordDialog,
+  DeleteUserDialog,
+} from "@/components/admin/UserDialogs";
+import { adminService } from "@/services/adminService";
+import { useAuthStore } from "@/store/authStore";
+import { toast } from "sonner";
 
 export default function ManageUsers() {
   const currentUserId = useAuthStore((s) => s.user?._id);
 
   const [items, setItems] = useState([]);
-  const [pagination, setPagination] = useState({ page: 1, totalPages: 1, total: 0 });
+  const [pagination, setPagination] = useState({
+    page: 1,
+    totalPages: 1,
+    total: 0,
+  });
   const [loading, setLoading] = useState(false);
-  const [filters, setFilters] = useState({ role: 'all', isActive: 'all', search: '' });
-  const [searchInput, setSearchInput] = useState('');
+  const [filters, setFilters] = useState({
+    role: "all",
+    isActive: "all",
+    search: "",
+  });
+  const [searchInput, setSearchInput] = useState("");
 
   // Dialog states
-  const [formDialog, setFormDialog] = useState({ open: false, mode: 'create', user: null });
+  const [formDialog, setFormDialog] = useState({
+    open: false,
+    mode: "create",
+    user: null,
+  });
   const [lockTarget, setLockTarget] = useState(null);
   const [resetTarget, setResetTarget] = useState(null);
   const [deleteTarget, setDeleteTarget] = useState(null);
@@ -47,8 +87,9 @@ export default function ManageUsers() {
       setLoading(true);
       try {
         const params = { page, limit: 20 };
-        if (filters.role !== 'all') params.role = filters.role;
-        if (filters.isActive !== 'all') params.isActive = filters.isActive === 'true';
+        if (filters.role !== "all") params.role = filters.role;
+        if (filters.isActive !== "all")
+          params.isActive = filters.isActive === "true";
         if (filters.search) params.search = filters.search;
         const res = await adminService.listUsers(params);
         setItems(res.data.items);
@@ -69,41 +110,63 @@ export default function ManageUsers() {
     setFilters((f) => ({ ...f, search: searchInput }));
   };
 
+  // Lưu ý: handleCreate/Edit/ResetPassword được gọi từ Dialog children — Dialog
+  // tự handle error UI bằng cách show error trong form, KHÔNG cần toast error.
+  // Chỉ toast khi THÀNH CÔNG để FE bắt được + dialog đóng.
   const handleCreate = async (payload) => {
-    await adminService.createUser(payload);
-    setFormDialog({ open: false, mode: 'create', user: null });
+    const res = await adminService.createUser(payload);
+    setFormDialog({ open: false, mode: "create", user: null });
     await fetchUsers(1);
+    toast.success(`Đã tạo người dùng "${res.data.user.fullName}"`);
   };
 
   const handleEdit = async (payload) => {
-    await adminService.updateUser(formDialog.user._id, payload);
-    setFormDialog({ open: false, mode: 'create', user: null });
+    const target = formDialog.user;
+    await adminService.updateUser(target._id, payload);
+    setFormDialog({ open: false, mode: "create", user: null });
     await fetchUsers(pagination.page);
+    toast.success(`Đã cập nhật thông tin "${target.fullName}"`);
   };
 
   const handleResetPassword = async (newPassword) => {
-    await adminService.resetUserPassword(resetTarget._id, newPassword);
+    const target = resetTarget;
+    await adminService.resetUserPassword(target._id, newPassword);
     setResetTarget(null);
+    toast.success(
+      `Đã đặt lại mật khẩu cho "${target.fullName}". Người dùng đã bị đăng xuất khỏi mọi thiết bị.`,
+    );
   };
 
   const handleDelete = async () => {
-    await adminService.deleteUser(deleteTarget._id);
+    const target = deleteTarget;
+    await adminService.deleteUser(target._id);
     setDeleteTarget(null);
     // Nếu xóa user cuối trang hiện tại, lùi về trang trước
     const remaining = items.length - 1;
-    const nextPage = remaining === 0 && pagination.page > 1 ? pagination.page - 1 : pagination.page;
+    const nextPage =
+      remaining === 0 && pagination.page > 1
+        ? pagination.page - 1
+        : pagination.page;
     await fetchUsers(nextPage);
+    toast.success(`Đã xóa người dùng "${target.fullName}"`);
   };
 
   const handleToggleLock = async () => {
     if (!lockTarget) return;
+    const target = lockTarget;
+    const willLock = target.isActive; // toggle: nếu đang active thì thao tác là KHÓA
     setLockBusy(true);
     try {
-      await adminService.toggleUserLock(lockTarget._id, !lockTarget.isActive);
+      await adminService.toggleUserLock(target._id, !target.isActive);
       setLockTarget(null);
       await fetchUsers(pagination.page);
+      toast.success(
+        willLock
+          ? `Đã khóa tài khoản "${target.fullName}". Mọi phiên đăng nhập của người này đã bị thu hồi.`
+          : `Đã mở khóa tài khoản "${target.fullName}".`,
+      );
     } catch (err) {
-      alert(err?.message || 'Thao tác thất bại');
+      toast.error(err?.message || "Thao tác thất bại");
     } finally {
       setLockBusy(false);
     }
@@ -114,14 +177,18 @@ export default function ManageUsers() {
       <div className="px-6 lg:px-8 py-6">
         <div className="mb-6 flex items-start justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-heading font-bold text-slate-900">Quản lý người dùng</h1>
+            <h1 className="text-2xl font-heading font-bold text-slate-900">
+              Quản lý người dùng
+            </h1>
             <p className="text-sm text-slate-600 mt-1">
               Tạo, sửa, xóa, khóa/mở khóa và đặt lại mật khẩu cho tài khoản.
             </p>
           </div>
           <button
             type="button"
-            onClick={() => setFormDialog({ open: true, mode: 'create', user: null })}
+            onClick={() =>
+              setFormDialog({ open: true, mode: "create", user: null })
+            }
             className="btn text-sm text-white bg-primary-500 hover:bg-primary-600 inline-flex items-center gap-1.5"
           >
             <Plus className="w-4 h-4" /> Tạo người dùng
@@ -147,7 +214,9 @@ export default function ManageUsers() {
               </form>
 
               <div>
-                <label className="text-xs font-medium text-slate-700 block mb-1">Vai trò</label>
+                <label className="text-xs font-medium text-slate-700 block mb-1">
+                  Vai trò
+                </label>
                 <Select
                   value={filters.role}
                   onValueChange={(v) => setFilters((f) => ({ ...f, role: v }))}
@@ -164,10 +233,14 @@ export default function ManageUsers() {
               </div>
 
               <div>
-                <label className="text-xs font-medium text-slate-700 block mb-1">Trạng thái</label>
+                <label className="text-xs font-medium text-slate-700 block mb-1">
+                  Trạng thái
+                </label>
                 <Select
                   value={filters.isActive}
-                  onValueChange={(v) => setFilters((f) => ({ ...f, isActive: v }))}
+                  onValueChange={(v) =>
+                    setFilters((f) => ({ ...f, isActive: v }))
+                  }
                 >
                   <SelectTrigger className="w-40">
                     <SelectValue />
@@ -215,7 +288,7 @@ export default function ManageUsers() {
                           <p className="text-xs text-slate-500">{u.email}</p>
                         </TableCell>
                         <TableCell>
-                          {u.role === 'admin' ? (
+                          {u.role === "admin" ? (
                             <Badge className="bg-primary-100 text-primary-700 border-primary-200">
                               <ShieldCheck className="w-3 h-3 mr-1" /> Admin
                             </Badge>
@@ -223,7 +296,13 @@ export default function ManageUsers() {
                             <Badge variant="muted">User</Badge>
                           )}
                         </TableCell>
-                        <TableCell className="font-mono text-sm">{u.targetScore}</TableCell>
+                        <TableCell className="font-mono text-sm">
+                          {u.role === 'admin' ? (
+                            <span className="text-slate-400">—</span>
+                          ) : (
+                            u.targetScore
+                          )}
+                        </TableCell>
                         <TableCell>
                           {u.isActive ? (
                             <Badge className="bg-secondary-100 text-secondary-700 border-secondary-200">
@@ -236,11 +315,13 @@ export default function ManageUsers() {
                           )}
                         </TableCell>
                         <TableCell className="text-xs text-slate-500">
-                          {new Date(u.createdAt).toLocaleDateString('vi-VN')}
+                          {new Date(u.createdAt).toLocaleDateString("vi-VN")}
                         </TableCell>
                         <TableCell className="text-right">
                           {isSelf ? (
-                            <span className="text-xs text-slate-400 italic">Bạn</span>
+                            <span className="text-xs text-slate-400 italic">
+                              Bạn
+                            </span>
                           ) : (
                             <DropdownMenu>
                               <DropdownMenuTrigger asChild>
@@ -255,22 +336,32 @@ export default function ManageUsers() {
                               <DropdownMenuContent align="end" className="w-44">
                                 <DropdownMenuItem
                                   onSelect={() =>
-                                    setFormDialog({ open: true, mode: 'edit', user: u })
+                                    setFormDialog({
+                                      open: true,
+                                      mode: "edit",
+                                      user: u,
+                                    })
                                   }
                                 >
                                   <Pencil className="w-4 h-4 mr-2" /> Sửa
                                 </DropdownMenuItem>
-                                <DropdownMenuItem onSelect={() => setResetTarget(u)}>
-                                  <KeyRound className="w-4 h-4 mr-2" /> Đặt lại mật khẩu
+                                <DropdownMenuItem
+                                  onSelect={() => setResetTarget(u)}
+                                >
+                                  <KeyRound className="w-4 h-4 mr-2" /> Đặt lại
+                                  mật khẩu
                                 </DropdownMenuItem>
-                                <DropdownMenuItem onSelect={() => setLockTarget(u)}>
+                                <DropdownMenuItem
+                                  onSelect={() => setLockTarget(u)}
+                                >
                                   {u.isActive ? (
                                     <>
                                       <Lock className="w-4 h-4 mr-2" /> Khóa
                                     </>
                                   ) : (
                                     <>
-                                      <Unlock className="w-4 h-4 mr-2" /> Mở khóa
+                                      <Unlock className="w-4 h-4 mr-2" /> Mở
+                                      khóa
                                     </>
                                   )}
                                 </DropdownMenuItem>
@@ -297,7 +388,8 @@ export default function ManageUsers() {
         {pagination.totalPages > 1 && (
           <div className="mt-4 flex items-center justify-between">
             <p className="text-sm text-slate-600">
-              {pagination.total} người dùng • Trang {pagination.page}/{pagination.totalPages}
+              {pagination.total} người dùng • Trang {pagination.page}/
+              {pagination.totalPages}
             </p>
             <div className="flex gap-2">
               <button
@@ -325,8 +417,10 @@ export default function ManageUsers() {
         open={formDialog.open}
         mode={formDialog.mode}
         initialUser={formDialog.user}
-        onClose={() => setFormDialog({ open: false, mode: 'create', user: null })}
-        onSubmit={formDialog.mode === 'create' ? handleCreate : handleEdit}
+        onClose={() =>
+          setFormDialog({ open: false, mode: "create", user: null })
+        }
+        onSubmit={formDialog.mode === "create" ? handleCreate : handleEdit}
       />
 
       <ResetPasswordDialog
@@ -343,15 +437,18 @@ export default function ManageUsers() {
         onConfirm={handleDelete}
       />
 
-      <Dialog open={!!lockTarget} onOpenChange={(open) => !open && setLockTarget(null)}>
+      <Dialog
+        open={!!lockTarget}
+        onOpenChange={(open) => !open && setLockTarget(null)}
+      >
         <DialogContent>
           <DialogHeader>
             <DialogTitle>
-              {lockTarget?.isActive ? 'Khóa tài khoản?' : 'Mở khóa tài khoản?'}
+              {lockTarget?.isActive ? "Khóa tài khoản?" : "Mở khóa tài khoản?"}
             </DialogTitle>
             <DialogDescription>
               {lockTarget?.isActive
-                ? `Người dùng ${lockTarget?.fullName} (${lockTarget?.email}) sẽ không đăng nhập được nữa cho đến khi mở khóa.`
+                ? `Người dùng ${lockTarget?.fullName} (${lockTarget?.email}) sẽ không đăng nhập được nữa cho đến khi được mở khóa.`
                 : `Mở khóa tài khoản ${lockTarget?.fullName} (${lockTarget?.email}).`}
             </DialogDescription>
           </DialogHeader>
@@ -370,12 +467,12 @@ export default function ManageUsers() {
               disabled={lockBusy}
               className={`btn text-sm text-white ${
                 lockTarget?.isActive
-                  ? 'bg-tertiary-500 hover:bg-tertiary-600'
-                  : 'bg-secondary-500 hover:bg-secondary-600'
+                  ? "bg-tertiary-500 hover:bg-tertiary-600"
+                  : "bg-secondary-500 hover:bg-secondary-600"
               }`}
             >
               {lockBusy && <Loader2 className="w-4 h-4 animate-spin mr-1" />}
-              {lockTarget?.isActive ? 'Khóa' : 'Mở khóa'}
+              {lockTarget?.isActive ? "Khóa" : "Mở khóa"}
             </button>
           </DialogFooter>
         </DialogContent>
