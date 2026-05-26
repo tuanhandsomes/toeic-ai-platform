@@ -21,7 +21,17 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { resultService } from "@/services/resultService";
+import { aiService } from "@/services/aiService";
+import { useAuthStore } from "@/store/authStore";
 import { formatDuration } from "@/utils/formatTime";
 import { ROUTES } from "@/constants/routes";
 import { cn } from "@/lib/utils";
@@ -132,12 +142,10 @@ export default function ResultDetail() {
         <Tabs defaultValue="overview" className="mt-2">
           <TabsList>
             <TabsTrigger value="overview">Tổng quan</TabsTrigger>
-            {isFullTest && result.aiAnalysis && (
-              <TabsTrigger value="ai">
-                <Sparkles className="w-4 h-4 mr-1.5" />
-                Phân tích với AI
-              </TabsTrigger>
-            )}
+            <TabsTrigger value="ai">
+              <Sparkles className="w-4 h-4 mr-1.5" />
+              Phân tích với AI
+            </TabsTrigger>
             <TabsTrigger value="review">
               Đáp án chi tiết ({result.totalQuestions})
             </TabsTrigger>
@@ -147,11 +155,16 @@ export default function ResultDetail() {
             <OverviewTab result={result} />
           </TabsContent>
 
-          {isFullTest && result.aiAnalysis && (
-            <TabsContent value="ai" className="mt-6">
-              <AIAnalysisTab analysis={result.aiAnalysis} />
-            </TabsContent>
-          )}
+          <TabsContent value="ai" className="mt-6">
+            <AIAnalysisPanel
+              resultId={result._id}
+              testType={result.testType}
+              analysis={result.aiAnalysis}
+              onAnalysisUpdate={(a) =>
+                setResult((r) => ({ ...r, aiAnalysis: a }))
+              }
+            />
+          </TabsContent>
 
           <TabsContent value="review" className="mt-6">
             <ReviewTab result={result} isFullTest={isFullTest} />
@@ -333,7 +346,156 @@ const PRIORITY_META = {
   },
 };
 
-function AIAnalysisTab({ analysis }) {
+function AIAnalysisPanel({ resultId, testType, analysis, onAnalysisUpdate }) {
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState("");
+
+  const handleAnalyze = async () => {
+    setErr("");
+    setBusy(true);
+    try {
+      const res = await aiService.analyze(resultId);
+      onAnalysisUpdate(res.data.analysis);
+    } catch (e) {
+      setErr(
+        e?.message ||
+          "Không thể sinh phân tích AI. Có thể bạn đã chạm giới hạn 5 lần/giờ — thử lại sau.",
+      );
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const errorModal = (
+    <AIErrorModal err={err} onClose={() => setErr("")} />
+  );
+
+  // Chưa có analysis → empty state với CTA
+  if (!analysis) {
+    return (
+      <>
+        <Card>
+          <CardContent className="p-8 text-center">
+            <div className="w-14 h-14 rounded-full bg-primary-100 text-primary-600 flex items-center justify-center mx-auto mb-4">
+              <Sparkles className="w-7 h-7" />
+            </div>
+            <h3 className="font-heading font-bold text-lg text-slate-900 mb-2">
+              Nhận phân tích cá nhân hóa từ AI
+            </h3>
+            <p className="text-sm text-slate-600 max-w-md mx-auto mb-5">
+              AI sẽ chỉ ra điểm mạnh, điểm yếu của bạn dựa trên bài làm này và
+              gợi ý hướng luyện tiếp theo. Quá trình mất khoảng 10-20 giây.
+            </p>
+            <button
+              type="button"
+              onClick={handleAnalyze}
+              disabled={busy}
+              className="btn-primary"
+            >
+              {busy ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  Đang phân tích…
+                </>
+              ) : (
+                <>
+                  <Sparkles className="w-4 h-4" />
+                  Phân tích với AI
+                </>
+              )}
+            </button>
+            <p className="text-xs text-slate-400 mt-3">
+              Giới hạn 5 lần mỗi giờ để tránh quá tải.
+            </p>
+          </CardContent>
+        </Card>
+        {errorModal}
+      </>
+    );
+  }
+
+  // Đã có analysis → render + nút "Phân tích lại"
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center justify-between gap-3 flex-wrap">
+        <p className="text-xs text-slate-500">
+          {analysis.isFallback
+            ? "Phân tích nội bộ (chưa qua OpenAI)"
+            : `Phân tích bởi ${analysis.model}`}
+          {analysis.createdAt &&
+            ` • ${new Date(analysis.createdAt).toLocaleString("vi-VN")}`}
+        </p>
+        <button
+          type="button"
+          onClick={handleAnalyze}
+          disabled={busy}
+          className="btn-secondary text-sm"
+        >
+          {busy ? (
+            <>
+              <Loader2 className="w-4 h-4 animate-spin" /> Đang phân tích…
+            </>
+          ) : (
+            <>
+              <RotateCw className="w-4 h-4" /> Phân tích lại
+            </>
+          )}
+        </button>
+      </div>
+      <AIAnalysisTab analysis={analysis} testType={testType} />
+      {errorModal}
+    </div>
+  );
+}
+
+/**
+ * Modal hiển thị lỗi khi gọi AI thất bại (rate limit, OpenAI down, network, ...).
+ * Phân biệt rate limit (429) để icon + title khác cho UX rõ ràng.
+ */
+function AIErrorModal({ err, onClose }) {
+  // Detect rate limit qua keyword đặc trưng trong message từ BE
+  const isRateLimit =
+    err &&
+    (err.includes("giới hạn") || err.includes("nhiều yêu cầu"));
+
+  const title = isRateLimit
+    ? "Đã đạt giới hạn phân tích AI"
+    : "Không thể phân tích AI";
+  const Icon = isRateLimit ? AlertTriangle : XCircle;
+  const iconBg = isRateLimit
+    ? "bg-yellow-100 text-yellow-700"
+    : "bg-tertiary-100 text-tertiary-700";
+
+  return (
+    <Dialog open={!!err} onOpenChange={(o) => !o && onClose()}>
+      <DialogContent className="max-w-md">
+        <DialogHeader>
+          <div
+            className={`w-12 h-12 rounded-full ${iconBg} flex items-center justify-center mx-auto mb-3`}
+          >
+            <Icon className="w-6 h-6" />
+          </div>
+          <DialogTitle className="text-center">{title}</DialogTitle>
+          <DialogDescription className="text-center pt-2 text-slate-600 leading-relaxed">
+            {err}
+          </DialogDescription>
+        </DialogHeader>
+        <DialogFooter className="sm:justify-center">
+          <button
+            type="button"
+            onClick={onClose}
+            className="btn-primary text-sm"
+          >
+            Đã hiểu
+          </button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function AIAnalysisTab({ analysis, testType }) {
+  const targetScore = useAuthStore((s) => s.user?.targetScore) || 700;
   const {
     strengths,
     weaknesses,
@@ -341,6 +503,11 @@ function AIAnalysisTab({ analysis }) {
     estimatedTargetWeeks,
     isFallback,
   } = analysis;
+
+  // Chỉ hiện card lộ trình cho Full Test — Practice 1 Part không đủ data
+  // để ước lượng thời gian đạt mục tiêu tổng. BE prompt cũng đã set 0 cho
+  // Practice nhưng FE guard thêm phòng AI không obey.
+  const showRoadmap = testType === "full" && estimatedTargetWeeks > 0;
 
   return (
     <div className="space-y-6">
@@ -351,7 +518,7 @@ function AIAnalysisTab({ analysis }) {
         </div>
       )}
 
-      {estimatedTargetWeeks > 0 && (
+      {showRoadmap && (
         <Card className="bg-gradient-to-br from-secondary-50 to-primary-50 border-secondary-200">
           <CardContent className="p-6 flex items-center gap-4">
             <div className="w-12 h-12 rounded-full bg-white flex items-center justify-center shadow-sm">
@@ -359,7 +526,7 @@ function AIAnalysisTab({ analysis }) {
             </div>
             <div>
               <p className="text-xs text-slate-600 uppercase tracking-wider mb-1">
-                Lộ trình đề xuất tới mục tiêu 800+
+                Lộ trình đề xuất tới mục tiêu {targetScore}+
               </p>
               <p className="font-mono text-2xl font-bold text-slate-900">
                 {estimatedTargetWeeks} tuần

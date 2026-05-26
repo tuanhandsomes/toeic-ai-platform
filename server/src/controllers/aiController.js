@@ -19,15 +19,12 @@ async function loadOwnedResult(resultId, userId) {
 export const aiController = {
   /**
    * POST /ai/analyze/:resultId
-   * Force-regenerate analysis — deletes existing then calls OpenAI fresh.
+   * Generate (lần đầu) hoặc regenerate analysis — xóa cũ rồi gọi OpenAI mới.
+   * Áp dụng cho cả Full Test và Practice (Part).
    * Rate-limited (aiLimiter: 5/hour/user).
    */
   analyze: asyncHandler(async (req, res) => {
     const result = await loadOwnedResult(req.params.resultId, req.user._id);
-
-    if (result.testType !== 'full') {
-      throw ApiError.badRequest('AI phân tích chỉ áp dụng cho Full Test');
-    }
 
     const analysis = await aiAnalysisService.regenerateForResult(result._id);
     if (!analysis) {
@@ -39,15 +36,14 @@ export const aiController = {
 
   /**
    * GET /ai/analysis/:resultId
-   * Returns existing analysis. If missing and result is full-test, lazy-generates one.
+   * Trả analysis đã có. Nếu chưa có, lazy-generate (cho cả Full Test + Practice).
    */
   get: asyncHandler(async (req, res) => {
     const result = await loadOwnedResult(req.params.resultId, req.user._id);
 
     let analysis = await aiAnalysisService.getByResultId(result._id);
 
-    // Lazy-generate only for full tests if missing (e.g. old results from before AI wire)
-    if (!analysis && result.testType === 'full') {
+    if (!analysis) {
       analysis = await aiAnalysisService.generateForResult(result._id);
     }
 

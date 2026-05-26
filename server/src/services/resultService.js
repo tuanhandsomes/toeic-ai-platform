@@ -117,8 +117,9 @@ export const resultService = {
       question: questionMap.get(String(a.questionId)) || null,
     }));
 
-    const aiAnalysis =
-      result.testType === 'full' ? await aiAnalysisService.getByResultId(result._id) : null;
+    // Load aiAnalysis cho cả Full Test và Practice — Practice cần FE đọc state
+    // để biết đã có hay chưa (nút "Phân tích AI" vs "Phân tích lại").
+    const aiAnalysis = await aiAnalysisService.getByResultId(result._id);
 
     return { ...result, answers: answersWithQuestion, aiAnalysis };
   },

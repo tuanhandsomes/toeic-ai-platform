@@ -30,7 +30,7 @@ const PART_TIPS = {
   7: 'Luyện đọc hiểu: kỹ năng skim/scan, paraphrase, suy luận; tăng tốc đọc.',
 };
 
-function buildHeuristicAnalysis(result) {
+function buildHeuristicAnalysis(result, user) {
   const parts = Object.entries(result.partBreakdown || {})
     .filter(([, v]) => v && v.total > 0)
     .map(([key, v]) => ({
@@ -57,10 +57,12 @@ function buildHeuristicAnalysis(result) {
     priority: idx === 0 ? 'high' : idx === 1 ? 'medium' : 'low',
   }));
 
-  // Estimate weeks to target 800 based on current scoreTotal
+  // Estimate weeks chỉ cho Full Test — Practice 1 Part không đủ data
+  // để ước lượng thời gian đạt mục tiêu tổng.
   let estimatedTargetWeeks = 0;
   if (result.testType === 'full') {
-    const gap = Math.max(0, 800 - (result.scoreTotal || 0));
+    const targetScore = user?.targetScore || 700;
+    const gap = Math.max(0, targetScore - (result.scoreTotal || 0));
     estimatedTargetWeeks = Math.min(16, Math.max(4, Math.ceil(gap / 60)));
   }
 
@@ -134,7 +136,6 @@ export const aiAnalysisService = {
     try {
       const result = await Result.findById(resultId).lean();
       if (!result) return null;
-      if (result.testType !== 'full') return null; // Only full tests get AI analysis
 
       const existing = await AIAnalysis.findOne({ resultId }).lean();
       if (existing) return existing;
@@ -146,7 +147,7 @@ export const aiAnalysisService = {
 
       const aiResponse = await callOpenAI({ result, user });
       const isFallback = !aiResponse;
-      const payload = aiResponse?.payload || buildHeuristicAnalysis(result);
+      const payload = aiResponse?.payload || buildHeuristicAnalysis(result, user);
 
       const doc = await AIAnalysis.create({
         resultId,

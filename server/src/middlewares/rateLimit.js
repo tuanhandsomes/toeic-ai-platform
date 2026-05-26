@@ -16,6 +16,15 @@ const rateLimitHandler = (_req, res /* , _next, options */) => {
   });
 };
 
+// Message riêng cho /ai/* — nói rõ giới hạn chung cho mọi bài (không phải per Part/đề)
+const aiRateLimitHandler = (_req, res) => {
+  res.status(429).json({
+    success: false,
+    message:
+      "Bạn đã yêu cầu phân tích AI 5 lần trong 1 giờ qua (giới hạn chung cho mọi bài, không tính riêng từng Part hay đề). Vui lòng thử lại sau khoảng 1 giờ.",
+  });
+};
+
 /**
  * /auth/* — chống brute-force login/register/forgot-password.
  * 10 request / 1 phút / IP. Đủ thoáng cho user vừa login vừa typo password,
@@ -40,7 +49,7 @@ export const aiLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
   keyGenerator: (req) => req.user?._id?.toString() || req.ip,
-  handler: rateLimitHandler,
+  handler: aiRateLimitHandler,
 });
 
 /**
