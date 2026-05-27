@@ -68,6 +68,24 @@ export function parsePassageRange(imageUrl) {
 }
 
 /**
+ * Parse range câu hỏi từ filename của audioUrl (Part 3/4 grouped audio).
+ *
+ * "E26-T01-32-34.mp3"  → { start: 32, end: 34 }   (group 3 câu)
+ * "E26-T01-07.mp3"     → null                      (single câu — không group)
+ */
+export function parseAudioRange(audioUrl) {
+  if (!audioUrl) return null;
+  const firstPath = audioUrl.split(';')[0].trim();
+  const filename = firstPath.split('/').pop() || '';
+  const m = filename.match(/E\d+-T\d+-(\d+)(?:-(\d+))?/i);
+  if (!m) return null;
+  const start = parseInt(m[1], 10);
+  const end = m[2] ? parseInt(m[2], 10) : start;
+  if (end <= start) return null; // single audio → không phải group
+  return { start, end };
+}
+
+/**
  * Văn bản prompt phía trên ảnh passage/graphic.
  *
  * @param {{ type: string, start: number, end: number }} range

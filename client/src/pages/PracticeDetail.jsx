@@ -3,12 +3,12 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, ArrowRight, Loader2, Save } from 'lucide-react';
 import Timer from '../components/exam/Timer.jsx';
 import AnswerSheet from '../components/exam/AnswerSheet.jsx';
-import QuestionCard from '../components/exam/QuestionCard.jsx';
+import { QuestionMedia, QuestionOptions } from '../components/exam/QuestionCard.jsx';
 import SubmitModal from '../components/exam/SubmitModal.jsx';
 import { testService } from '../services/testService.js';
 import { resultService } from '../services/resultService.js';
 import { useAuthStore } from '../store/authStore.js';
-import { computeGlobalNumbers } from '../constants/toeic.js';
+import { computeGlobalNumbers, parsePassageRange, parseAudioRange } from '../constants/toeic.js';
 
 const draftKey = (userId, testId) => `exam-draft:${userId}:${testId}`;
 
@@ -162,24 +162,53 @@ export default function PracticeDetail() {
     };
   }, [test, startedAt, answers, flagged, currentIndex, testId, userId]);
 
-  // 4. Handlers
-  const handleSelect = useCallback(
-    (key) => {
-      if (!currentQuestion) return;
-      setAnswers((prev) => ({ ...prev, [currentQuestion._id]: key }));
-    },
-    [currentQuestion],
-  );
+  // 4. Handlers — keyed by questionId so group views (Part 3/4/6/7) can answer
+  // any question in the visible group, not just the "current" one.
+  const handleSelect = useCallback((questionId, key) => {
+    setAnswers((prev) => ({ ...prev, [questionId]: key }));
+  }, []);
 
-  const handleToggleFlag = useCallback(() => {
-    if (!currentQuestion) return;
+  const handleToggleFlag = useCallback((questionId) => {
     setFlagged((prev) => {
       const next = new Set(prev);
-      if (next.has(currentQuestion._id)) next.delete(currentQuestion._id);
-      else next.add(currentQuestion._id);
+      if (next.has(questionId)) next.delete(questionId);
+      else next.add(questionId);
       return next;
     });
-  }, [currentQuestion]);
+  }, []);
+
+  // Group questions sharing the same passage or audio file:
+  //   - Part 6/7 + Part 3/4 with graphic → grouped by image passage range
+  //   - Part 3/4 without graphic         → grouped by audio range (E26-TXX-{start}-{end}.mp3)
+  //   - Part 1/2/5 (single audio/image)  → group is just [currentQuestion]
+  const groupQuestions = useMemo(() => {
+    if (!currentQuestion) return [];
+    const passage = parsePassageRange(currentQuestion.content?.imageUrl);
+    if (passage) {
+      return questions.filter((q) => {
+        const p = parsePassageRange(q.content?.imageUrl);
+        return (
+          p &&
+          p.type === passage.type &&
+          p.start === passage.start &&
+          p.end === passage.end
+        );
+      });
+    }
+    const audio = parseAudioRange(currentQuestion.content?.audioUrl);
+    if (audio) {
+      return questions.filter((q) => {
+        const a = parseAudioRange(q.content?.audioUrl);
+        return a && a.start === audio.start && a.end === audio.end;
+      });
+    }
+    return [currentQuestion];
+  }, [questions, currentQuestion]);
+
+  const groupGlobalNumbers = useMemo(
+    () => groupQuestions.map((q) => globalNumbers[questions.indexOf(q)]),
+    [groupQuestions, globalNumbers, questions],
+  );
 
   const handlePrev = () => setCurrentIndex((i) => Math.max(0, i - 1));
   const handleNext = () => setCurrentIndex((i) => Math.min(totalCount - 1, i + 1));
@@ -234,14 +263,29 @@ export default function PracticeDetail() {
     }
   }, [handleSubmit, isSubmitting]);
 
-  // Keyboard shortcuts: A/B/C/D + arrow keys
+  // Cảnh báo khi user đóng tab / reload / navigate ra khỏi domain trong lúc làm bài.
+  // Browser sẽ hiện native confirm dialog ("Reload site? Changes you made may not be saved").
+  // KHÔNG thể custom UI cho beforeunload — browser ép native dialog vì lý do bảo mật.
+  useEffect(() => {
+    if (!test || isSubmitting) return;
+    const handleBeforeUnload = (e) => {
+      e.preventDefault();
+      e.returnValue = ''; // Chrome cần dòng này để hiện dialog
+    };
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [test, isSubmitting]);
+
+  // Keyboard shortcuts: A/B/C/D + arrow keys.
+  // A/B/C/D answers the focused question (currentQuestion); for group views user can
+  // still click on any question block directly.
   useEffect(() => {
     const onKey = (e) => {
       if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
       const key = e.key.toUpperCase();
       if (['A', 'B', 'C', 'D'].includes(key)) {
         const validKeys = currentQuestion?.options.map((o) => o.key) || [];
-        if (validKeys.includes(key)) handleSelect(key);
+        if (validKeys.includes(key)) handleSelect(currentQuestion._id, key);
       } else if (e.key === 'ArrowLeft') handlePrev();
       else if (e.key === 'ArrowRight') handleNext();
     };
@@ -272,22 +316,33 @@ export default function PracticeDetail() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="fixed inset-0 overflow-hidden flex flex-col bg-slate-50">
       {/* Top bar */}
-      <header className="bg-white border-b border-slate-200 sticky top-0 z-20">
-        <div className="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between gap-4">
+      <header className="bg-white border-b border-slate-200 shrink-0 z-20">
+        <div className="px-6 lg:px-10 xl:px-14 py-3 grid grid-cols-3 items-center gap-4">
           <div className="min-w-0">
-            <p className="text-xs text-slate-500 uppercase tracking-wider">{test.type === 'full' ? 'Full Test' : 'Luyện tập'}</p>
+            <p className="text-xs text-slate-500 uppercase tracking-wider">
+              {test.type === 'full' ? 'Full Test' : 'Luyện tập'}
+            </p>
             <h1 className="font-heading font-semibold truncate">{test.title}</h1>
           </div>
 
-          <div className="flex items-center gap-3 flex-shrink-0">
+          <div className="text-center">
+            <p className="font-heading font-semibold text-slate-900">
+              {currentQuestion.part <= 4 ? 'Listening' : 'Reading'}: Part {currentQuestion.part}
+            </p>
+          </div>
+
+          <div className="flex items-center gap-3 flex-shrink-0 justify-end">
             {lastSavedAt && (
-              <span className="hidden md:flex items-center gap-1 text-xs text-slate-500">
+              <span className="hidden xl:flex items-center gap-1 text-xs text-slate-500">
                 <Save className="w-3 h-3" />
                 Lưu lúc {lastSavedAt.toLocaleTimeString('vi-VN')}
               </span>
             )}
+            <span className="hidden sm:inline-flex items-center px-3 py-1.5 rounded-full bg-slate-100 text-sm font-mono font-semibold text-slate-700">
+              {answeredCount}/{totalCount}
+            </span>
             <Timer
               durationSec={test.durationMinutes * 60}
               startedAt={startedAt}
@@ -305,57 +360,63 @@ export default function PracticeDetail() {
         </div>
       </header>
 
-      {/* Main grid */}
-      <div className="max-w-7xl mx-auto px-6 py-6 grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-6">
-        <div>
-          <QuestionCard
+      {/* Body: 3-column card grid + separated nav bar — fits viewport */}
+      <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
+        <div className="flex-1 min-h-0 overflow-hidden px-6 lg:px-10 xl:px-14 py-6 grid grid-cols-1 lg:grid-cols-[1fr_1fr_320px] lg:grid-rows-[minmax(0,1fr)] gap-6 items-stretch">
+          <QuestionMedia
             question={currentQuestion}
             globalNumber={currentGlobalNumber}
             isFirstOfPart={isFirstOfPart}
-            selected={answers[currentQuestion._id] ?? null}
-            isFlagged={flagged.has(currentQuestion._id)}
+          />
+
+          <QuestionOptions
+            questions={groupQuestions}
+            globalNumbers={groupGlobalNumbers}
+            answers={answers}
+            flagged={flagged}
             onSelect={handleSelect}
             onToggleFlag={handleToggleFlag}
           />
 
-          <div className="mt-6 flex items-center justify-between gap-3">
-            <button
-              type="button"
-              onClick={handlePrev}
-              disabled={currentIndex === 0}
-              className="btn-ghost flex items-center"
-            >
-              <ArrowLeft className="w-4 h-4" /> Câu trước
-            </button>
-
-            <div className="text-xs text-slate-500 hidden sm:block">
-              Phím tắt: <kbd className="px-1.5 py-0.5 bg-slate-200 rounded text-slate-700">A</kbd>{' '}
-              <kbd className="px-1.5 py-0.5 bg-slate-200 rounded text-slate-700">B</kbd>{' '}
-              <kbd className="px-1.5 py-0.5 bg-slate-200 rounded text-slate-700">C</kbd>{' '}
-              <kbd className="px-1.5 py-0.5 bg-slate-200 rounded text-slate-700">D</kbd>{' '}
-              <kbd className="px-1.5 py-0.5 bg-slate-200 rounded text-slate-700">←</kbd>{' '}
-              <kbd className="px-1.5 py-0.5 bg-slate-200 rounded text-slate-700">→</kbd>
-            </div>
-
-            <button
-              type="button"
-              onClick={handleNext}
-              disabled={currentIndex === totalCount - 1}
-              className="btn-primary"
-            >
-              Câu tiếp <ArrowRight className="w-4 h-4" />
-            </button>
-          </div>
+          <AnswerSheet
+            questions={questions}
+            globalNumbers={globalNumbers}
+            answers={answers}
+            flagged={flagged}
+            currentIndex={currentIndex}
+            onJump={handleJump}
+          />
         </div>
 
-        <AnswerSheet
-          questions={questions}
-          globalNumbers={globalNumbers}
-          answers={answers}
-          flagged={flagged}
-          currentIndex={currentIndex}
-          onJump={handleJump}
-        />
+        {/* Bottom nav bar — separated, centered */}
+        <div className="border-t border-slate-200 bg-white px-6 py-4 flex items-center justify-center gap-6 sm:gap-10 shrink-0">
+          <button
+            type="button"
+            onClick={handlePrev}
+            disabled={currentIndex === 0}
+            className="btn-ghost flex items-center"
+          >
+            <ArrowLeft className="w-4 h-4" /> Câu trước
+          </button>
+
+          <div className="text-xs text-slate-500 hidden sm:block">
+            <kbd className="px-1.5 py-0.5 bg-slate-200 rounded text-slate-700">A</kbd>{' '}
+            <kbd className="px-1.5 py-0.5 bg-slate-200 rounded text-slate-700">B</kbd>{' '}
+            <kbd className="px-1.5 py-0.5 bg-slate-200 rounded text-slate-700">C</kbd>{' '}
+            <kbd className="px-1.5 py-0.5 bg-slate-200 rounded text-slate-700">D</kbd>{' '}
+            <kbd className="px-1.5 py-0.5 bg-slate-200 rounded text-slate-700">←</kbd>{' '}
+            <kbd className="px-1.5 py-0.5 bg-slate-200 rounded text-slate-700">→</kbd>
+          </div>
+
+          <button
+            type="button"
+            onClick={handleNext}
+            disabled={currentIndex === totalCount - 1}
+            className="btn-primary"
+          >
+            Câu tiếp <ArrowRight className="w-4 h-4" />
+          </button>
+        </div>
       </div>
 
       <SubmitModal
