@@ -76,7 +76,7 @@ export default function ScoreCard({ result, isFullTest, compact = false }) {
   }
 
   return (
-    <div className="rounded-card border border-slate-200 overflow-hidden bg-white">
+    <div className="rounded-2xl border border-slate-200 overflow-hidden bg-white">
       {/* TOP — Điểm tổng */}
       <div className={`bg-white text-center ${compact ? 'py-5' : 'py-8'}`}>
         <Flag

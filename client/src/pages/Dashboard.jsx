@@ -1,16 +1,24 @@
-import { useEffect, useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useEffect, useMemo, useState } from "react";
+import { Link } from "react-router-dom";
 import {
-  Flame, Target, BookOpen, Clock, PenTool, ClipboardCheck, BarChart3,
-  ArrowRight, History as HistoryIcon, Loader2,
-} from 'lucide-react';
-import AppLayout from '@/components/layout/AppLayout';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { KpiCard } from '@/components/common/KpiCard';
-import { useAuthStore } from '@/store/authStore';
-import { resultService } from '@/services/resultService';
-import { ROUTES } from '@/constants/routes';
-import { formatDuration } from '@/utils/formatTime';
+  Flame,
+  Target,
+  BookOpen,
+  Clock,
+  PenTool,
+  ClipboardCheck,
+  BarChart3,
+  ArrowRight,
+  History as HistoryIcon,
+  Loader2,
+} from "lucide-react";
+import AppLayout from "@/components/layout/AppLayout";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { KpiCard } from "@/components/common/KpiCard";
+import { useAuthStore } from "@/store/authStore";
+import { resultService } from "@/services/resultService";
+import { ROUTES } from "@/constants/routes";
+import { formatDuration } from "@/utils/formatTime";
 
 export default function Dashboard() {
   const user = useAuthStore((s) => s.user);
@@ -34,7 +42,9 @@ export default function Dashboard() {
   }, []);
 
   const stats = useMemo(() => {
-    const fullTests = results.filter((r) => r.testType === 'full' && r.scoreTotal > 0);
+    const fullTests = results.filter(
+      (r) => r.testType === "full" && r.scoreTotal > 0,
+    );
     const latestScore = fullTests[0]?.scoreTotal || null;
     const totalDuration = results.reduce((s, r) => s + (r.durationSec || 0), 0);
     return {
@@ -51,10 +61,11 @@ export default function Dashboard() {
       <div className="px-6 lg:px-8 py-6">
         <div className="mb-8">
           <h1 className="text-3xl font-heading font-bold mb-2">
-            Chào, {user?.fullName?.split(' ').pop() || 'bạn'} 👋
+            Xin chào, {user?.fullName?.split(" ").pop() || "bạn"} 👋
           </h1>
           <p className="text-slate-600">
-            Mục tiêu của bạn: {user?.targetScore || 700} điểm. Hôm nay luyện gì nào?
+            Mục tiêu của bạn: {user?.targetScore || 700} điểm. Hôm nay luyện gì
+            nào?
           </p>
         </div>
 
@@ -63,8 +74,8 @@ export default function Dashboard() {
             icon={Target}
             color="primary"
             label="Điểm gần nhất"
-            value={stats.latestScore || '--'}
-            sub={stats.latestScore ? 'Full Test' : 'Chưa có Full Test'}
+            value={stats.latestScore || "--"}
+            sub={stats.latestScore ? "Full Test" : "Chưa có Full Test"}
           />
           <KpiCard
             icon={Target}
@@ -87,7 +98,9 @@ export default function Dashboard() {
             icon={Clock}
             color="orange"
             label="Tổng thời gian"
-            value={stats.totalDuration ? formatDuration(stats.totalDuration) : '0p'}
+            value={
+              stats.totalDuration ? formatDuration(stats.totalDuration) : "0p"
+            }
           />
         </div>
 
@@ -98,7 +111,10 @@ export default function Dashboard() {
                 <HistoryIcon className="w-5 h-5 text-primary-500" />
                 Hoạt động gần đây
               </CardTitle>
-              <Link to={ROUTES.RESULTS} className="text-sm text-primary-600 hover:underline">
+              <Link
+                to={ROUTES.RESULTS}
+                className="text-sm text-primary-600 hover:underline"
+              >
                 Xem tất cả
               </Link>
             </CardHeader>
@@ -109,15 +125,20 @@ export default function Dashboard() {
                 </div>
               ) : recent.length === 0 ? (
                 <div className="py-8 text-center">
-                  <p className="text-sm text-slate-500 mb-3">Bạn chưa có bài làm nào.</p>
-                  <Link to={ROUTES.PRACTICE} className="btn-primary text-sm inline-flex">
+                  <p className="text-sm text-slate-500 mb-3">
+                    Bạn chưa có bài làm nào.
+                  </p>
+                  <Link
+                    to={ROUTES.PRACTICE}
+                    className="btn-primary text-sm inline-flex"
+                  >
                     Bắt đầu luyện tập đầu tiên
                   </Link>
                 </div>
               ) : (
                 <div className="divide-y divide-slate-100">
                   {recent.map((r) => {
-                    const isFullTest = r.testType === 'full';
+                    const isFullTest = r.testType === "full";
                     return (
                       <Link
                         key={r._id}
@@ -126,23 +147,27 @@ export default function Dashboard() {
                       >
                         <div className="min-w-0 flex-1">
                           <p className="font-medium text-slate-900 truncate">
-                            {r.testId?.title || 'Đề thi'}
+                            {r.testId?.title || "Đề thi"}
                           </p>
                           <p className="text-xs text-slate-500">
-                            {new Date(r.submittedAt).toLocaleString('vi-VN')}
-                            {' • '}
+                            {new Date(r.submittedAt).toLocaleString("vi-VN")}
+                            {" • "}
                             {formatDuration(r.durationSec)}
                           </p>
                         </div>
                         <div className="text-right ml-4">
                           {isFullTest ? (
-                            <p className="font-mono font-bold text-slate-900">{r.scoreTotal}</p>
+                            <p className="font-mono font-bold text-slate-900">
+                              {r.scoreTotal}
+                            </p>
                           ) : (
                             <p className="font-mono font-bold text-slate-900">
                               {r.correctCount}/{r.totalQuestions}
                             </p>
                           )}
-                          <p className="text-xs text-slate-500">{isFullTest ? 'Total' : `${r.accuracy}%`}</p>
+                          <p className="text-xs text-slate-500">
+                            {isFullTest ? "Total" : `${r.accuracy}%`}
+                          </p>
                         </div>
                       </Link>
                     );
@@ -162,13 +187,15 @@ export default function Dashboard() {
             <CardContent>
               <ul className="text-sm text-slate-700 space-y-2">
                 <li className="flex gap-2">
-                  <span>✓</span> Luyện đều mỗi ngày 30 phút hiệu quả hơn 4 tiếng cuối tuần.
+                  <span>✓</span> Luyện đều mỗi ngày 30 phút hiệu quả hơn 4 tiếng
+                  cuối tuần.
                 </li>
                 <li className="flex gap-2">
                   <span>✓</span> Làm Full Test 1 lần/tuần để theo dõi tiến bộ.
                 </li>
                 <li className="flex gap-2">
-                  <span>✓</span> Đọc giải thích từng câu sai — đó là nơi bạn học nhanh nhất.
+                  <span>✓</span> Đọc giải thích từng câu sai — đó là nơi bạn học
+                  nhanh nhất.
                 </li>
               </ul>
             </CardContent>
@@ -210,7 +237,9 @@ function QuickAction({ to, icon: Icon, title, description }) {
             <Icon className="w-6 h-6" />
           </div>
           <div className="flex-1">
-            <h3 className="font-heading font-semibold text-slate-900 mb-0.5">{title}</h3>
+            <h3 className="font-heading font-semibold text-slate-900 mb-0.5">
+              {title}
+            </h3>
             <p className="text-sm text-slate-600">{description}</p>
           </div>
           <ArrowRight className="w-5 h-5 text-slate-400 group-hover:text-primary-500 transition-colors" />

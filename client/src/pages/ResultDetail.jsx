@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import {
   ArrowLeft,
@@ -104,8 +104,8 @@ export default function ResultDetail() {
 
   return (
     <AppLayout>
-      <div className="px-6 lg:px-8 py-6">
-        <div className="mb-3">
+      <div className="px-6 lg:px-8 pt-6 pb-0 h-full flex flex-col min-h-0 overflow-hidden">
+        <div className="mb-3 shrink-0">
           <Link
             to={ROUTES.RESULTS}
             className="inline-flex items-center gap-1 text-sm text-slate-600 hover:text-primary-600"
@@ -115,7 +115,7 @@ export default function ResultDetail() {
           </Link>
         </div>
 
-        <div className="mb-4 flex items-center justify-between flex-wrap gap-3">
+        <div className="mb-4 flex items-center justify-between flex-wrap gap-3 shrink-0">
           <div>
             <h1 className="text-2xl font-heading font-bold">
               {test?.title || "Kết quả bài làm"}
@@ -137,8 +137,11 @@ export default function ResultDetail() {
           </Link>
         </div>
 
-        <Tabs defaultValue="overview" className="mt-2">
-          <TabsList>
+        <Tabs
+          defaultValue="overview"
+          className="mt-2 flex-1 min-h-0 flex flex-col overflow-hidden"
+        >
+          <TabsList className="shrink-0 self-start">
             <TabsTrigger value="overview">Tổng quan</TabsTrigger>
             <TabsTrigger value="ai">
               <Sparkles className="w-4 h-4 mr-1.5" />
@@ -149,11 +152,14 @@ export default function ResultDetail() {
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="overview" className="mt-6">
+          <TabsContent
+            value="overview"
+            className="mt-6 flex-1 min-h-0 overflow-auto"
+          >
             <OverviewTab result={result} />
           </TabsContent>
 
-          <TabsContent value="ai" className="mt-6">
+          <TabsContent value="ai" className="mt-6 flex-1 min-h-0 overflow-auto">
             <AIAnalysisPanel
               resultId={result._id}
               testType={result.testType}
@@ -164,7 +170,7 @@ export default function ResultDetail() {
             />
           </TabsContent>
 
-          <TabsContent value="review" className="mt-6">
+          <TabsContent value="review" className="mt-6 flex-1 min-h-0">
             <ReviewTab result={result} isFullTest={isFullTest} />
           </TabsContent>
         </Tabs>
@@ -187,81 +193,80 @@ function OverviewTab({ result }) {
     .sort((a, b) => a.part - b.part);
 
   return (
-    <div className="space-y-6">
-      {/* Score card full width ở trên cùng */}
-      <ScoreCard result={result} isFullTest={isFullTest} />
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-base">
-              <Trophy className="w-5 h-5 text-primary-500" />
-              Phân tích theo Part
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {parts.map((p) => (
-                <div key={p.key}>
-                  <div className="flex items-center justify-between text-sm mb-1.5">
-                    <span className="text-slate-700">
-                      {PART_NAMES[p.part] || `Part ${p.part}`}
-                    </span>
-                    <span className="font-mono font-semibold">
-                      {p.correct}/{p.total} • {p.accuracy}%
-                    </span>
-                  </div>
-                  <Progress
-                    value={p.accuracy}
-                    className={cn(
-                      "h-2",
-                      p.accuracy >= 80 && "[&>div]:bg-secondary-500",
-                      p.accuracy >= 60 &&
-                        p.accuracy < 80 &&
-                        "[&>div]:bg-yellow-400",
-                      p.accuracy < 60 && "[&>div]:bg-tertiary-500",
-                    )}
-                  />
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base">Thống kê chung</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3 text-sm">
-              <div className="flex justify-between">
-                <span className="text-slate-600">Tổng số câu</span>
-                <strong>{result.totalQuestions}</strong>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-slate-600">Số câu đúng</span>
-                <strong className="text-secondary-600">
-                  {result.correctCount}
-                </strong>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-slate-600">Số câu sai / bỏ qua</span>
-                <strong className="text-tertiary-600">
-                  {result.totalQuestions - result.correctCount}
-                </strong>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-slate-600">Tỷ lệ chính xác</span>
-                <strong>{result.accuracy}%</strong>
-              </div>
-              <div className="flex justify-between border-t border-slate-100 pt-3">
-                <span className="text-slate-600">Thời gian làm bài</span>
-                <strong>{formatDuration(result.durationSec)}</strong>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+    <div className="grid grid-cols-1 lg:grid-cols-[1fr_1fr_1fr] gap-6 h-full items-stretch">
+      <div className="h-full">
+        <ScoreCard result={result} isFullTest={isFullTest} compact />
       </div>
+
+      <Card className="h-full overflow-hidden flex flex-col">
+        <CardHeader className="shrink-0">
+          <CardTitle className="flex items-center gap-2 text-base">
+            <Trophy className="w-5 h-5 text-primary-500" />
+            Phân tích theo Part
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="flex-1 min-h-0 overflow-y-auto">
+          <div className="space-y-4">
+            {parts.map((p) => (
+              <div key={p.key}>
+                <div className="flex items-center justify-between text-sm mb-1.5">
+                  <span className="text-slate-700">
+                    {PART_NAMES[p.part] || `Part ${p.part}`}
+                  </span>
+                  <span className="font-mono font-semibold">
+                    {p.correct}/{p.total} • {p.accuracy}%
+                  </span>
+                </div>
+                <Progress
+                  value={p.accuracy}
+                  className={cn(
+                    "h-2",
+                    p.accuracy >= 80 && "[&>div]:bg-secondary-500",
+                    p.accuracy >= 60 &&
+                      p.accuracy < 80 &&
+                      "[&>div]:bg-yellow-400",
+                    p.accuracy < 60 && "[&>div]:bg-tertiary-500",
+                  )}
+                />
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card className="h-full overflow-hidden flex flex-col">
+        <CardHeader className="shrink-0">
+          <CardTitle className="text-base">Thống kê chung</CardTitle>
+        </CardHeader>
+        <CardContent className="flex-1 min-h-0 overflow-y-auto">
+          <div className="space-y-3 text-sm">
+            <div className="flex justify-between">
+              <span className="text-slate-600">Tổng số câu</span>
+              <strong>{result.totalQuestions}</strong>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-slate-600">Số câu đúng</span>
+              <strong className="text-secondary-600">
+                {result.correctCount}
+              </strong>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-slate-600">Số câu sai / bỏ qua</span>
+              <strong className="text-tertiary-600">
+                {result.totalQuestions - result.correctCount}
+              </strong>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-slate-600">Tỷ lệ chính xác</span>
+              <strong>{result.accuracy}%</strong>
+            </div>
+            <div className="flex justify-between border-t border-slate-100 pt-3">
+              <span className="text-slate-600">Thời gian làm bài</span>
+              <strong>{formatDuration(result.durationSec)}</strong>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }
@@ -556,110 +561,126 @@ function AIAnalysisTab({ analysis, testType }) {
   );
 }
 
-const PART_TITLE = {
-  1: "Part 1",
-  2: "Part 2",
-  3: "Part 3",
-  4: "Part 4",
-  5: "Part 5",
-  6: "Part 6",
-  7: "Part 7",
-};
-
 // Part 1-2: audio + (image for P1) + options-only-letter + blue explanation box
 // Part 3-7: text + options-with-text + explanation
 const HIDE_OPTION_TEXT_PARTS = new Set([1, 2]);
 
 function ReviewTab({ result, isFullTest }) {
   const answers = (result.answers || []).filter((a) => a.question);
+  const middleScrollRef = useRef(null);
 
-  const parts = useMemo(() => {
-    const set = new Set(answers.map((a) => a.question.part));
-    return [...set].sort((a, b) => a - b);
-  }, [answers]);
+  // Smooth scroll câu được click trong navigator vào view CHỈ trong card giữa.
+  // Dùng manual scrollTo trên container thay vì scrollIntoView — vì scrollIntoView
+  // sẽ scroll mọi ancestor scrollable (kể cả AppLayout main) làm trồi page lên.
+  const handleJump = (idx) => {
+    const ans = answers[idx];
+    const container = middleScrollRef.current;
+    if (!ans || !container) return;
+    const el = container.querySelector(`#review-q-${ans.questionId}`);
+    if (!el) return;
+    const top = el.offsetTop - container.offsetTop;
+    container.scrollTo({ top, behavior: "smooth" });
+  };
 
-  const [viewMode, setViewMode] = useState("part"); // 'part' | 'all'
-  const [activePart, setActivePart] = useState(parts[0] || 1);
-
-  // Index global theo thứ tự câu hỏi để Navigator highlight đúng
-  const globalIndex = useMemo(() => {
+  // Pre-compute per-part totals + index-in-part for header rendering
+  const partTotals = useMemo(() => {
     const map = new Map();
-    answers.forEach((a, idx) => map.set(a.questionId, idx));
+    answers.forEach((a) => {
+      const p = a.question.part;
+      map.set(p, (map.get(p) || 0) + 1);
+    });
     return map;
   }, [answers]);
 
-  const displayedAnswers = useMemo(() => {
-    if (viewMode === "all") return answers;
-    return answers.filter((a) => a.question.part === activePart);
-  }, [answers, viewMode, activePart]);
+  const indexInPart = useMemo(() => {
+    const map = new Map();
+    const counters = new Map();
+    answers.forEach((a) => {
+      const p = a.question.part;
+      const c = (counters.get(p) || 0) + 1;
+      counters.set(p, c);
+      map.set(a.questionId, c);
+    });
+    return map;
+  }, [answers]);
 
-  const handleJump = (questionId) => {
-    const el = document.getElementById(`review-q-${questionId}`);
-    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
-  };
+  if (answers.length === 0) {
+    return (
+      <Card>
+        <CardContent className="p-6 text-sm text-slate-600">
+          Không có câu trả lời nào để xem lại.
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-[240px_minmax(0,1fr)_240px] gap-4">
-      <div className="hidden lg:block">
-        <div className="sticky top-4">
-          <ReviewSidebar result={result} isFullTest={isFullTest} />
-        </div>
-      </div>
+    <div className="grid grid-cols-1 lg:grid-cols-[280px_minmax(0,1fr)_320px] lg:grid-rows-[minmax(0,1fr)] gap-6 items-stretch h-full overflow-hidden">
+      <ReviewStatCard
+        result={result}
+        isFullTest={isFullTest}
+        answers={answers}
+      />
 
-      <div className="min-w-0">
-        <PartFilterBar
-          parts={parts}
-          activePart={activePart}
-          onSelectPart={setActivePart}
-          viewMode={viewMode}
-          onViewModeChange={setViewMode}
-        />
-
-        <div className="space-y-6 mt-4">
-          {viewMode === "all" ? (
-            parts.map((p) => (
-              <ReviewPartSection
-                key={p}
-                part={p}
-                answers={answers.filter((a) => a.question.part === p)}
-                globalIndex={globalIndex}
+      {/* MIDDLE: scrollable list of all questions — outer keeps rounded corners, inner scrolls */}
+      <div className="bg-white rounded-2xl border border-slate-200 h-full overflow-hidden">
+        <div ref={middleScrollRef} className="h-full overflow-y-auto p-6 md:p-8">
+          <div className="space-y-8">
+            {answers.map((ans) => (
+              <ReviewQuestion
+                key={ans.questionId}
+                ans={ans}
+                totalInPart={partTotals.get(ans.question.part) || 0}
+                indexInPart={indexInPart.get(ans.questionId) || 0}
               />
-            ))
-          ) : (
-            <ReviewPartSection
-              part={activePart}
-              answers={displayedAnswers}
-              globalIndex={globalIndex}
-            />
-          )}
+            ))}
+          </div>
         </div>
       </div>
 
-      <div className="hidden lg:block">
-        <div className="sticky top-4">
-          <ReviewNavigator
-            answers={answers}
-            activePart={viewMode === "all" ? null : activePart}
-            onJump={handleJump}
-          />
-        </div>
-      </div>
+      <ReviewNavigator answers={answers} onJump={handleJump} />
     </div>
   );
 }
 
-function ReviewSidebar({ result, isFullTest }) {
+function ReviewStatCard({ result, isFullTest, answers }) {
+  // Breakdown per part
+  const partBreakdown = useMemo(() => {
+    const map = new Map();
+    answers.forEach((a) => {
+      const p = a.question.part;
+      const prev = map.get(p) || { correct: 0, total: 0 };
+      map.set(p, {
+        correct: prev.correct + (a.isCorrect ? 1 : 0),
+        total: prev.total + 1,
+      });
+    });
+    return [...map.entries()].sort(([a], [b]) => a - b);
+  }, [answers]);
+
   return (
-    <div className="space-y-3">
+    <div className="bg-white rounded-2xl border border-slate-200 p-6 h-full overflow-y-auto flex flex-col gap-5">
       <ScoreCard result={result} isFullTest={isFullTest} compact />
 
-      {/* Block phụ — tỷ lệ + thời gian (data không có trong ScoreCard) */}
-      <div className="bg-slate-50 rounded-card border border-slate-200 p-4 text-sm space-y-2">
+      <div className="rounded-xl bg-slate-50 border border-slate-200 p-4 space-y-3 text-sm">
+        {partBreakdown.map(([part, { correct, total }]) => (
+          <div key={part} className="flex items-center justify-between">
+            <span className="text-slate-600">
+              {part <= 4 ? "Listening" : "Reading"} Part {part}
+            </span>
+            <strong className="font-mono">
+              {correct}/{total}
+            </strong>
+          </div>
+        ))}
+      </div>
+
+      <div className="rounded-xl bg-slate-50 border border-slate-200 p-4 space-y-3 text-sm">
         <div className="flex justify-between">
           <span className="text-slate-600">Tỷ lệ chính xác</span>
           <strong className="font-mono">{result.accuracy}%</strong>
         </div>
-        <div className="flex justify-between">
+        <div className="flex justify-between border-t border-slate-200 pt-3">
           <span className="text-slate-600">Thời gian làm bài</span>
           <strong className="font-mono">
             {formatDuration(result.durationSec)}
@@ -670,95 +691,7 @@ function ReviewSidebar({ result, isFullTest }) {
   );
 }
 
-function PartFilterBar({
-  parts,
-  activePart,
-  onSelectPart,
-  viewMode,
-  onViewModeChange,
-}) {
-  return (
-    <div className="bg-white rounded-card shadow-card p-3 flex flex-wrap items-center justify-between gap-2">
-      <div className="flex items-center gap-1.5 flex-wrap">
-        {viewMode === "part" &&
-          parts.map((p) => (
-            <button
-              key={p}
-              type="button"
-              onClick={() => onSelectPart(p)}
-              className={cn(
-                "text-xs font-semibold px-3 py-1.5 rounded-md transition-colors",
-                activePart === p
-                  ? "bg-primary-500 text-white"
-                  : "bg-slate-100 text-slate-700 hover:bg-slate-200",
-              )}
-            >
-              Part {p}
-            </button>
-          ))}
-        {viewMode === "all" && (
-          <span className="text-xs text-slate-500 font-medium px-2">
-            Hiển thị tất cả các Part
-          </span>
-        )}
-      </div>
-
-      <div className="inline-flex rounded-md border border-slate-200 overflow-hidden text-xs">
-        <button
-          type="button"
-          onClick={() => onViewModeChange("part")}
-          className={cn(
-            "px-3 py-1.5 font-medium transition-colors",
-            viewMode === "part"
-              ? "bg-slate-900 text-white"
-              : "bg-white text-slate-700 hover:bg-slate-50",
-          )}
-        >
-          Xem một phần
-        </button>
-        <button
-          type="button"
-          onClick={() => onViewModeChange("all")}
-          className={cn(
-            "px-3 py-1.5 font-medium border-l border-slate-200 transition-colors",
-            viewMode === "all"
-              ? "bg-slate-900 text-white"
-              : "bg-white text-slate-700 hover:bg-slate-50",
-          )}
-        >
-          Xem toàn bộ
-        </button>
-      </div>
-    </div>
-  );
-}
-
-function ReviewPartSection({ part, answers, globalIndex }) {
-  if (answers.length === 0) return null;
-  const correctInPart = answers.filter((a) => a.isCorrect).length;
-
-  return (
-    <section>
-      <div className="flex items-center justify-between bg-primary-50 border border-primary-100 rounded-lg px-4 py-2.5 mb-4">
-        <h3 className="font-heading font-bold text-primary-700">
-          {PART_TITLE[part]}
-        </h3>
-        <span className="text-xs font-mono text-primary-700">
-          {correctInPart}/{answers.length} câu đúng
-        </span>
-      </div>
-
-      <div className="space-y-5">
-        {answers.map((ans) => {
-          const idx = globalIndex.get(ans.questionId) ?? 0;
-          return <ReviewQuestion key={ans.questionId} ans={ans} index={idx} />;
-        })}
-      </div>
-    </section>
-  );
-}
-
-function ReviewQuestion({ ans, index }) {
+function ReviewQuestion({ ans, totalInPart, indexInPart }) {
   const q = ans.question;
   const part = q.part;
   const hideOptionText = HIDE_OPTION_TEXT_PARTS.has(part);
@@ -769,24 +702,25 @@ function ReviewQuestion({ ans, index }) {
   const correct = q.correctAnswer;
 
   return (
-    <article
-      id={`review-q-${ans.questionId}`}
-      className="bg-white rounded-card shadow-card p-5 md:p-6"
-    >
-      <div className="flex items-center justify-between mb-3">
-        <h4 className="font-semibold text-slate-900">
-          Question {index + 1}
-          {ans.isCorrect ? (
-            <span className="ml-2 inline-flex items-center gap-1 text-secondary-600 text-xs font-medium">
-              <CheckCircle2 className="w-3.5 h-3.5" /> Đúng
-            </span>
-          ) : (
-            <span className="ml-2 inline-flex items-center gap-1 text-tertiary-600 text-xs font-medium">
-              <XCircle className="w-3.5 h-3.5" /> Sai
-            </span>
-          )}
+    <article id={`review-q-${ans.questionId}`} className="scroll-mt-4">
+      <div className="flex items-center justify-between mb-4">
+        <h4 className="font-heading font-semibold text-slate-900 text-lg">
+          Part {part}{" "}
+          <span className="text-primary-600 font-mono">
+            [{indexInPart}/{totalInPart}]
+          </span>
         </h4>
-        <Badge variant="muted">Part {part}</Badge>
+        {ans.isCorrect ? (
+          <Badge className="bg-secondary-500 text-white hover:bg-secondary-600">
+            <CheckCircle2 className="w-3.5 h-3.5 mr-1" /> Đúng
+          </Badge>
+        ) : userChose ? (
+          <Badge className="bg-red-500 text-white hover:bg-red-600">
+            <XCircle className="w-3.5 h-3.5 mr-1" /> Sai
+          </Badge>
+        ) : (
+          <Badge variant="muted">Bỏ qua</Badge>
+        )}
       </div>
 
       {hasAudio && (
@@ -830,7 +764,7 @@ function ReviewQuestion({ ans, index }) {
               className={cn(
                 "flex items-center gap-3 px-3 py-2.5 rounded-lg border transition-colors",
                 isAnswerKey && "border-secondary-300 bg-secondary-50",
-                !isAnswerKey && isUser && "border-tertiary-300 bg-tertiary-50",
+                !isAnswerKey && isUser && "border-red-300 bg-red-50",
                 !isAnswerKey && !isUser && "border-slate-200",
               )}
             >
@@ -841,7 +775,7 @@ function ReviewQuestion({ ans, index }) {
                     "border-secondary-500 bg-secondary-500 text-white",
                   !isAnswerKey &&
                     isUser &&
-                    "border-tertiary-500 bg-tertiary-500 text-white",
+                    "border-red-500 bg-red-500 text-white",
                   !isAnswerKey && !isUser && "border-slate-300 text-slate-500",
                 )}
               >
@@ -863,7 +797,7 @@ function ReviewQuestion({ ans, index }) {
                 </Badge>
               )}
               {isUser && !isAnswerKey && (
-                <Badge className="bg-tertiary-500 text-white hover:bg-tertiary-600 text-xs">
+                <Badge className="bg-red-500 text-white hover:bg-red-600 text-xs">
                   Bạn chọn
                 </Badge>
               )}
@@ -881,7 +815,7 @@ function ReviewQuestion({ ans, index }) {
         <p className="font-semibold text-primary-700 mb-1.5">
           Đáp án chính xác: ({correct})
         </p>
-        <p className="font-semibold text-slate-800 mb-2">Number {index + 1}:</p>
+        <p className="font-semibold text-slate-800 mb-2">Câu {indexInPart}:</p>
 
         {/* Liệt kê 4 options English với option đúng được in đậm */}
         <ul className="space-y-1 mb-3">
@@ -928,7 +862,7 @@ function ReviewQuestion({ ans, index }) {
   );
 }
 
-function ReviewNavigator({ answers, activePart, onJump }) {
+function ReviewNavigator({ answers, onJump }) {
   const grouped = useMemo(() => {
     const map = new Map();
     answers.forEach((a, idx) => {
@@ -940,52 +874,60 @@ function ReviewNavigator({ answers, activePart, onJump }) {
   }, [answers]);
 
   return (
-    <div className="bg-white rounded-card shadow-card p-4 max-h-[calc(100vh-6rem)] overflow-y-auto">
-      <div className="space-y-4">
-        {[...grouped.entries()].map(([part, items]) => {
-          const dimmed = activePart != null && activePart !== part;
-          return (
-            <div key={part} className={cn(dimmed && "opacity-40")}>
-              <p className="text-xs font-semibold text-slate-700 mb-2">
-                Part {part}
-              </p>
-              <div className="grid grid-cols-5 gap-1.5">
-                {items.map(({ ans, idx }) => (
+    <div className="bg-white rounded-2xl border border-slate-200 p-5 h-full flex flex-col">
+      <h3 className="font-heading font-semibold text-slate-900 mb-3">
+        Phiếu kết quả
+      </h3>
+
+      <ul className="space-y-1.5 text-xs text-slate-600 mb-5">
+        <li className="flex items-center gap-2">
+          <span className="w-1.5 h-1.5 rounded-full bg-secondary-500" />
+          Đúng
+        </li>
+        <li className="flex items-center gap-2">
+          <span className="w-1.5 h-1.5 rounded-full bg-red-500" />
+          Sai
+        </li>
+        <li className="flex items-center gap-2">
+          <span className="w-1.5 h-1.5 rounded-full bg-slate-400" />
+          Bỏ qua
+        </li>
+      </ul>
+
+      <div className="space-y-4 flex-1 min-h-0 overflow-y-auto pr-1">
+        {[...grouped.entries()].map(([part, items]) => (
+          <div key={part}>
+            <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">
+              Part {part}
+            </p>
+            <div className="grid grid-cols-4 gap-1.5">
+              {items.map(({ ans, idx }) => {
+                let cls =
+                  "h-9 text-xs font-semibold rounded-md border transition-colors ";
+                if (ans.isCorrect) {
+                  cls +=
+                    "bg-secondary-50 border-secondary-300 text-secondary-700 hover:bg-secondary-100";
+                } else if (ans.selected) {
+                  cls +=
+                    "bg-red-50 border-red-300 text-red-700 hover:bg-red-100";
+                } else {
+                  cls +=
+                    "bg-slate-50 border-slate-300 text-slate-500 hover:bg-slate-100";
+                }
+                return (
                   <button
                     key={ans.questionId}
                     type="button"
-                    onClick={() => onJump(ans.questionId)}
-                    className={cn(
-                      "h-8 text-xs font-semibold rounded border transition-colors",
-                      ans.isCorrect
-                        ? "bg-secondary-50 border-secondary-300 text-secondary-700 hover:bg-secondary-100"
-                        : ans.selected
-                          ? "bg-tertiary-50 border-tertiary-300 text-tertiary-700 hover:bg-tertiary-100"
-                          : "bg-slate-50 border-slate-300 text-slate-500 hover:bg-slate-100",
-                    )}
+                    onClick={() => onJump(idx)}
+                    className={cls}
                   >
                     {idx + 1}
                   </button>
-                ))}
-              </div>
+                );
+              })}
             </div>
-          );
-        })}
-      </div>
-
-      <div className="mt-4 pt-3 border-t border-slate-200 space-y-1.5 text-xs">
-        <p className="flex items-center gap-1.5">
-          <span className="inline-block w-3 h-3 rounded bg-secondary-50 border border-secondary-300" />
-          <span className="text-slate-600">Đúng</span>
-        </p>
-        <p className="flex items-center gap-1.5">
-          <span className="inline-block w-3 h-3 rounded bg-tertiary-50 border border-tertiary-300" />
-          <span className="text-slate-600">Sai</span>
-        </p>
-        <p className="flex items-center gap-1.5">
-          <span className="inline-block w-3 h-3 rounded bg-slate-50 border border-slate-300" />
-          <span className="text-slate-600">Bỏ qua</span>
-        </p>
+          </div>
+        ))}
       </div>
     </div>
   );
