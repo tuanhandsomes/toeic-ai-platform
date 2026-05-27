@@ -16,6 +16,16 @@ import {
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationPrevious,
+  PaginationNext,
+  PaginationEllipsis,
+  getPageRange,
+} from '@/components/ui/pagination';
 import { adminService } from '@/services/adminService';
 import { uploadService } from '@/services/uploadService';
 import { toast } from 'sonner';
@@ -153,7 +163,7 @@ export default function ManageQuestions() {
     async (page = 1) => {
       setLoading(true);
       try {
-        const params = { page, limit: 20 };
+        const params = { page, limit: 10 };
         if (filters.part !== 'all') params.part = Number(filters.part);
         if (filters.difficulty !== 'all') params.difficulty = filters.difficulty;
         if (filters.search) params.search = filters.search;
@@ -391,29 +401,38 @@ export default function ManageQuestions() {
         </Card>
 
         {pagination.totalPages > 1 && (
-          <div className="mt-4 flex items-center justify-between">
-            <p className="text-sm text-slate-600">
-              {pagination.total} câu • Trang {pagination.page}/{pagination.totalPages}
-            </p>
-            <div className="flex gap-2">
-              <button
-                type="button"
-                disabled={pagination.page <= 1}
-                onClick={() => fetchQuestions(pagination.page - 1)}
-                className="btn-ghost text-sm"
-              >
-                Trước
-              </button>
-              <button
-                type="button"
-                disabled={pagination.page >= pagination.totalPages}
-                onClick={() => fetchQuestions(pagination.page + 1)}
-                className="btn-ghost text-sm"
-              >
-                Sau
-              </button>
-            </div>
-          </div>
+          <Pagination className="mt-4">
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious
+                  disabled={pagination.page <= 1}
+                  onClick={() => fetchQuestions(pagination.page - 1)}
+                />
+              </PaginationItem>
+              {getPageRange(pagination.page, pagination.totalPages).map(
+                (p, idx) => (
+                  <PaginationItem key={`${p}-${idx}`}>
+                    {p === '...' ? (
+                      <PaginationEllipsis />
+                    ) : (
+                      <PaginationLink
+                        isActive={p === pagination.page}
+                        onClick={() => fetchQuestions(p)}
+                      >
+                        {p}
+                      </PaginationLink>
+                    )}
+                  </PaginationItem>
+                )
+              )}
+              <PaginationItem>
+                <PaginationNext
+                  disabled={pagination.page >= pagination.totalPages}
+                  onClick={() => fetchQuestions(pagination.page + 1)}
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
         )}
       </div>
 

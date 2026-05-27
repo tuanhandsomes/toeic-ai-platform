@@ -4,9 +4,21 @@ import { Headphones, BookOpen, Clock, FileQuestion, Loader2 } from 'lucide-react
 import AppLayout from '@/components/layout/AppLayout';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationPrevious,
+  PaginationNext,
+  PaginationEllipsis,
+  getPageRange,
+} from '@/components/ui/pagination';
 import { EmptyState } from '@/components/common/EmptyState';
 import { testService } from '@/services/testService';
 import { cn } from '@/lib/utils';
+
+const PAGE_SIZE = 9;
 
 const PART_INFO = {
   1: { label: 'Part 1', desc: 'Mô tả tranh' },
@@ -34,6 +46,7 @@ export default function PracticeList() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [filter, setFilter] = useState('all');
+  const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
     let cancelled = false;
@@ -59,11 +72,27 @@ export default function PracticeList() {
     return tests.filter((t) => String(t.part) === filter);
   }, [tests, filter]);
 
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [filter]);
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const safePage = Math.min(currentPage, totalPages);
+  const paginated = filtered.slice(
+    (safePage - 1) * PAGE_SIZE,
+    safePage * PAGE_SIZE,
+  );
+
   const { listening, reading } = useMemo(() => {
-    const listening = filtered.filter((t) => t.part >= 1 && t.part <= 4);
-    const reading = filtered.filter((t) => t.part >= 5 && t.part <= 7);
+    const listening = paginated.filter((t) => t.part >= 1 && t.part <= 4);
+    const reading = paginated.filter((t) => t.part >= 5 && t.part <= 7);
     return { listening, reading };
-  }, [filtered]);
+  }, [paginated]);
+
+  const goToPage = (p) => {
+    setCurrentPage(p);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   return (
     <AppLayout>
@@ -139,6 +168,39 @@ export default function PracticeList() {
               ))}
             </div>
           </section>
+        )}
+
+        {!loading && totalPages > 1 && (
+          <Pagination className="mt-8">
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious
+                  disabled={safePage <= 1}
+                  onClick={() => goToPage(safePage - 1)}
+                />
+              </PaginationItem>
+              {getPageRange(safePage, totalPages).map((p, idx) => (
+                <PaginationItem key={`${p}-${idx}`}>
+                  {p === '...' ? (
+                    <PaginationEllipsis />
+                  ) : (
+                    <PaginationLink
+                      isActive={p === safePage}
+                      onClick={() => goToPage(p)}
+                    >
+                      {p}
+                    </PaginationLink>
+                  )}
+                </PaginationItem>
+              ))}
+              <PaginationItem>
+                <PaginationNext
+                  disabled={safePage >= totalPages}
+                  onClick={() => goToPage(safePage + 1)}
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
         )}
       </div>
     </AppLayout>

@@ -9,6 +9,16 @@ import { Badge } from '@/components/ui/badge';
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationPrevious,
+  PaginationNext,
+  PaginationEllipsis,
+  getPageRange,
+} from '@/components/ui/pagination';
 import { adminService } from '@/services/adminService';
 import { ROUTES } from '@/constants/routes';
 import { formatDuration } from '@/utils/formatTime';
@@ -17,10 +27,13 @@ const PART_LABELS = {
   1: 'Part 1', 2: 'Part 2', 3: 'Part 3', 4: 'Part 4', 5: 'Part 5', 6: 'Part 6', 7: 'Part 7',
 };
 
+const RECENT_PAGE_SIZE = 5;
+
 export default function AdminDashboard() {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [recentPage, setRecentPage] = useState(1);
 
   useEffect(() => {
     let cancelled = false;
@@ -179,41 +192,84 @@ export default function AdminDashboard() {
             <CardContent>
               {stats.activity.recentResults.length === 0 ? (
                 <p className="text-sm text-slate-500 italic">Chưa có bài làm nào.</p>
-              ) : (
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Người dùng</TableHead>
-                      <TableHead>Đề</TableHead>
-                      <TableHead className="text-right">Điểm/Độ chính xác</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {stats.activity.recentResults.map((r) => (
-                      <TableRow key={r._id}>
-                        <TableCell>
-                          <p className="text-sm font-medium">{r.userId?.fullName || '(deleted)'}</p>
-                          <p className="text-xs text-slate-500">{r.userId?.email}</p>
-                        </TableCell>
-                        <TableCell>
-                          <p className="text-sm">{r.testId?.title || '(deleted)'}</p>
-                          <Badge variant="muted" className="mt-0.5">
-                            {r.testType === 'full' ? 'Full Test' : 'Practice'}
-                          </Badge>
-                        </TableCell>
-                        <TableCell className="text-right">
-                          {r.testType === 'full' ? (
-                            <span className="font-mono font-bold">{r.scoreTotal}</span>
-                          ) : (
-                            <span className="font-mono font-bold">{r.accuracy}%</span>
-                          )}
-                          <p className="text-xs text-slate-500">{formatDuration(r.durationSec)}</p>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              )}
+              ) : (() => {
+                const total = stats.activity.recentResults.length;
+                const totalPages = Math.max(1, Math.ceil(total / RECENT_PAGE_SIZE));
+                const safePage = Math.min(recentPage, totalPages);
+                const pageItems = stats.activity.recentResults.slice(
+                  (safePage - 1) * RECENT_PAGE_SIZE,
+                  safePage * RECENT_PAGE_SIZE,
+                );
+                return (
+                  <>
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Người dùng</TableHead>
+                          <TableHead>Đề</TableHead>
+                          <TableHead className="text-right">Điểm/Độ chính xác</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {pageItems.map((r) => (
+                          <TableRow key={r._id}>
+                            <TableCell>
+                              <p className="text-sm font-medium">{r.userId?.fullName || '(deleted)'}</p>
+                              <p className="text-xs text-slate-500">{r.userId?.email}</p>
+                            </TableCell>
+                            <TableCell>
+                              <p className="text-sm">{r.testId?.title || '(deleted)'}</p>
+                              <Badge variant="muted" className="mt-0.5">
+                                {r.testType === 'full' ? 'Full Test' : 'Practice'}
+                              </Badge>
+                            </TableCell>
+                            <TableCell className="text-right">
+                              {r.testType === 'full' ? (
+                                <span className="font-mono font-bold">{r.scoreTotal}</span>
+                              ) : (
+                                <span className="font-mono font-bold">{r.accuracy}%</span>
+                              )}
+                              <p className="text-xs text-slate-500">{formatDuration(r.durationSec)}</p>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                    {totalPages > 1 && (
+                      <Pagination className="mt-4">
+                        <PaginationContent>
+                          <PaginationItem>
+                            <PaginationPrevious
+                              disabled={safePage <= 1}
+                              onClick={() => setRecentPage(safePage - 1)}
+                            />
+                          </PaginationItem>
+                          {getPageRange(safePage, totalPages).map((p, idx) => (
+                            <PaginationItem key={`${p}-${idx}`}>
+                              {p === '...' ? (
+                                <PaginationEllipsis />
+                              ) : (
+                                <PaginationLink
+                                  isActive={p === safePage}
+                                  onClick={() => setRecentPage(p)}
+                                >
+                                  {p}
+                                </PaginationLink>
+                              )}
+                            </PaginationItem>
+                          ))}
+                          <PaginationItem>
+                            <PaginationNext
+                              disabled={safePage >= totalPages}
+                              onClick={() => setRecentPage(safePage + 1)}
+                            />
+                          </PaginationItem>
+                        </PaginationContent>
+                      </Pagination>
+                    )}
+                  </>
+                );
+              })()}
             </CardContent>
           </Card>
         </div>

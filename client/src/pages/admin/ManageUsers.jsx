@@ -39,6 +39,16 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationPrevious,
+  PaginationNext,
+  PaginationEllipsis,
+  getPageRange,
+} from "@/components/ui/pagination";
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -86,7 +96,7 @@ export default function ManageUsers() {
     async (page = 1) => {
       setLoading(true);
       try {
-        const params = { page, limit: 20 };
+        const params = { page, limit: 10 };
         if (filters.role !== "all") params.role = filters.role;
         if (filters.isActive !== "all")
           params.isActive = filters.isActive === "true";
@@ -386,30 +396,38 @@ export default function ManageUsers() {
         </Card>
 
         {pagination.totalPages > 1 && (
-          <div className="mt-4 flex items-center justify-between">
-            <p className="text-sm text-slate-600">
-              {pagination.total} người dùng • Trang {pagination.page}/
-              {pagination.totalPages}
-            </p>
-            <div className="flex gap-2">
-              <button
-                type="button"
-                disabled={pagination.page <= 1}
-                onClick={() => fetchUsers(pagination.page - 1)}
-                className="btn-ghost text-sm"
-              >
-                Trước
-              </button>
-              <button
-                type="button"
-                disabled={pagination.page >= pagination.totalPages}
-                onClick={() => fetchUsers(pagination.page + 1)}
-                className="btn-ghost text-sm"
-              >
-                Sau
-              </button>
-            </div>
-          </div>
+          <Pagination className="mt-4">
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious
+                  disabled={pagination.page <= 1}
+                  onClick={() => fetchUsers(pagination.page - 1)}
+                />
+              </PaginationItem>
+              {getPageRange(pagination.page, pagination.totalPages).map(
+                (p, idx) => (
+                  <PaginationItem key={`${p}-${idx}`}>
+                    {p === "..." ? (
+                      <PaginationEllipsis />
+                    ) : (
+                      <PaginationLink
+                        isActive={p === pagination.page}
+                        onClick={() => fetchUsers(p)}
+                      >
+                        {p}
+                      </PaginationLink>
+                    )}
+                  </PaginationItem>
+                )
+              )}
+              <PaginationItem>
+                <PaginationNext
+                  disabled={pagination.page >= pagination.totalPages}
+                  onClick={() => fetchUsers(pagination.page + 1)}
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
         )}
       </div>
 

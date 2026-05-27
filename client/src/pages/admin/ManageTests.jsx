@@ -17,6 +17,16 @@ import {
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationPrevious,
+  PaginationNext,
+  PaginationEllipsis,
+  getPageRange,
+} from '@/components/ui/pagination';
 import { adminService } from '@/services/adminService';
 import { toast } from 'sonner';
 
@@ -159,7 +169,7 @@ export default function ManageTests() {
     async (page = 1) => {
       setLoading(true);
       try {
-        const params = { page, limit: 20 };
+        const params = { page, limit: 10 };
         if (filters.type !== 'all') params.type = filters.type;
         if (filters.isPublished !== 'all') params.isPublished = filters.isPublished === 'true';
         if (filters.search) params.search = filters.search;
@@ -416,29 +426,38 @@ export default function ManageTests() {
         </Card>
 
         {pagination.totalPages > 1 && (
-          <div className="mt-4 flex items-center justify-between">
-            <p className="text-sm text-slate-600">
-              {pagination.total} đề • Trang {pagination.page}/{pagination.totalPages}
-            </p>
-            <div className="flex gap-2">
-              <button
-                type="button"
-                disabled={pagination.page <= 1}
-                onClick={() => fetchTests(pagination.page - 1)}
-                className="btn-ghost text-sm"
-              >
-                Trước
-              </button>
-              <button
-                type="button"
-                disabled={pagination.page >= pagination.totalPages}
-                onClick={() => fetchTests(pagination.page + 1)}
-                className="btn-ghost text-sm"
-              >
-                Sau
-              </button>
-            </div>
-          </div>
+          <Pagination className="mt-4">
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious
+                  disabled={pagination.page <= 1}
+                  onClick={() => fetchTests(pagination.page - 1)}
+                />
+              </PaginationItem>
+              {getPageRange(pagination.page, pagination.totalPages).map(
+                (p, idx) => (
+                  <PaginationItem key={`${p}-${idx}`}>
+                    {p === '...' ? (
+                      <PaginationEllipsis />
+                    ) : (
+                      <PaginationLink
+                        isActive={p === pagination.page}
+                        onClick={() => fetchTests(p)}
+                      >
+                        {p}
+                      </PaginationLink>
+                    )}
+                  </PaginationItem>
+                )
+              )}
+              <PaginationItem>
+                <PaginationNext
+                  disabled={pagination.page >= pagination.totalPages}
+                  onClick={() => fetchTests(pagination.page + 1)}
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
         )}
       </div>
 
@@ -1032,7 +1051,7 @@ function QuestionPickerDialog({ alreadySelected, onClose, onConfirm }) {
     async (page = 1) => {
       setLoading(true);
       try {
-        const params = { page, limit: 20 };
+        const params = { page, limit: 10 };
         if (partFilter !== 'all') params.part = Number(partFilter);
         if (search) params.search = search;
         const res = await adminService.listQuestions(params);
@@ -1135,29 +1154,38 @@ function QuestionPickerDialog({ alreadySelected, onClose, onConfirm }) {
         </div>
 
         {pagination.totalPages > 1 && (
-          <div className="flex justify-between items-center text-sm mt-2">
-            <span className="text-slate-600">
-              Trang {pagination.page}/{pagination.totalPages} • {pagination.total} câu
-            </span>
-            <div className="flex gap-2">
-              <button
-                type="button"
-                disabled={pagination.page <= 1}
-                onClick={() => fetchQuestions(pagination.page - 1)}
-                className="btn-ghost text-xs"
-              >
-                Trước
-              </button>
-              <button
-                type="button"
-                disabled={pagination.page >= pagination.totalPages}
-                onClick={() => fetchQuestions(pagination.page + 1)}
-                className="btn-ghost text-xs"
-              >
-                Sau
-              </button>
-            </div>
-          </div>
+          <Pagination className="mt-2">
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious
+                  disabled={pagination.page <= 1}
+                  onClick={() => fetchQuestions(pagination.page - 1)}
+                />
+              </PaginationItem>
+              {getPageRange(pagination.page, pagination.totalPages).map(
+                (p, idx) => (
+                  <PaginationItem key={`${p}-${idx}`}>
+                    {p === '...' ? (
+                      <PaginationEllipsis />
+                    ) : (
+                      <PaginationLink
+                        isActive={p === pagination.page}
+                        onClick={() => fetchQuestions(p)}
+                      >
+                        {p}
+                      </PaginationLink>
+                    )}
+                  </PaginationItem>
+                )
+              )}
+              <PaginationItem>
+                <PaginationNext
+                  disabled={pagination.page >= pagination.totalPages}
+                  onClick={() => fetchQuestions(pagination.page + 1)}
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
         )}
 
         <DialogFooter>

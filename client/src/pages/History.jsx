@@ -9,6 +9,16 @@ import { Badge } from '@/components/ui/badge';
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationPrevious,
+  PaginationNext,
+  PaginationEllipsis,
+  getPageRange,
+} from '@/components/ui/pagination';
 import { KpiCard } from '@/components/common/KpiCard';
 import { EmptyState } from '@/components/common/EmptyState';
 import { resultService } from '@/services/resultService';
@@ -22,11 +32,14 @@ const FILTERS = [
   { value: 'part', label: 'Luyện tập' },
 ];
 
+const PAGE_SIZE = 10;
+
 export default function History() {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [filter, setFilter] = useState('all');
+  const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
     let cancelled = false;
@@ -51,6 +64,22 @@ export default function History() {
     if (filter === 'all') return items;
     return items.filter((r) => r.testType === filter);
   }, [items, filter]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [filter]);
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const safePage = Math.min(currentPage, totalPages);
+  const paginated = filtered.slice(
+    (safePage - 1) * PAGE_SIZE,
+    safePage * PAGE_SIZE,
+  );
+
+  const goToPage = (p) => {
+    setCurrentPage(p);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   const stats = useMemo(() => {
     if (items.length === 0) return { total: 0, avgScore: 0, bestScore: 0, totalDurationSec: 0 };
@@ -158,7 +187,7 @@ export default function History() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {filtered.map((r) => {
+                  {paginated.map((r) => {
                     const test = r.testId;
                     const isFullTest = r.testType === 'full';
                     return (
@@ -206,6 +235,39 @@ export default function History() {
               </Table>
             </CardContent>
           </Card>
+        )}
+
+        {!loading && totalPages > 1 && (
+          <Pagination className="mt-4">
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious
+                  disabled={safePage <= 1}
+                  onClick={() => goToPage(safePage - 1)}
+                />
+              </PaginationItem>
+              {getPageRange(safePage, totalPages).map((p, idx) => (
+                <PaginationItem key={`${p}-${idx}`}>
+                  {p === '...' ? (
+                    <PaginationEllipsis />
+                  ) : (
+                    <PaginationLink
+                      isActive={p === safePage}
+                      onClick={() => goToPage(p)}
+                    >
+                      {p}
+                    </PaginationLink>
+                  )}
+                </PaginationItem>
+              ))}
+              <PaginationItem>
+                <PaginationNext
+                  disabled={safePage >= totalPages}
+                  onClick={() => goToPage(safePage + 1)}
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
         )}
       </div>
     </AppLayout>
