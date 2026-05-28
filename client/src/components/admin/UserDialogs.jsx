@@ -169,7 +169,7 @@ function UserForm({ mode, initialUser, onClose, onSubmit }) {
           <button
             type="submit"
             disabled={busy}
-            className="btn text-sm text-white bg-primary-500 hover:bg-primary-600"
+            className="btn-primary text-sm"
           >
             {busy && <Loader2 className="w-4 h-4 animate-spin mr-1" />}
             {isCreate ? 'Tạo' : 'Lưu'}
@@ -262,7 +262,7 @@ function ResetPasswordForm({ user, onClose, onSubmit }) {
           <button
             type="submit"
             disabled={busy}
-            className="btn text-sm text-white bg-primary-500 hover:bg-primary-600"
+            className="btn-primary text-sm"
           >
             {busy && <Loader2 className="w-4 h-4 animate-spin mr-1" />}
             Đặt lại
@@ -329,7 +329,7 @@ function DeleteUserBody({ user, onClose, onConfirm }) {
           type="button"
           onClick={handleConfirm}
           disabled={busy}
-          className="btn text-sm text-white bg-tertiary-500 hover:bg-tertiary-600"
+          className="btn text-sm text-white bg-tertiary-500 hover:bg-tertiary-600 px-5 py-2.5"
         >
           {busy && <Loader2 className="w-4 h-4 animate-spin mr-1" />}
           Xóa vĩnh viễn

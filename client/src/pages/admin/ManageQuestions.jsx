@@ -148,8 +148,9 @@ export default function ManageQuestions() {
   const [items, setItems] = useState([]);
   const [pagination, setPagination] = useState({ page: 1, totalPages: 1, total: 0 });
   const [loading, setLoading] = useState(false);
-  const [filters, setFilters] = useState({ part: 'all', difficulty: 'all', search: '' });
-  const [searchInput, setSearchInput] = useState('');
+  const INITIAL_FILTERS = { part: 'all', difficulty: 'all', search: '' };
+  const [filters, setFilters] = useState(INITIAL_FILTERS);
+  const [pending, setPending] = useState(INITIAL_FILTERS);
 
   const [editorOpen, setEditorOpen] = useState(false);
   const [editorMode, setEditorMode] = useState('create');
@@ -258,31 +259,33 @@ export default function ManageQuestions() {
 
         <Card className="mb-4">
           <CardContent className="p-4">
-            <div className="flex flex-wrap items-end gap-3">
-              <form
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  setFilters((f) => ({ ...f, search: searchInput }));
-                }}
-                className="flex-1 min-w-[240px]"
-              >
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                setFilters(pending);
+              }}
+              className="flex flex-wrap items-end gap-3"
+            >
+              <div className="flex-1 min-w-[240px]">
                 <label className="text-xs font-medium text-slate-700 block mb-1">Tìm kiếm</label>
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                   <Input
                     placeholder="Nội dung hoặc giải thích…"
-                    value={searchInput}
-                    onChange={(e) => setSearchInput(e.target.value)}
+                    value={pending.search}
+                    onChange={(e) =>
+                      setPending((p) => ({ ...p, search: e.target.value }))
+                    }
                     className="pl-9"
                   />
                 </div>
-              </form>
+              </div>
 
               <div>
                 <label className="text-xs font-medium text-slate-700 block mb-1">Part</label>
                 <Select
-                  value={filters.part}
-                  onValueChange={(v) => setFilters((f) => ({ ...f, part: v }))}
+                  value={pending.part}
+                  onValueChange={(v) => setPending((p) => ({ ...p, part: v }))}
                 >
                   <SelectTrigger className="w-32">
                     <SelectValue />
@@ -301,8 +304,10 @@ export default function ManageQuestions() {
               <div>
                 <label className="text-xs font-medium text-slate-700 block mb-1">Độ khó</label>
                 <Select
-                  value={filters.difficulty}
-                  onValueChange={(v) => setFilters((f) => ({ ...f, difficulty: v }))}
+                  value={pending.difficulty}
+                  onValueChange={(v) =>
+                    setPending((p) => ({ ...p, difficulty: v }))
+                  }
                 >
                   <SelectTrigger className="w-36">
                     <SelectValue />
@@ -315,7 +320,26 @@ export default function ManageQuestions() {
                   </SelectContent>
                 </Select>
               </div>
-            </div>
+
+              <div className="flex gap-2">
+                <button
+                  type="submit"
+                  className="btn-primary text-sm"
+                >
+                  <Search className="w-4 h-4" /> Tìm
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setPending(INITIAL_FILTERS);
+                    setFilters(INITIAL_FILTERS);
+                  }}
+                  className="btn-ghost text-sm"
+                >
+                  Đặt lại
+                </button>
+              </div>
+            </form>
           </CardContent>
         </Card>
 

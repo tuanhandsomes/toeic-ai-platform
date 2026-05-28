@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import {
   Lock,
   Unlock,
@@ -10,6 +11,7 @@ import {
   Pencil,
   KeyRound,
   Trash2,
+  Eye,
 } from "lucide-react";
 import AdminLayout from "@/components/layout/AdminLayout";
 import { Card, CardContent } from "@/components/ui/card";
@@ -65,6 +67,7 @@ import { useAuthStore } from "@/store/authStore";
 import { toast } from "sonner";
 
 export default function ManageUsers() {
+  const navigate = useNavigate();
   const currentUserId = useAuthStore((s) => s.user?._id);
 
   const [items, setItems] = useState([]);
@@ -74,12 +77,11 @@ export default function ManageUsers() {
     total: 0,
   });
   const [loading, setLoading] = useState(false);
-  const [filters, setFilters] = useState({
-    role: "all",
-    isActive: "all",
-    search: "",
-  });
-  const [searchInput, setSearchInput] = useState("");
+  // `filters` = committed filters dùng để fetch. `pending` = UI state khi user
+  // đang chỉnh dropdown/search input nhưng CHƯA bấm "Tìm". Chỉ apply khi submit.
+  const INITIAL_FILTERS = { role: "all", isActive: "all", search: "" };
+  const [filters, setFilters] = useState(INITIAL_FILTERS);
+  const [pending, setPending] = useState(INITIAL_FILTERS);
 
   // Dialog states
   const [formDialog, setFormDialog] = useState({
@@ -116,8 +118,13 @@ export default function ManageUsers() {
   }, [fetchUsers]);
 
   const handleSearch = (e) => {
-    e.preventDefault();
-    setFilters((f) => ({ ...f, search: searchInput }));
+    if (e) e.preventDefault();
+    setFilters(pending);
+  };
+
+  const handleResetFilters = () => {
+    setPending(INITIAL_FILTERS);
+    setFilters(INITIAL_FILTERS);
   };
 
   // Lưu ý: handleCreate/Edit/ResetPassword được gọi từ Dialog children — Dialog
@@ -199,7 +206,7 @@ export default function ManageUsers() {
             onClick={() =>
               setFormDialog({ open: true, mode: "create", user: null })
             }
-            className="btn text-sm text-white bg-primary-500 hover:bg-primary-600 inline-flex items-center gap-1.5"
+            className="btn-primary text-sm"
           >
             <Plus className="w-4 h-4" /> Tạo người dùng
           </button>
@@ -207,8 +214,8 @@ export default function ManageUsers() {
 
         <Card className="mb-4">
           <CardContent className="p-4">
-            <div className="flex flex-wrap items-end gap-3">
-              <form onSubmit={handleSearch} className="flex-1 min-w-[240px]">
+            <form onSubmit={handleSearch} className="flex flex-wrap items-end gap-3">
+              <div className="flex-1 min-w-[240px]">
                 <label className="text-xs font-medium text-slate-700 block mb-1">
                   Tìm kiếm
                 </label>
@@ -216,20 +223,24 @@ export default function ManageUsers() {
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                   <Input
                     placeholder="Tên hoặc email…"
-                    value={searchInput}
-                    onChange={(e) => setSearchInput(e.target.value)}
+                    value={pending.search}
+                    onChange={(e) =>
+                      setPending((p) => ({ ...p, search: e.target.value }))
+                    }
                     className="pl-9"
                   />
                 </div>
-              </form>
+              </div>
 
               <div>
                 <label className="text-xs font-medium text-slate-700 block mb-1">
                   Vai trò
                 </label>
                 <Select
-                  value={filters.role}
-                  onValueChange={(v) => setFilters((f) => ({ ...f, role: v }))}
+                  value={pending.role}
+                  onValueChange={(v) =>
+                    setPending((p) => ({ ...p, role: v }))
+                  }
                 >
                   <SelectTrigger className="w-36">
                     <SelectValue />
@@ -247,9 +258,9 @@ export default function ManageUsers() {
                   Trạng thái
                 </label>
                 <Select
-                  value={filters.isActive}
+                  value={pending.isActive}
                   onValueChange={(v) =>
-                    setFilters((f) => ({ ...f, isActive: v }))
+                    setPending((p) => ({ ...p, isActive: v }))
                   }
                 >
                   <SelectTrigger className="w-40">
@@ -262,7 +273,23 @@ export default function ManageUsers() {
                   </SelectContent>
                 </Select>
               </div>
-            </div>
+
+              <div className="flex gap-2">
+                <button
+                  type="submit"
+                  className="btn-primary text-sm"
+                >
+                  <Search className="w-4 h-4" /> Tìm
+                </button>
+                <button
+                  type="button"
+                  onClick={handleResetFilters}
+                  className="btn-ghost text-sm"
+                >
+                  Đặt lại
+                </button>
+              </div>
+            </form>
           </CardContent>
         </Card>
 
@@ -294,7 +321,18 @@ export default function ManageUsers() {
                     return (
                       <TableRow key={u._id}>
                         <TableCell>
-                          <p className="text-sm font-medium">{u.fullName}</p>
+                          {u.role === "admin" ? (
+                            <p className="text-sm font-medium text-slate-900">
+                              {u.fullName}
+                            </p>
+                          ) : (
+                            <Link
+                              to={`/admin/users/${u._id}`}
+                              className="text-sm font-medium text-slate-900 hover:text-primary-600 hover:underline"
+                            >
+                              {u.fullName}
+                            </Link>
+                          )}
                           <p className="text-xs text-slate-500">{u.email}</p>
                         </TableCell>
                         <TableCell>
@@ -344,6 +382,15 @@ export default function ManageUsers() {
                                 </button>
                               </DropdownMenuTrigger>
                               <DropdownMenuContent align="end" className="w-44">
+                                {u.role !== "admin" && (
+                                  <DropdownMenuItem
+                                    onSelect={() =>
+                                      navigate(`/admin/users/${u._id}`)
+                                    }
+                                  >
+                                    <Eye className="w-4 h-4 mr-2" /> Xem chi tiết
+                                  </DropdownMenuItem>
+                                )}
                                 <DropdownMenuItem
                                   onSelect={() =>
                                     setFormDialog({

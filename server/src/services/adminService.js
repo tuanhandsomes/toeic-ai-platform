@@ -104,7 +104,9 @@ export const adminService = {
     const user = await User.findById(userId).lean();
     if (!user) throw ApiError.notFound("Không tìm thấy người dùng");
     delete user.passwordHash;
-    return user;
+    // Đếm số lần AI đã phân tích bài làm của user — dùng cho trang chi tiết admin.
+    const aiAnalysisCount = await AIAnalysis.countDocuments({ userId });
+    return { ...user, aiAnalysisCount };
   },
 
   async createUser({ fullName, email, password, role, targetScore, isActive }) {

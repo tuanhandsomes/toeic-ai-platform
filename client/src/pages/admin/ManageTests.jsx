@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback, useRef } from 'react';
+import { Link } from 'react-router-dom';
 import {
   Plus, Pencil, Trash2, Search, Loader2, X, AlertCircle, Upload, FileJson, CheckCircle2,
   UploadCloud, FileAudio, FileImage,
@@ -57,8 +58,9 @@ export default function ManageTests() {
   const [items, setItems] = useState([]);
   const [pagination, setPagination] = useState({ page: 1, totalPages: 1, total: 0 });
   const [loading, setLoading] = useState(false);
-  const [filters, setFilters] = useState({ type: 'all', isPublished: 'all', search: '' });
-  const [searchInput, setSearchInput] = useState('');
+  const INITIAL_FILTERS = { type: 'all', isPublished: 'all', search: '' };
+  const [filters, setFilters] = useState(INITIAL_FILTERS);
+  const [pending, setPending] = useState(INITIAL_FILTERS);
 
   const [editorOpen, setEditorOpen] = useState(false);
   const [editorMode, setEditorMode] = useState('create'); // 'create' | 'edit'
@@ -275,31 +277,33 @@ export default function ManageTests() {
 
         <Card className="mb-4">
           <CardContent className="p-4">
-            <div className="flex flex-wrap items-end gap-3">
-              <form
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  setFilters((f) => ({ ...f, search: searchInput }));
-                }}
-                className="flex-1 min-w-[240px]"
-              >
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                setFilters(pending);
+              }}
+              className="flex flex-wrap items-end gap-3"
+            >
+              <div className="flex-1 min-w-[240px]">
                 <label className="text-xs font-medium text-slate-700 block mb-1">Tìm kiếm</label>
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                   <Input
                     placeholder="Tiêu đề đề thi…"
-                    value={searchInput}
-                    onChange={(e) => setSearchInput(e.target.value)}
+                    value={pending.search}
+                    onChange={(e) =>
+                      setPending((p) => ({ ...p, search: e.target.value }))
+                    }
                     className="pl-9"
                   />
                 </div>
-              </form>
+              </div>
 
               <div>
                 <label className="text-xs font-medium text-slate-700 block mb-1">Loại</label>
                 <Select
-                  value={filters.type}
-                  onValueChange={(v) => setFilters((f) => ({ ...f, type: v }))}
+                  value={pending.type}
+                  onValueChange={(v) => setPending((p) => ({ ...p, type: v }))}
                 >
                   <SelectTrigger className="w-40">
                     <SelectValue />
@@ -315,8 +319,10 @@ export default function ManageTests() {
               <div>
                 <label className="text-xs font-medium text-slate-700 block mb-1">Trạng thái</label>
                 <Select
-                  value={filters.isPublished}
-                  onValueChange={(v) => setFilters((f) => ({ ...f, isPublished: v }))}
+                  value={pending.isPublished}
+                  onValueChange={(v) =>
+                    setPending((p) => ({ ...p, isPublished: v }))
+                  }
                 >
                   <SelectTrigger className="w-40">
                     <SelectValue />
@@ -328,7 +334,26 @@ export default function ManageTests() {
                   </SelectContent>
                 </Select>
               </div>
-            </div>
+
+              <div className="flex gap-2">
+                <button
+                  type="submit"
+                  className="btn-primary text-sm"
+                >
+                  <Search className="w-4 h-4" /> Tìm
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setPending(INITIAL_FILTERS);
+                    setFilters(INITIAL_FILTERS);
+                  }}
+                  className="btn-ghost text-sm"
+                >
+                  Đặt lại
+                </button>
+              </div>
+            </form>
           </CardContent>
         </Card>
 
@@ -358,7 +383,12 @@ export default function ManageTests() {
                   {items.map((t) => (
                     <TableRow key={t._id}>
                       <TableCell>
-                        <p className="text-sm font-medium">{t.title}</p>
+                        <Link
+                          to={`/admin/tests/${t._id}`}
+                          className="text-sm font-medium text-slate-900 hover:text-primary-600 hover:underline"
+                        >
+                          {t.title}
+                        </Link>
                         {t.series && (
                           <p className="text-xs text-slate-500">
                             {t.series}{t.year ? ` • ${t.year}` : ''}
@@ -848,14 +878,17 @@ function TestEditorDialog({ mode, test, busy, onCancel, onSave }) {
   return (
     <>
       <Dialog open onOpenChange={(open) => !open && onCancel()}>
-        <DialogContent className="max-w-2xl">
-          <DialogHeader>
-            <DialogTitle>
+        <DialogContent className="max-w-2xl max-h-[90vh] flex flex-col">
+          <DialogHeader className="shrink-0">
+            <DialogTitle className="truncate pr-8">
               {mode === 'create' ? 'Tạo đề mới' : `Sửa đề: ${test.title}`}
             </DialogTitle>
           </DialogHeader>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form
+            onSubmit={handleSubmit}
+            className="flex-1 min-h-0 flex flex-col space-y-4 overflow-y-auto pr-1"
+          >
             <div>
               <Label>Tiêu đề *</Label>
               <Input
@@ -876,7 +909,7 @@ function TestEditorDialog({ mode, test, busy, onCancel, onSave }) {
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
                 <Label>Loại</Label>
                 <Select value={form.type} onValueChange={(v) => updateField('type', v)}>
@@ -912,7 +945,7 @@ function TestEditorDialog({ mode, test, busy, onCancel, onSave }) {
               )}
             </div>
 
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <div>
                 <Label>Thời gian (phút)</Label>
                 <Input
@@ -942,7 +975,7 @@ function TestEditorDialog({ mode, test, busy, onCancel, onSave }) {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
                 <Label>Độ khó</Label>
                 <Select value={form.difficulty} onValueChange={(v) => updateField('difficulty', v)}>

@@ -30,6 +30,7 @@ router.post(
   adminController.createUser,
 );
 router.get("/users/:id", adminController.getUser);
+router.get("/users/:id/results", adminController.getUserResults);
 router.patch(
   "/users/:id",
   validate(updateUserSchema),

@@ -19,6 +19,11 @@ export const adminService = {
   getUser(id) {
     return axiosClient.get(`/admin/users/${id}`);
   },
+  getUserResults(id, params) {
+    return axiosClient.get(`/admin/users/${id}/results`, {
+      params: buildQuery(params),
+    });
+  },
   createUser(payload) {
     return axiosClient.post('/admin/users', payload);
   },
