@@ -39,7 +39,10 @@ const VARIANTS = {
  * @param {string|number} props.value
  * @param {string} [props.unit]  Eg "phút", "câu"
  * @param {string} [props.sub]   Sub-text below value
- * @param {number} [props.change]  Percent change vs prev period (positive/negative)
+ * @param {number} [props.change]  Delta vs prev period (positive/negative).
+ *                                  Mặc định hiển thị suffix `%`; pass `changeUnit`
+ *                                  để đổi sang "bài"/"câu"/... (delta tuyệt đối).
+ * @param {string} [props.changeUnit='%']  Đơn vị hiển thị sau số change.
  * @param {boolean} [props.bordered=true] Use colored border (false = plain card)
  */
 export function KpiCard({
@@ -50,10 +53,12 @@ export function KpiCard({
   unit,
   sub,
   change,
+  changeUnit = '%',
   bordered = true,
   className,
 }) {
   const variant = VARIANTS[color] || VARIANTS.primary;
+  const suffix = changeUnit === '%' ? '%' : ` ${changeUnit}`;
   return (
     <Card
       className={cn(
@@ -79,7 +84,8 @@ export function KpiCard({
             {change > 0 && <TrendingUp className="w-3 h-3" />}
             {change < 0 && <TrendingDown className="w-3 h-3" />}
             {change > 0 ? '+' : ''}
-            {change}%
+            {typeof change === 'number' ? change.toLocaleString('vi-VN') : change}
+            {suffix}
           </span>
         )}
       </div>

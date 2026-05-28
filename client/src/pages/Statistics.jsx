@@ -1,90 +1,62 @@
-import { useEffect, useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
-import { CartesianGrid, Line, LineChart, XAxis, YAxis, LabelList } from 'recharts';
+import { useEffect, useMemo, useState } from "react";
+import { Link } from "react-router-dom";
 import {
-  Loader2, TrendingUp, Clock, FileQuestion, Target, Trophy,
+  CartesianGrid,
+  Line,
+  LineChart,
+  XAxis,
+  YAxis,
+  LabelList,
+} from "recharts";
+import {
+  Loader2,
+  TrendingUp,
+  Clock,
+  FileQuestion,
+  Target,
+  Trophy,
   ChevronRight,
-} from 'lucide-react';
-import AppLayout from '@/components/layout/AppLayout';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+} from "lucide-react";
+import AppLayout from "@/components/layout/AppLayout";
 import {
-  Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
-} from '@/components/ui/table';
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+} from "@/components/ui/card";
 import {
-  ChartContainer, ChartTooltip, ChartTooltipContent,
-} from '@/components/ui/chart';
-import { KpiCard } from '@/components/common/KpiCard';
-import { RankBadge } from '@/components/common/RankBadge';
-import { EmptyState } from '@/components/common/EmptyState';
-import { resultService } from '@/services/resultService';
-import { useAuthStore } from '@/store/authStore';
-
-const TODAY = (() => {
-  const d = new Date();
-  d.setHours(0, 0, 0, 0);
-  return d;
-})();
-
-const dayKey = (date) => {
-  const d = new Date(date);
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-};
-
-const formatDateMMDD = (date) => {
-  const d = new Date(date);
-  return `${String(d.getMonth() + 1).padStart(2, '0')}/${String(d.getDate()).padStart(2, '0')}`;
-};
-
-function build7DayBuckets(results, offsetDays = 0) {
-  const buckets = [];
-  const startDate = new Date(TODAY);
-  startDate.setDate(TODAY.getDate() - offsetDays);
-
-  for (let i = 6; i >= 0; i--) {
-    const d = new Date(startDate);
-    d.setDate(startDate.getDate() - i);
-    buckets.push({
-      key: dayKey(d),
-      date: d,
-      label: formatDateMMDD(d),
-      minutes: 0,
-      accuracySum: 0,
-      questions: 0,
-      count: 0,
-    });
-  }
-
-  const map = new Map(buckets.map((b) => [b.key, b]));
-  results.forEach((r) => {
-    const key = dayKey(r.submittedAt);
-    const b = map.get(key);
-    if (b) {
-      b.minutes += Math.round((r.durationSec || 0) / 60);
-      b.questions += r.totalQuestions || 0;
-      b.accuracySum += r.accuracy || 0;
-      b.count += 1;
-    }
-  });
-
-  return buckets.map((b) => ({
-    ...b,
-    avgAccuracy: b.count > 0 ? Math.round(b.accuracySum / b.count) : 0,
-  }));
-}
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+} from "@/components/ui/chart";
+import { KpiCard } from "@/components/common/KpiCard";
+import { RankBadge } from "@/components/common/RankBadge";
+import { EmptyState } from "@/components/common/EmptyState";
+import { resultService } from "@/services/resultService";
+import { useAuthStore } from "@/store/authStore";
+import { computeWeeklyKpis } from "@/utils/statsHelpers";
 
 // Chart configs — shadcn convention
 const studyTimeConfig = {
   minutes: {
-    label: 'Phút học',
-    color: 'hsl(var(--chart-3))', // terracotta
+    label: "Phút học",
+    color: "hsl(var(--chart-3))", // terracotta
   },
 };
 
 const scoreProgressConfig = {
   avgAccuracy: {
-    label: 'Độ chính xác',
-    color: 'hsl(var(--chart-1))', // indigo
+    label: "Độ chính xác",
+    color: "hsl(var(--chart-1))", // indigo
   },
 };
 
@@ -92,7 +64,7 @@ export default function Statistics() {
   const user = useAuthStore((s) => s.user);
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
   useEffect(() => {
     let cancelled = false;
@@ -103,7 +75,7 @@ export default function Statistics() {
         if (!cancelled) setResults(res.data.items);
       })
       .catch((err) => {
-        if (!cancelled) setError(err?.message || 'Không tải được dữ liệu');
+        if (!cancelled) setError(err?.message || "Không tải được dữ liệu");
       })
       .finally(() => {
         if (!cancelled) setLoading(false);
@@ -114,51 +86,17 @@ export default function Statistics() {
   }, []);
 
   const stats = useMemo(() => {
-    const thisWeek = build7DayBuckets(results, 0);
-    const lastWeek = build7DayBuckets(results, 7);
-
-    const dateRange = `${thisWeek[0].label} - ${thisWeek[6].label}`;
-
-    const sum = (arr, key) => arr.reduce((s, b) => s + b[key], 0);
-    const thisCount = sum(thisWeek, 'count');
-    const lastCount = sum(lastWeek, 'count');
-    const thisQuestions = sum(thisWeek, 'questions');
-    const lastQuestions = sum(lastWeek, 'questions');
-    const thisMinutes = sum(thisWeek, 'minutes');
-    const lastMinutes = sum(lastWeek, 'minutes');
-
-    const computeAvgAccuracy = (week) => {
-      const c = sum(week, 'count');
-      if (c === 0) return 0;
-      const totalAcc = week.reduce((s, b) => s + b.accuracySum, 0);
-      return Math.round(totalAcc / c);
-    };
-    const thisAccuracy = computeAvgAccuracy(thisWeek);
-    const lastAccuracy = computeAvgAccuracy(lastWeek);
-
-    const change = (now, prev) => {
-      if (prev === 0) return now > 0 ? null : 0;
-      return Math.round(((now - prev) / prev) * 100);
-    };
-
+    const base = computeWeeklyKpis(results);
     const ranked = results
       .slice()
       .map((r) => ({
         ...r,
-        rankScore: r.testType === 'full' ? r.scoreTotal : r.accuracy * 10,
+        rankScore: r.testType === "full" ? r.scoreTotal : r.accuracy * 10,
       }))
       .sort((a, b) => b.rankScore - a.rankScore)
       .slice(0, 10);
-
     return {
-      dateRange,
-      thisWeek,
-      kpis: {
-        tests: { value: thisCount, change: change(thisCount, lastCount) },
-        questions: { value: thisQuestions, change: change(thisQuestions, lastQuestions) },
-        minutes: { value: thisMinutes, change: change(thisMinutes, lastMinutes) },
-        accuracy: { value: thisAccuracy, change: change(thisAccuracy, lastAccuracy) },
-      },
+      ...base,
       ranked,
       target: user?.targetScore || 700,
     };
@@ -168,7 +106,9 @@ export default function Statistics() {
     <AppLayout>
       <div className="px-6 lg:px-8 py-6">
         <div className="mb-6">
-          <h1 className="text-3xl font-heading font-bold mb-2">Thống kê tiến bộ</h1>
+          <h1 className="text-3xl font-heading font-bold mb-2">
+            Thống kê tiến bộ
+          </h1>
           <p className="text-slate-600">
             Phân tích hành trình luyện thi 7 ngày qua dựa trên dữ liệu bài làm.
           </p>
@@ -207,41 +147,50 @@ export default function Statistics() {
               <KpiCard
                 icon={FileQuestion}
                 color="primary"
-                label="Bài đã làm"
+                label="Bài đã làm (7 ngày)"
                 value={stats.kpis.tests.value}
                 unit="bài"
+                sub={stats.kpis.tests.sub}
                 change={stats.kpis.tests.change}
+                changeUnit={stats.kpis.tests.changeUnit}
               />
               <KpiCard
                 icon={Target}
                 color="secondary"
-                label="Câu đã làm"
-                value={stats.kpis.questions.value.toLocaleString('vi-VN')}
+                label="Câu đã làm (7 ngày)"
+                value={stats.kpis.questions.value}
                 unit="câu"
+                sub={stats.kpis.questions.sub}
                 change={stats.kpis.questions.change}
+                changeUnit={stats.kpis.questions.changeUnit}
               />
               <KpiCard
                 icon={Clock}
                 color="tertiary"
-                label="Thời gian học"
+                label="Thời gian học (7 ngày)"
                 value={stats.kpis.minutes.value}
-                unit="phút"
+                sub={stats.kpis.minutes.sub}
                 change={stats.kpis.minutes.change}
+                changeUnit={stats.kpis.minutes.changeUnit}
               />
               <KpiCard
                 icon={TrendingUp}
                 color="violet"
-                label="Độ chính xác"
+                label="Độ chính xác (7 ngày)"
                 value={stats.kpis.accuracy.value}
                 unit="%"
+                sub={stats.kpis.accuracy.sub}
                 change={stats.kpis.accuracy.change}
+                changeUnit={stats.kpis.accuracy.changeUnit}
               />
             </div>
 
             {/* Two 7-day charts */}
             <section className="mb-8">
               <div className="mb-4">
-                <h2 className="font-heading font-semibold text-xl">Hoạt động 7 ngày qua</h2>
+                <h2 className="font-heading font-semibold text-xl">
+                  Hoạt động 7 ngày qua
+                </h2>
                 <p className="text-sm text-slate-500">{stats.dateRange}</p>
               </div>
 
@@ -256,7 +205,10 @@ export default function Statistics() {
                     <CardDescription>{stats.dateRange}</CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <ChartContainer config={studyTimeConfig} className="h-[220px] w-full">
+                    <ChartContainer
+                      config={studyTimeConfig}
+                      className="h-[220px] w-full"
+                    >
                       <LineChart
                         data={stats.thisWeek}
                         margin={{ top: 24, right: 16, left: 16, bottom: 4 }}
@@ -269,7 +221,7 @@ export default function Statistics() {
                           tickMargin={8}
                           fontSize={11}
                         />
-                        <YAxis hide domain={[0, 'dataMax + 20']} />
+                        <YAxis hide domain={[0, "dataMax + 20"]} />
                         <ChartTooltip
                           cursor={false}
                           content={
@@ -284,8 +236,12 @@ export default function Statistics() {
                           type="monotone"
                           stroke="var(--color-minutes)"
                           strokeWidth={2.5}
-                          dot={{ r: 4, fill: 'var(--color-minutes)', strokeWidth: 0 }}
-                          activeDot={{ r: 6, strokeWidth: 2, stroke: 'white' }}
+                          dot={{
+                            r: 4,
+                            fill: "var(--color-minutes)",
+                            strokeWidth: 0,
+                          }}
+                          activeDot={{ r: 6, strokeWidth: 2, stroke: "white" }}
                         >
                           <LabelList
                             dataKey="minutes"
@@ -308,10 +264,15 @@ export default function Statistics() {
                       <TrendingUp className="w-4 h-4 text-primary-600" />
                       Tiến độ điểm số trong 7 ngày
                     </CardTitle>
-                    <CardDescription>Độ chính xác trung bình mỗi ngày</CardDescription>
+                    <CardDescription>
+                      Độ chính xác trung bình mỗi ngày
+                    </CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <ChartContainer config={scoreProgressConfig} className="h-[220px] w-full">
+                    <ChartContainer
+                      config={scoreProgressConfig}
+                      className="h-[220px] w-full"
+                    >
                       <LineChart
                         data={stats.thisWeek}
                         margin={{ top: 24, right: 16, left: 16, bottom: 4 }}
@@ -331,7 +292,10 @@ export default function Statistics() {
                             <ChartTooltipContent
                               labelFormatter={(label) => `Ngày ${label}`}
                               indicator="dot"
-                              formatter={(value) => [`${value}%`, ' Độ chính xác']}
+                              formatter={(value) => [
+                                `${value}%`,
+                                " Độ chính xác",
+                              ]}
                             />
                           }
                         />
@@ -340,8 +304,12 @@ export default function Statistics() {
                           type="monotone"
                           stroke="var(--color-avgAccuracy)"
                           strokeWidth={2.5}
-                          dot={{ r: 4, fill: 'var(--color-avgAccuracy)', strokeWidth: 0 }}
-                          activeDot={{ r: 6, strokeWidth: 2, stroke: 'white' }}
+                          dot={{
+                            r: 4,
+                            fill: "var(--color-avgAccuracy)",
+                            strokeWidth: 0,
+                          }}
+                          activeDot={{ r: 6, strokeWidth: 2, stroke: "white" }}
                         >
                           <LabelList
                             dataKey="avgAccuracy"
@@ -350,7 +318,9 @@ export default function Statistics() {
                             className="fill-slate-900"
                             fontSize={12}
                             fontWeight={600}
-                            formatter={(value) => (value > 0 ? `${value}%` : '')}
+                            formatter={(value) =>
+                              value > 0 ? `${value}%` : ""
+                            }
                           />
                         </Line>
                       </LineChart>
@@ -370,7 +340,9 @@ export default function Statistics() {
                         <Trophy className="w-5 h-5 text-amber-500" />
                         Bảng xếp hạng điểm số
                       </CardTitle>
-                      <CardDescription>Top 10 bài làm tốt nhất của bạn</CardDescription>
+                      <CardDescription>
+                        Top 10 bài làm tốt nhất của bạn
+                      </CardDescription>
                     </div>
                   </div>
                 </CardHeader>
@@ -378,7 +350,9 @@ export default function Statistics() {
                   <Table>
                     <TableHeader>
                       <TableRow>
-                        <TableHead className="w-16 text-center pl-6">Hạng</TableHead>
+                        <TableHead className="w-16 text-center pl-6">
+                          Hạng
+                        </TableHead>
                         <TableHead>Bài thi</TableHead>
                         <TableHead className="w-28">Loại</TableHead>
                         <TableHead className="w-32">Ngày làm</TableHead>
@@ -388,27 +362,31 @@ export default function Statistics() {
                     </TableHeader>
                     <TableBody>
                       {stats.ranked.map((r, i) => {
-                        const isFullTest = r.testType === 'full';
-                        const date = new Date(r.submittedAt).toLocaleDateString('vi-VN');
+                        const isFullTest = r.testType === "full";
+                        const date = new Date(r.submittedAt).toLocaleDateString(
+                          "vi-VN",
+                        );
                         return (
                           <TableRow key={r._id}>
                             <TableCell className="text-center pl-6">
                               <RankBadge rank={i + 1} />
                             </TableCell>
                             <TableCell className="font-medium">
-                              {r.testId?.title || 'Đề thi'}
+                              {r.testId?.title || "Đề thi"}
                             </TableCell>
-                            <TableCell>
-                              <Badge variant={isFullTest ? 'default' : 'secondary'}>
-                                {isFullTest ? 'Full Test' : 'Luyện tập'}
-                              </Badge>
+                            <TableCell className="font-medium text-slate-900">
+                              {isFullTest ? "Full Test" : "Luyện tập"}
                             </TableCell>
-                            <TableCell className="text-slate-600">{date}</TableCell>
+                            <TableCell className="text-slate-600">
+                              {date}
+                            </TableCell>
                             <TableCell className="text-right font-mono font-bold">
                               {isFullTest ? (
                                 <>
                                   {r.scoreTotal}
-                                  <span className="text-xs text-slate-400 ml-1">/990</span>
+                                  <span className="text-xs text-slate-400 ml-1">
+                                    /990
+                                  </span>
                                 </>
                               ) : (
                                 <>
