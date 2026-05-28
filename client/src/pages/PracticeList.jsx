@@ -1,9 +1,10 @@
 import { useEffect, useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { Headphones, BookOpen, Clock, FileQuestion, Loader2 } from 'lucide-react';
+import { Headphones, BookOpen, FileQuestion, Loader2 } from 'lucide-react';
 import AppLayout from '@/components/layout/AppLayout';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { getDisplayDuration } from '@/constants/toeic';
 import {
   Pagination,
   PaginationContent,
@@ -209,42 +210,59 @@ export default function PracticeList() {
 
 function TestCard({ test }) {
   const partInfo = PART_INFO[test.part] || {};
-  const isListening = test.part >= 1 && test.part <= 4;
 
   return (
-    <Link to={`/practice/${test._id}`} className="block group">
-      <Card className="hover:shadow-elevated transition-shadow h-full flex flex-col overflow-hidden">
-        <div
-          className={cn(
-            'px-6 py-4 flex items-center justify-between',
-            isListening ? 'bg-secondary-50' : 'bg-tertiary-50',
-          )}
+    <Link to={`/tests/${test._id}`} className="block group">
+      <Card className="hover:shadow-elevated transition-shadow h-full relative overflow-hidden">
+        {/* Badge Free góc trên phải */}
+        <Badge
+          variant="tertiary"
+          className="absolute top-3 right-3 z-10"
         >
-          <Badge variant={isListening ? 'secondary' : 'tertiary'}>
-            {partInfo.label || `Part ${test.part}`}
-          </Badge>
-          <span className="text-xs text-slate-600">{partInfo.desc}</span>
-        </div>
+          Free
+        </Badge>
 
-        <CardContent className="p-6 flex-1 flex flex-col">
-          <h3 className="font-heading font-semibold text-slate-900 mb-3 group-hover:text-primary-600 transition-colors">
+        <CardContent className="p-6">
+          <h3 className="font-heading font-bold text-lg text-slate-900 mb-4 pr-14 group-hover:text-primary-600 transition-colors">
             {test.title}
           </h3>
 
-          <div className="flex items-center gap-4 text-sm text-slate-600 mb-4">
-            <div className="flex items-center gap-1.5">
-              <FileQuestion className="w-4 h-4" />
-              {test.totalQuestions} câu
+          <div className="grid grid-cols-2 gap-x-6 gap-y-1.5 text-sm text-slate-600 mb-4">
+            <div>
+              Thời gian:{' '}
+              <strong className="text-slate-900">
+                {getDisplayDuration(test)} phút
+              </strong>
             </div>
-            <div className="flex items-center gap-1.5">
-              <Clock className="w-4 h-4" />
-              {test.durationMinutes} phút
+            <div>
+              Câu hỏi:{' '}
+              <strong className="text-slate-900">
+                {test.totalQuestions} câu
+              </strong>
+            </div>
+            <div>
+              Phần thi:{' '}
+              <strong className="text-slate-900">
+                {partInfo.label || `Part ${test.part}`}
+              </strong>
+            </div>
+            <div>
+              Loại:{' '}
+              <strong className="text-slate-900">{partInfo.desc || '—'}</strong>
             </div>
           </div>
 
-          <span className="mt-auto inline-flex items-center justify-center px-4 py-2 bg-primary-500 text-white text-sm font-medium rounded-lg group-hover:bg-primary-600 transition-colors">
-            Bắt đầu →
-          </span>
+          {test.series && (
+            <Badge variant="muted" className="mb-4">
+              {test.series.toUpperCase()}
+            </Badge>
+          )}
+
+          <div>
+            <span className="inline-flex items-center justify-center px-5 py-2 bg-primary-500 text-white text-sm font-medium rounded-full group-hover:bg-primary-600 transition-colors">
+              Làm bài
+            </span>
+          </div>
         </CardContent>
       </Card>
     </Link>

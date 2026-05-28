@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { ArrowLeft, ArrowRight, Loader2, Save } from 'lucide-react';
 import Timer from '../components/exam/Timer.jsx';
 import AnswerSheet from '../components/exam/AnswerSheet.jsx';
@@ -15,6 +15,10 @@ const draftKey = (userId, testId) => `exam-draft:${userId}:${testId}`;
 export default function PracticeDetail() {
   const { testId } = useParams();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  // ?mode=practice cho Full Test → tắt countdown, không auto-submit hết giờ.
+  // Cho phép user "làm lại Full Test ở chế độ luyện tập" (count-up timer).
+  const isPracticeMode = searchParams.get('mode') === 'practice';
   const userId = useAuthStore((s) => s.user?._id);
 
   const [test, setTest] = useState(null);
@@ -346,8 +350,14 @@ export default function PracticeDetail() {
             <Timer
               durationSec={test.durationMinutes * 60}
               startedAt={startedAt}
-              onExpire={test.type === 'full' ? handleExpire : undefined}
-              mode={test.type === 'full' ? 'countdown' : 'elapsed'}
+              onExpire={
+                test.type === 'full' && !isPracticeMode
+                  ? handleExpire
+                  : undefined
+              }
+              mode={
+                test.type === 'full' && !isPracticeMode ? 'countdown' : 'elapsed'
+              }
             />
             <button
               type="button"
