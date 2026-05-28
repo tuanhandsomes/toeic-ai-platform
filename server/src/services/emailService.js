@@ -91,7 +91,76 @@ async function sendPasswordReset({ to, fullName, token }) {
   });
 }
 
+/**
+ * Tin nhắn liên hệ từ form public trên Landing Page.
+ * Gửi tới CONTACT_RECIPIENT (email cá nhân của owner / admin platform).
+ * Reply-To set về email của user gửi → owner có thể reply trực tiếp từ inbox.
+ */
+async function sendContactMessage({ name, email, message }) {
+  const recipient = env.CONTACT_RECIPIENT;
+  if (!recipient) {
+    logger.warn('Contact message skipped: CONTACT_RECIPIENT not set');
+    return false;
+  }
+
+  const escape = (s) =>
+    String(s).replace(/[&<>"']/g, (c) =>
+      ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]),
+    );
+
+  const html = `
+    <div style="font-family: Inter, system-ui, sans-serif; max-width: 560px; margin: 0 auto; padding: 24px; color: #1e293b;">
+      <h2 style="color: #4F46E5; font-size: 20px; margin: 0 0 16px;">Tin nhắn mới từ Landing Page</h2>
+      <table style="width: 100%; border-collapse: collapse; margin-bottom: 16px;">
+        <tr>
+          <td style="padding: 8px 0; color: #64748b; width: 100px;">Họ tên:</td>
+          <td style="padding: 8px 0; font-weight: 600;">${escape(name)}</td>
+        </tr>
+        <tr>
+          <td style="padding: 8px 0; color: #64748b;">Email:</td>
+          <td style="padding: 8px 0;">
+            <a href="mailto:${escape(email)}" style="color: #4F46E5;">${escape(email)}</a>
+          </td>
+        </tr>
+      </table>
+      <div style="background: #f1f5f9; border-left: 4px solid #4F46E5; padding: 16px; border-radius: 4px; white-space: pre-wrap;">${escape(message)}</div>
+      <p style="font-size: 12px; color: #94a3b8; margin-top: 24px;">
+        Bạn có thể trả lời trực tiếp email này — phản hồi sẽ được gửi tới ${escape(email)}.
+      </p>
+    </div>
+  `;
+
+  const text = `Tin nhắn mới từ Landing Page\n\nHọ tên: ${name}\nEmail: ${email}\n\n${message}`;
+
+  const client = getResendClient();
+  if (!client) {
+    logger.warn('Email skipped: RESEND_API_KEY not set', { to: recipient });
+    return false;
+  }
+
+  try {
+    const { data, error } = await client.emails.send({
+      from: `${env.EMAIL_FROM_NAME} <${env.EMAIL_FROM}>`,
+      to: recipient,
+      replyTo: email,
+      subject: `[TOEIC AI] Liên hệ từ ${name}`,
+      html,
+      text,
+    });
+    if (error) {
+      logger.error('Contact email send error', { err: error.message || error });
+      return false;
+    }
+    logger.info('Contact email sent', { from: email, id: data?.id });
+    return true;
+  } catch (err) {
+    logger.error('Contact email send threw', { err: err.message });
+    return false;
+  }
+}
+
 export const emailService = {
   send,
   sendPasswordReset,
+  sendContactMessage,
 };

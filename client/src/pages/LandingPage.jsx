@@ -12,8 +12,12 @@ import {
   ArrowUp,
   Play,
   Flame,
+  Send,
+  Mail,
 } from "lucide-react";
+import { toast } from "sonner";
 import { ROUTES } from "../constants/routes.js";
+import { contactService } from "../services/contactService.js";
 
 function useInView(threshold = 0.15) {
   const ref = useRef(null);
@@ -66,9 +70,27 @@ function ScrollToTopButton() {
 
 const NAV_LINKS = [
   { label: "Tính năng", href: "#features" },
-  { label: "Lộ trình học", href: "#features" },
-  { label: "Đề thi mẫu", href: "#features" },
-  { label: "Liên hệ", href: "#footer" },
+  { label: "Lộ trình học", href: "#roadmap" },
+  { label: "Đề thi mẫu", href: ROUTES.REGISTER },
+  { label: "Liên hệ", href: "#contact" },
+];
+
+const ROADMAP_STEPS = [
+  {
+    n: 1,
+    title: "Đăng ký tài khoản",
+    desc: "Miễn phí, không cần thẻ tín dụng. Chọn mục tiêu điểm TOEIC của bạn ngay từ đầu.",
+  },
+  {
+    n: 2,
+    title: "Làm bài luyện tập hoặc Full Test",
+    desc: "Đề thi mô phỏng chuẩn cấu trúc, đồng hồ đếm ngược, audio chất lượng cao như thi thật.",
+  },
+  {
+    n: 3,
+    title: "Nhận phân tích cá nhân từ AI",
+    desc: "AI chỉ rõ điểm mạnh, điểm yếu và gợi ý Part cần luyện tiếp theo. Lặp lại để tiến bộ.",
+  },
 ];
 
 const FEATURES = [
@@ -128,9 +150,10 @@ const CHART_BARS = [55, 72, 48, 90, 65];
 
 function FeatureCard({ icon: Icon, iconBg, title, desc, delay = 0, visible }) {
   return (
-    <div
+    <Link
+      to={ROUTES.REGISTER}
       style={{ animationDelay: `${delay}ms` }}
-      className={`rounded-card bg-white border border-slate-100 p-5 transition-all duration-300 hover:-translate-y-1 hover:shadow-elevated ${
+      className={`group block rounded-card bg-white border border-slate-100 p-5 transition-all duration-300 hover:-translate-y-1 hover:shadow-elevated hover:border-primary-200 ${
         visible ? "animate-fade-in-up" : "opacity-0"
       }`}
     >
@@ -139,15 +162,17 @@ function FeatureCard({ icon: Icon, iconBg, title, desc, delay = 0, visible }) {
       >
         <Icon className="w-5 h-5" />
       </div>
-      <h3 className="font-heading font-semibold text-base mb-1.5 text-slate-900">
+      <h3 className="font-heading font-semibold text-base mb-1.5 text-slate-900 group-hover:text-primary-700 transition-colors">
         {title}
       </h3>
       <p className="text-sm text-slate-600 leading-relaxed">{desc}</p>
-    </div>
+    </Link>
   );
 }
 
 function FooterCol({ title, items }) {
+  const itemCls =
+    "text-sm text-slate-500 hover:text-slate-800 transition-colors";
   return (
     <div>
       <h4 className="font-heading font-semibold text-sm text-primary-700 mb-3">
@@ -156,12 +181,15 @@ function FooterCol({ title, items }) {
       <ul className="space-y-2">
         {items.map((i) => (
           <li key={i.label}>
-            <a
-              href={i.href}
-              className="text-sm text-slate-500 hover:text-slate-800 transition-colors"
-            >
-              {i.label}
-            </a>
+            {i.href.startsWith("#") ? (
+              <a href={i.href} className={itemCls}>
+                {i.label}
+              </a>
+            ) : (
+              <Link to={i.href} className={itemCls}>
+                {i.label}
+              </Link>
+            )}
           </li>
         ))}
       </ul>
@@ -172,7 +200,7 @@ function FooterCol({ title, items }) {
 function StatsBand() {
   const [ref, inView] = useInView(0.3);
   return (
-    <section ref={ref} className="bg-primary-700 text-white">
+    <section id="tests" ref={ref} className="bg-primary-700 text-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
         {STATS.map((s, i) => (
           <div
@@ -186,6 +214,168 @@ function StatsBand() {
             <p className="text-primary-100 text-xs">{s.label}</p>
           </div>
         ))}
+      </div>
+    </section>
+  );
+}
+
+function RoadmapSection() {
+  const [ref, inView] = useInView(0.15);
+  return (
+    <section id="roadmap" ref={ref} className="py-16 md:py-20 bg-white">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div
+          className={`max-w-2xl mx-auto text-center mb-10 ${
+            inView ? "animate-fade-in-up" : "opacity-0"
+          }`}
+        >
+          <h2 className="text-3xl md:text-4xl font-heading font-bold text-slate-900 mb-3">
+            Lộ trình học 3 bước
+          </h2>
+          <p className="text-slate-600 text-sm">
+            Đơn giản, hiệu quả. Bắt đầu trong vài phút và thấy tiến bộ sau mỗi
+            bài làm.
+          </p>
+        </div>
+
+        <div className="grid sm:grid-cols-3 gap-5">
+          {ROADMAP_STEPS.map((s, i) => (
+            <div
+              key={s.n}
+              style={{ animationDelay: `${150 + i * 100}ms` }}
+              className={`rounded-card bg-white border border-slate-200 p-6 ${
+                inView ? "animate-fade-in-up" : "opacity-0"
+              }`}
+            >
+              <div className="w-10 h-10 rounded-full bg-primary-500 text-white font-heading font-bold flex items-center justify-center mb-3">
+                {s.n}
+              </div>
+              <h3 className="font-heading font-semibold text-base mb-1.5 text-slate-900">
+                {s.title}
+              </h3>
+              <p className="text-sm text-slate-600 leading-relaxed">{s.desc}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function ContactSection() {
+  const [ref, inView] = useInView(0.15);
+  const [form, setForm] = useState({ name: "", email: "", message: "" });
+  const [sending, setSending] = useState(false);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setSending(true);
+    try {
+      await contactService.send(form);
+      toast.success("Đã gửi tin nhắn — chúng tôi sẽ phản hồi sớm nhất!");
+      setForm({ name: "", email: "", message: "" });
+    } catch (err) {
+      // Validation errors từ BE có shape { message, details: [{field, message}] }.
+      // Ưu tiên message field-specific nếu có để user biết lỗi cụ thể.
+      const fieldMsg = err?.details?.[0]?.message;
+      toast.error(
+        fieldMsg ||
+          err?.message ||
+          "Không gửi được tin nhắn. Vui lòng thử lại sau ít phút.",
+      );
+    } finally {
+      setSending(false);
+    }
+  };
+
+  return (
+    <section
+      id="contact"
+      ref={ref}
+      className="py-16 md:py-20 bg-gradient-to-br from-primary-50/40 via-white to-secondary-50/30"
+    >
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div
+          className={`text-center mb-10 ${
+            inView ? "animate-fade-in-up" : "opacity-0"
+          }`}
+        >
+          <div className="inline-flex w-14 h-14 rounded-full bg-primary-100 text-primary-600 items-center justify-center mb-4">
+            <Mail className="w-7 h-7" />
+          </div>
+          <h2 className="text-3xl md:text-4xl font-heading font-bold text-slate-900 mb-3">
+            Liên hệ với chúng tôi
+          </h2>
+          <p className="text-slate-600 text-sm">
+            Bạn có câu hỏi hoặc góp ý? Hãy để lại tin nhắn — chúng tôi sẽ phản
+            hồi lại bạn sớm nhất có thể!
+          </p>
+        </div>
+
+        <form
+          onSubmit={handleSubmit}
+          style={{ animationDelay: "200ms" }}
+          className={`rounded-2xl bg-white border border-slate-200 shadow-card p-6 md:p-8 space-y-4 ${
+            inView ? "animate-fade-in-up" : "opacity-0"
+          }`}
+        >
+          <div className="grid sm:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-1.5">
+                Họ và tên
+              </label>
+              <input
+                type="text"
+                required
+                value={form.name}
+                onChange={(e) => setForm({ ...form, name: e.target.value })}
+                className="input"
+                placeholder="Nhập tên của bạn"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-1.5">
+                Email
+              </label>
+              <input
+                type="email"
+                required
+                value={form.email}
+                onChange={(e) => setForm({ ...form, email: e.target.value })}
+                className="input"
+                placeholder="email@example.com"
+              />
+            </div>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-1.5">
+              Nội dung
+            </label>
+            <textarea
+              required
+              rows={5}
+              value={form.message}
+              onChange={(e) => setForm({ ...form, message: e.target.value })}
+              className="input resize-none"
+              placeholder="Câu hỏi hoặc góp ý của bạn..."
+            />
+          </div>
+          <div className="flex justify-end pt-2">
+            <button
+              type="submit"
+              disabled={sending}
+              className="btn-primary transition-transform hover:-translate-y-0.5 hover:shadow-lg"
+            >
+              {sending ? (
+                "Đang gửi..."
+              ) : (
+                <>
+                  Gửi tin nhắn <Send className="w-4 h-4" />
+                </>
+              )}
+            </button>
+          </div>
+        </form>
       </div>
     </section>
   );
@@ -321,15 +511,20 @@ export default function LandingPage() {
           </button>
 
           <nav className="hidden md:flex items-center gap-7 text-sm">
-            {NAV_LINKS.map((l) => (
-              <a
-                key={l.label}
-                href={l.href}
-                className="text-slate-600 hover:text-slate-900 transition-colors"
-              >
-                {l.label}
-              </a>
-            ))}
+            {NAV_LINKS.map((l) => {
+              const cls =
+                "text-slate-600 hover:text-slate-900 transition-colors";
+              // href bắt đầu '#' → anchor scroll trong page; else → React Router Link
+              return l.href.startsWith("#") ? (
+                <a key={l.label} href={l.href} className={cls}>
+                  {l.label}
+                </a>
+              ) : (
+                <Link key={l.label} to={l.href} className={cls}>
+                  {l.label}
+                </Link>
+              );
+            })}
           </nav>
 
           <div className="flex items-center gap-1">
@@ -382,11 +577,11 @@ export default function LandingPage() {
                 Bắt đầu miễn phí <ArrowRight className="w-4 h-4" />
               </Link>
               <a
-                href="#features"
+                href="#roadmap"
                 className="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-slate-700 hover:text-slate-900 transition-colors group"
               >
                 <Play className="w-4 h-4 transition-transform group-hover:scale-110" />{" "}
-                Xem demo 2 phút
+                Cách hoạt động
               </a>
             </div>
 
@@ -415,7 +610,11 @@ export default function LandingPage() {
 
       <StatsBand />
 
+      <RoadmapSection />
+
       <FeaturesSection />
+
+      <ContactSection />
 
       {/* Footer */}
       <footer
@@ -440,15 +639,15 @@ export default function LandingPage() {
               title="Sản phẩm"
               items={[
                 { label: "Tính năng", href: "#features" },
-                { label: "Lộ trình học", href: "#features" },
+                { label: "Lộ trình học", href: "#roadmap" },
               ]}
             />
 
             <FooterCol
               title="Tài nguyên"
               items={[
-                { label: "Đề thi mẫu", href: "#features" },
-                { label: "Hỗ trợ", href: "#features" },
+                { label: "Đề thi mẫu", href: ROUTES.REGISTER },
+                { label: "Hỗ trợ", href: "#contact" },
               ]}
             />
 
@@ -457,7 +656,7 @@ export default function LandingPage() {
               items={[
                 { label: "Privacy Policy", href: "#features" },
                 { label: "Terms of Service", href: "#features" },
-                { label: "Contact Us", href: "#features" },
+                { label: "Contact Us", href: "#contact" },
               ]}
             />
           </div>

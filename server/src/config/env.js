@@ -17,6 +17,9 @@ export const env = {
   RESEND_API_KEY: process.env.RESEND_API_KEY || '',
   EMAIL_FROM: process.env.EMAIL_FROM || 'onboarding@resend.dev',
   EMAIL_FROM_NAME: process.env.EMAIL_FROM_NAME || 'TOEIC AI Platform',
+  // Email cá nhân nhận tin nhắn từ form Liên hệ trên Landing Page.
+  // KHÔNG required — nếu thiếu, contactService trả 500 với message gợi ý.
+  CONTACT_RECIPIENT: process.env.CONTACT_RECIPIENT || '',
   CLOUDINARY_CLOUD_NAME: process.env.CLOUDINARY_CLOUD_NAME || '',
   CLOUDINARY_API_KEY: process.env.CLOUDINARY_API_KEY || '',
   CLOUDINARY_API_SECRET: process.env.CLOUDINARY_API_SECRET || '',

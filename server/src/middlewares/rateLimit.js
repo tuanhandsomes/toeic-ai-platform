@@ -53,6 +53,24 @@ export const aiLimiter = rateLimit({
 });
 
 /**
+ * /contact — public form, chống spam.
+ * 3 request / 10 phút / IP. Đủ cho user retry nếu typo, đủ chặn bot spam form.
+ */
+export const contactLimiter = rateLimit({
+  windowMs: 10 * 60 * 1000,
+  max: 3,
+  standardHeaders: true,
+  legacyHeaders: false,
+  handler: (_req, res) => {
+    res.status(429).json({
+      success: false,
+      message:
+        'Bạn đã gửi quá nhiều tin nhắn liên hệ trong thời gian ngắn. Vui lòng thử lại sau khoảng 10 phút.',
+    });
+  },
+});
+
+/**
  * Defense-in-depth cho mọi endpoint còn lại.
  * 200 request / 1 phút / IP. Một user bình thường không bao giờ chạm ngưỡng này.
  */

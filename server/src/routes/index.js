@@ -8,6 +8,7 @@ import statsRoutes from './statsRoutes.js';
 import aiRoutes from './aiRoutes.js';
 import uploadRoutes from './uploadRoutes.js';
 import adminRoutes from './adminRoutes.js';
+import contactRoutes from './contactRoutes.js';
 
 const router = Router();
 
@@ -20,5 +21,6 @@ router.use('/stats', statsRoutes);
 router.use('/ai', aiRoutes);
 router.use('/upload', uploadRoutes);
 router.use('/admin', adminRoutes);
+router.use('/contact', contactRoutes);
 
 export default router;
