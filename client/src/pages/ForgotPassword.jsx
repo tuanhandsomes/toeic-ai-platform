@@ -1,24 +1,24 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { Mail, MailQuestion, ArrowLeft, CheckCircle2 } from 'lucide-react';
-import { authService } from '../services/authService.js';
-import { ROUTES } from '../constants/routes.js';
+import { useState } from "react";
+import { Link } from "react-router-dom";
+import { Mail, MailQuestion, ArrowLeft, CheckCircle2 } from "lucide-react";
+import { authService } from "../services/authService.js";
+import { ROUTES } from "../constants/routes.js";
 
 export default function ForgotPassword() {
-  const [email, setEmail] = useState('');
+  const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [sent, setSent] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
+    setError("");
     setLoading(true);
     try {
       await authService.forgotPassword(email);
       setSent(true);
     } catch (err) {
-      setError(err?.message || 'Gửi yêu cầu thất bại');
+      setError(err?.message || "Gửi yêu cầu thất bại");
     } finally {
       setLoading(false);
     }
@@ -49,7 +49,8 @@ export default function ForgotPassword() {
             Quên mật khẩu?
           </h2>
           <p className="text-sm text-slate-600 leading-relaxed">
-            Nhập email tài khoản, chúng tôi sẽ gửi link đặt lại mật khẩu cho bạn.
+            Nhập email tài khoản của bạn, chúng tôi sẽ gửi link đặt lại mật khẩu
+            cho bạn.
           </p>
         </div>
 
@@ -59,9 +60,9 @@ export default function ForgotPassword() {
             <div>
               <p className="font-medium">Đã gửi yêu cầu</p>
               <p className="mt-1 text-secondary-700/80">
-                Nếu email <strong>{email}</strong> đã được đăng ký, chúng tôi
-                đã gửi liên kết đặt lại mật khẩu. Vui lòng kiểm tra hộp thư
-                (cả thư rác).
+                Nếu email <strong>{email}</strong> đã được đăng ký, chúng tôi đã
+                gửi liên kết đặt lại mật khẩu. Vui lòng kiểm tra hộp thư (cả thư
+                rác).
               </p>
             </div>
           </div>
@@ -94,7 +95,7 @@ export default function ForgotPassword() {
                 disabled={loading}
                 className="btn-primary w-full transition-transform hover:-translate-y-0.5 hover:shadow-lg"
               >
-                {loading ? 'Đang gửi...' : 'Gửi link đặt lại'}
+                {loading ? "Đang gửi..." : "Gửi link đặt lại"}
               </button>
             </form>
           </>
@@ -102,7 +103,7 @@ export default function ForgotPassword() {
 
         {/* Footer */}
         <div className="mt-6 pt-5 border-t border-slate-100 text-center text-sm text-slate-600">
-          Gặp khó khăn?{' '}
+          Gặp khó khăn?{" "}
           <a
             href="mailto:support@toeicai.vn"
             className="text-primary-600 font-medium hover:underline"

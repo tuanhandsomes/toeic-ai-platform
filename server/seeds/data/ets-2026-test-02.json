@@ -1,6 +1,4 @@
 {
-  "_comment": "ETS 2026 Test 02 — 200 câu full test. Extract từ lc-key.pdf + rc-key.pdf. AudioUrl/imageUrl tự sinh theo questionNumber khi seed. Run: npm run seed:real ets-2026-test-02.json",
-
   "testInfo": {
     "title": "ETS 2026 — Full Test 02",
     "series": "ETS 2026",
@@ -27,8 +25,14 @@
       "questionNumber": 2,
       "part": 1,
       "options": [
-        { "key": "A", "text": "Some shopping bags have been placed on a train platform." },
-        { "key": "B", "text": "Some people are lined up to buy train tickets." },
+        {
+          "key": "A",
+          "text": "Some shopping bags have been placed on a train platform."
+        },
+        {
+          "key": "B",
+          "text": "Some people are lined up to buy train tickets."
+        },
         { "key": "C", "text": "A woman is pulling her luggage behind her." },
         { "key": "D", "text": "A man is leaning against a railing." }
       ],
@@ -40,7 +44,10 @@
       "questionNumber": 3,
       "part": 1,
       "options": [
-        { "key": "A", "text": "Some wooden planks are leaning against a wall." },
+        {
+          "key": "A",
+          "text": "Some wooden planks are leaning against a wall."
+        },
         { "key": "B", "text": "A vehicle is parked next to a building." },
         { "key": "C", "text": "Some stones have been stacked on a pallet." },
         { "key": "D", "text": "A package has been left near a door." }
@@ -328,7 +335,10 @@
       "part": 2,
       "text": "Dr. Molina sees patients in her Middleville office.",
       "options": [
-        { "key": "A", "text": "The instructor was so patient with the students." },
+        {
+          "key": "A",
+          "text": "The instructor was so patient with the students."
+        },
         { "key": "B", "text": "Oh, that's only two kilometers from my house." },
         { "key": "C", "text": "We have some digital thermometers in stock." }
       ],
@@ -367,7 +377,10 @@
       "part": 2,
       "text": "When will you finish updating the sales data?",
       "options": [
-        { "key": "A", "text": "I'm waiting for information from one more store." },
+        {
+          "key": "A",
+          "text": "I'm waiting for information from one more store."
+        },
         { "key": "B", "text": "In the top drawer." },
         { "key": "C", "text": "Sales increased by five percent." }
       ],
@@ -940,7 +953,10 @@
       "part": 3,
       "text": "Why does the woman want the man to attend a conference?",
       "options": [
-        { "key": "A", "text": "To learn more about the latest industry trends" },
+        {
+          "key": "A",
+          "text": "To learn more about the latest industry trends"
+        },
         { "key": "B", "text": "To accept a reward on behalf of the company" },
         { "key": "C", "text": "To host a panel discussion" },
         { "key": "D", "text": "To screen job candidates" }
@@ -1068,7 +1084,10 @@
       "part": 4,
       "text": "What does the speaker mean when he says, \"these things are constantly changing\"?",
       "options": [
-        { "key": "A", "text": "He recommends professional development courses." },
+        {
+          "key": "A",
+          "text": "He recommends professional development courses."
+        },
         { "key": "B", "text": "He questions the value of an investment." },
         { "key": "C", "text": "Some information will be excluded." },
         { "key": "D", "text": "Using technology is important." }
@@ -1280,7 +1299,10 @@
       "options": [
         { "key": "A", "text": "To indicate why a product is only sold online" },
         { "key": "B", "text": "To justify the high price of a product" },
-        { "key": "C", "text": "To suggest that a company is having financial difficulties" },
+        {
+          "key": "C",
+          "text": "To suggest that a company is having financial difficulties"
+        },
         { "key": "D", "text": "To explain why a product is not well-known" }
       ],
       "correctAnswer": "D",
@@ -1308,7 +1330,10 @@
       "options": [
         { "key": "A", "text": "Some streets are being resurfaced." },
         { "key": "B", "text": "Some roads are closed for a bicycle race." },
-        { "key": "C", "text": "A group of residents is hosting a fund-raising concert." },
+        {
+          "key": "C",
+          "text": "A group of residents is hosting a fund-raising concert."
+        },
         { "key": "D", "text": "A local politician will be speaking in a park." }
       ],
       "correctAnswer": "A",
@@ -1436,9 +1461,7 @@
       ],
       "correctAnswer": "D",
       "explanation": "'Promptly' = đúng giờ, hợp lý nhất với 'at 2 P.M.'",
-      "vocab": [
-        { "word": "promptly", "meaning": "đúng giờ, ngay lập tức" }
-      ],
+      "vocab": [{ "word": "promptly", "meaning": "đúng giờ, ngay lập tức" }],
       "difficulty": "medium"
     },
     {
@@ -1471,9 +1494,7 @@
       ],
       "correctAnswer": "A",
       "explanation": "'Lead' dùng như tính từ nghĩa 'chủ chốt, đứng đầu' → 'lead design engineer'.",
-      "vocab": [
-        { "word": "lead engineer", "meaning": "kỹ sư trưởng" }
-      ],
+      "vocab": [{ "word": "lead engineer", "meaning": "kỹ sư trưởng" }],
       "difficulty": "medium"
     },
     {
@@ -1502,9 +1523,7 @@
       ],
       "correctAnswer": "D",
       "explanation": "'By + mốc thời gian' = trước/không muộn hơn thời điểm đó.",
-      "vocab": [
-        { "word": "by", "meaning": "trước (mốc thời gian)" }
-      ],
+      "vocab": [{ "word": "by", "meaning": "trước (mốc thời gian)" }],
       "difficulty": "easy"
     },
     {
@@ -1588,9 +1607,7 @@
       ],
       "correctAnswer": "D",
       "explanation": "Sau động từ 'grown' cần trạng từ → 'significantly'.",
-      "vocab": [
-        { "word": "tenure", "meaning": "nhiệm kỳ" }
-      ],
+      "vocab": [{ "word": "tenure", "meaning": "nhiệm kỳ" }],
       "difficulty": "easy"
     },
     {
@@ -1637,9 +1654,7 @@
       ],
       "correctAnswer": "B",
       "explanation": "'Abruptly' = đột ngột, phù hợp với 'changed direction last week'.",
-      "vocab": [
-        { "word": "abruptly", "meaning": "đột ngột" }
-      ],
+      "vocab": [{ "word": "abruptly", "meaning": "đột ngột" }],
       "difficulty": "medium"
     },
     {
@@ -1686,9 +1701,7 @@
       ],
       "correctAnswer": "C",
       "explanation": "'Be composed of' = bao gồm.",
-      "vocab": [
-        { "word": "be composed of", "meaning": "bao gồm" }
-      ],
+      "vocab": [{ "word": "be composed of", "meaning": "bao gồm" }],
       "difficulty": "medium"
     },
     {
@@ -1703,9 +1716,7 @@
       ],
       "correctAnswer": "D",
       "explanation": "Xem tài liệu trước rồi mới gặp khách → 'before'.",
-      "vocab": [
-        { "word": "mortgage broker", "meaning": "môi giới thế chấp" }
-      ],
+      "vocab": [{ "word": "mortgage broker", "meaning": "môi giới thế chấp" }],
       "difficulty": "easy"
     },
     {
@@ -1734,9 +1745,7 @@
       ],
       "correctAnswer": "A",
       "explanation": "Cụm cố định 'unforeseen circumstances' = tình huống bất ngờ.",
-      "vocab": [
-        { "word": "unforeseen", "meaning": "không lường trước được" }
-      ],
+      "vocab": [{ "word": "unforeseen", "meaning": "không lường trước được" }],
       "difficulty": "medium"
     },
     {
@@ -1751,9 +1760,7 @@
       ],
       "correctAnswer": "B",
       "explanation": "'Unlimited' + danh từ đếm được số nhiều → 'transfers'.",
-      "vocab": [
-        { "word": "transfer", "meaning": "giao dịch chuyển tiền" }
-      ],
+      "vocab": [{ "word": "transfer", "meaning": "giao dịch chuyển tiền" }],
       "difficulty": "easy"
     },
     {
@@ -1782,9 +1789,7 @@
       ],
       "correctAnswer": "C",
       "explanation": "So sánh hơn với 'than' → 'briefer'.",
-      "vocab": [
-        { "word": "ample", "meaning": "đầy đủ, dư dả" }
-      ],
+      "vocab": [{ "word": "ample", "meaning": "đầy đủ, dư dả" }],
       "difficulty": "easy"
     },
     {
@@ -1799,9 +1804,7 @@
       ],
       "correctAnswer": "B",
       "explanation": "Cam kết hoàn tiền nếu đơn không kịp → 'guarantee' = bảo đảm.",
-      "vocab": [
-        { "word": "guarantee", "meaning": "bảo đảm, cam kết" }
-      ],
+      "vocab": [{ "word": "guarantee", "meaning": "bảo đảm, cam kết" }],
       "difficulty": "medium"
     },
     {
@@ -1830,9 +1833,7 @@
       ],
       "correctAnswer": "D",
       "explanation": "Cụm cố định 'unseasonably cold' = lạnh trái mùa.",
-      "vocab": [
-        { "word": "unseasonably", "meaning": "trái mùa" }
-      ],
+      "vocab": [{ "word": "unseasonably", "meaning": "trái mùa" }],
       "difficulty": "hard"
     },
     {
@@ -1861,9 +1862,7 @@
       ],
       "correctAnswer": "B",
       "explanation": "Cụm cố định 'distinguish A from B' = phân biệt A với B.",
-      "vocab": [
-        { "word": "distinguish", "meaning": "phân biệt" }
-      ],
+      "vocab": [{ "word": "distinguish", "meaning": "phân biệt" }],
       "difficulty": "medium"
     },
     {
@@ -1902,10 +1901,19 @@
       "text": "Choose the sentence that best fits the passage.",
       "imageUrl": "/images/ets-2026/test-02/passage-q131-134.PNG",
       "options": [
-        { "key": "A", "text": "With many savory options, muffins are not just for breakfast anymore." },
-        { "key": "B", "text": "Every week, she baked a new variety to deliver to eager takers." },
+        {
+          "key": "A",
+          "text": "With many savory options, muffins are not just for breakfast anymore."
+        },
+        {
+          "key": "B",
+          "text": "Every week, she baked a new variety to deliver to eager takers."
+        },
         { "key": "C", "text": "She would take daily walks with her friends." },
-        { "key": "D", "text": "Unfortunately, it took nearly three hours to prepare a batch." }
+        {
+          "key": "D",
+          "text": "Unfortunately, it took nearly three hours to prepare a batch."
+        }
       ],
       "correctAnswer": "B",
       "explanation": "Câu này nối tiếp ý cô ấy bắt đầu chia sẻ bánh rộng rãi → 'Mỗi tuần, cô ấy nướng một loại mới để giao'.",
@@ -1977,10 +1985,22 @@
       "text": "Choose the sentence that best fits the passage.",
       "imageUrl": "/images/ets-2026/test-02/passage-q135-138.PNG",
       "options": [
-        { "key": "A", "text": "Many soaps have a fragrance that is too strong for customers." },
-        { "key": "B", "text": "Handwashing is essential for workers in the food industry." },
-        { "key": "C", "text": "Several factors can influence the price of soap products." },
-        { "key": "D", "text": "All the ingredients are sourced from plants found in the wild." }
+        {
+          "key": "A",
+          "text": "Many soaps have a fragrance that is too strong for customers."
+        },
+        {
+          "key": "B",
+          "text": "Handwashing is essential for workers in the food industry."
+        },
+        {
+          "key": "C",
+          "text": "Several factors can influence the price of soap products."
+        },
+        {
+          "key": "D",
+          "text": "All the ingredients are sourced from plants found in the wild."
+        }
       ],
       "correctAnswer": "D",
       "explanation": "Đoạn nhấn mạnh tính 'natural' và 'unscented' → 'All the ingredients are sourced from plants…' phù hợp nhất.",
@@ -2029,9 +2049,7 @@
       ],
       "correctAnswer": "C",
       "explanation": "'Bistro' đồng nghĩa với 'eatery' = quán ăn.",
-      "vocab": [
-        { "word": "eatery", "meaning": "quán ăn, nhà hàng nhỏ" }
-      ],
+      "vocab": [{ "word": "eatery", "meaning": "quán ăn, nhà hàng nhỏ" }],
       "difficulty": "medium"
     },
     {
@@ -2040,9 +2058,15 @@
       "text": "Choose the sentence that best fits the passage.",
       "imageUrl": "/images/ets-2026/test-02/passage-q139-142.PNG",
       "options": [
-        { "key": "A", "text": "I update the menu quarterly based on diners' feedback." },
+        {
+          "key": "A",
+          "text": "I update the menu quarterly based on diners' feedback."
+        },
         { "key": "B", "text": "Even so, business has not been good lately." },
-        { "key": "C", "text": "My parents managed the bistro before I was born." },
+        {
+          "key": "C",
+          "text": "My parents managed the bistro before I was born."
+        },
         { "key": "D", "text": "But the time has come for something new." }
       ],
       "correctAnswer": "D",
@@ -2100,9 +2124,15 @@
       "text": "Choose the sentence that best fits the passage.",
       "imageUrl": "/images/ets-2026/test-02/passage-q143-146.PNG",
       "options": [
-        { "key": "A", "text": "We regularly repair both commercial and private driveways." },
+        {
+          "key": "A",
+          "text": "We regularly repair both commercial and private driveways."
+        },
         { "key": "B", "text": "This approach is the one we would recommend." },
-        { "key": "C", "text": "Please consider posting a review on our Web site." },
+        {
+          "key": "C",
+          "text": "Please consider posting a review on our Web site."
+        },
         { "key": "D", "text": "We will provide you with an itemized receipt." }
       ],
       "correctAnswer": "B",
@@ -2176,10 +2206,19 @@
       "text": "What is suggested about the new business cards?",
       "imageUrl": "/images/ets-2026/test-02/passage-q149-150.PNG",
       "options": [
-        { "key": "A", "text": "They will be issued only to full-time employees." },
+        {
+          "key": "A",
+          "text": "They will be issued only to full-time employees."
+        },
         { "key": "B", "text": "They will be mailed to employees' homes." },
-        { "key": "C", "text": "They will be printed during the month of April." },
-        { "key": "D", "text": "They will include the original Frantum Corporation logo." }
+        {
+          "key": "C",
+          "text": "They will be printed during the month of April."
+        },
+        {
+          "key": "D",
+          "text": "They will include the original Frantum Corporation logo."
+        }
       ],
       "correctAnswer": "C",
       "explanation": "Memo ngày 31/3, nhân viên sẽ nhận danh thiếp mới trước 1/5 → in trong tháng Tư.",
@@ -2192,9 +2231,15 @@
       "imageUrl": "/images/ets-2026/test-02/passage-q151-152.PNG",
       "options": [
         { "key": "A", "text": "She will be present at an upcoming workshop." },
-        { "key": "B", "text": "The accounting meeting is extremely important." },
+        {
+          "key": "B",
+          "text": "The accounting meeting is extremely important."
+        },
         { "key": "C", "text": "A social event after work promises to be fun." },
-        { "key": "D", "text": "She does not expect Mr. Oxley to return a document he borrowed." }
+        {
+          "key": "D",
+          "text": "She does not expect Mr. Oxley to return a document he borrowed."
+        }
       ],
       "correctAnswer": "A",
       "explanation": "Câu 'I wouldn't miss it' khẳng định bà sẽ tham dự hội thảo kỹ năng quản lý.",
@@ -2221,10 +2266,22 @@
       "text": "What is the purpose of the e-mail?",
       "imageUrl": "/images/ets-2026/test-02/passage-q153-155.PNG",
       "options": [
-        { "key": "A", "text": "To notify Mr. Tso about a Web site address change" },
-        { "key": "B", "text": "To explain how to access an employee payment system" },
-        { "key": "C", "text": "To remind Mr. Tso of the requirement to sign a form" },
-        { "key": "D", "text": "To inform Mr. Tso about a change to his work schedule" }
+        {
+          "key": "A",
+          "text": "To notify Mr. Tso about a Web site address change"
+        },
+        {
+          "key": "B",
+          "text": "To explain how to access an employee payment system"
+        },
+        {
+          "key": "C",
+          "text": "To remind Mr. Tso of the requirement to sign a form"
+        },
+        {
+          "key": "D",
+          "text": "To inform Mr. Tso about a change to his work schedule"
+        }
       ],
       "correctAnswer": "C",
       "explanation": "Email nhắc nhở các nhân viên chưa ký trang chấp thuận Sổ tay nhân viên.",
@@ -2237,7 +2294,10 @@
       "imageUrl": "/images/ets-2026/test-02/passage-q153-155.PNG",
       "options": [
         { "key": "A", "text": "She is a new employee at Faeber Electric." },
-        { "key": "B", "text": "She wrote the Faeber Electric Employee Handbook." },
+        {
+          "key": "B",
+          "text": "She wrote the Faeber Electric Employee Handbook."
+        },
         { "key": "C", "text": "She sent an e-mail to employees on May 1." },
         { "key": "D", "text": "She is Mr. Tso's manager." }
       ],
@@ -2356,8 +2416,14 @@
       "text": "What is indicated about Ms. Woods?",
       "imageUrl": "/images/ets-2026/test-02/passage-q161-163.PNG",
       "options": [
-        { "key": "A", "text": "She is applying for a job at Honey Canyon Apparel." },
-        { "key": "B", "text": "She has shopped at Honey Canyon Apparel before." },
+        {
+          "key": "A",
+          "text": "She is applying for a job at Honey Canyon Apparel."
+        },
+        {
+          "key": "B",
+          "text": "She has shopped at Honey Canyon Apparel before."
+        },
         { "key": "C", "text": "She prefers to wear casual clothing." },
         { "key": "D", "text": "She works as a fashion designer." }
       ],
@@ -2388,8 +2454,14 @@
       "options": [
         { "key": "A", "text": "It is Nibora's best-selling vehicle." },
         { "key": "B", "text": "It is good for parking in small spaces." },
-        { "key": "C", "text": "It has received more positive reviews than other SUVs have received." },
-        { "key": "D", "text": "It is good for driving on many types of surfaces." }
+        {
+          "key": "C",
+          "text": "It has received more positive reviews than other SUVs have received."
+        },
+        {
+          "key": "D",
+          "text": "It is good for driving on many types of surfaces."
+        }
       ],
       "correctAnswer": "D",
       "explanation": "Quảng cáo nói XC-35 chạy được từ bãi biển đến đường rừng, có khoảng sáng gầm cao, êm trên địa hình gồ ghề → tốt trên nhiều loại bề mặt.",
@@ -2416,10 +2488,16 @@
       "text": "What is mentioned in the advertisement about the options for the XC-35?",
       "imageUrl": "/images/ets-2026/test-02/passage-q164-167.PNG",
       "options": [
-        { "key": "A", "text": "They can be discounted if bought as a package." },
+        {
+          "key": "A",
+          "text": "They can be discounted if bought as a package."
+        },
         { "key": "B", "text": "They are unavailable in some dealerships." },
         { "key": "C", "text": "Some will be discontinued soon." },
-        { "key": "D", "text": "Some are available only if bought in a package." }
+        {
+          "key": "D",
+          "text": "Some are available only if bought in a package."
+        }
       ],
       "correctAnswer": "A",
       "explanation": "Quảng cáo gợi ý xem các gói giá trị (value packages) ở đại lý để tiết kiệm → được giảm giá nếu mua theo gói.",
@@ -2462,9 +2540,15 @@
       "imageUrl": "/images/ets-2026/test-02/passage-q168-171.PNG",
       "options": [
         { "key": "A", "text": "It offers group lessons for adults." },
-        { "key": "B", "text": "It employs musicians who have university degrees." },
+        {
+          "key": "B",
+          "text": "It employs musicians who have university degrees."
+        },
         { "key": "C", "text": "It operates a recording studio." },
-        { "key": "D", "text": "It provides a complimentary musical instrument." }
+        {
+          "key": "D",
+          "text": "It provides a complimentary musical instrument."
+        }
       ],
       "correctAnswer": "B",
       "explanation": "Tất cả giảng viên đều có ít nhất bằng cử nhân âm nhạc → nhạc sĩ có bằng đại học.",
@@ -2536,7 +2620,10 @@
       "text": "At 4:52 P.M., what does Ms. Au most likely mean when she writes, \"What a relief\"?",
       "imageUrl": "/images/ets-2026/test-02/passage-q172-175.PNG",
       "options": [
-        { "key": "A", "text": "She is pleased that Ms. Walter agrees with her." },
+        {
+          "key": "A",
+          "text": "She is pleased that Ms. Walter agrees with her."
+        },
         { "key": "B", "text": "She is grateful to be invited to an event." },
         { "key": "C", "text": "She is happy her calendar is correct." },
         { "key": "D", "text": "She is happy to meet with her friends." }
@@ -2644,7 +2731,10 @@
       "options": [
         { "key": "A", "text": "It has an office on Hope Street." },
         { "key": "B", "text": "It was founded by Mr. Silverman." },
-        { "key": "C", "text": "It holds a fund-raising event every two years." },
+        {
+          "key": "C",
+          "text": "It holds a fund-raising event every two years."
+        },
         { "key": "D", "text": "It focuses on protecting the environment." }
       ],
       "correctAnswer": "D",
@@ -2688,9 +2778,18 @@
       "imageUrl": "/images/ets-2026/test-02/passage-q181-185-a.PNG;/images/ets-2026/test-02/passage-q181-185-b.PNG",
       "options": [
         { "key": "A", "text": "It has been in business since 1981." },
-        { "key": "B", "text": "It will prepare a chicken dish for the fund-raiser." },
-        { "key": "C", "text": "It has several locations in downtown Portland." },
-        { "key": "D", "text": "It will provide the food for the fund-raiser for the first time." }
+        {
+          "key": "B",
+          "text": "It will prepare a chicken dish for the fund-raiser."
+        },
+        {
+          "key": "C",
+          "text": "It has several locations in downtown Portland."
+        },
+        {
+          "key": "D",
+          "text": "It will provide the food for the fund-raiser for the first time."
+        }
       ],
       "correctAnswer": "D",
       "explanation": "Thông báo nói có bữa tối chay do Green Earth chuẩn bị; email nói 'năm nay hợp tác với công ty cung cấp dịch vụ ăn uống mới' → lần đầu cung cấp.",
@@ -2702,8 +2801,14 @@
       "text": "What is true about Mr. Cleary?",
       "imageUrl": "/images/ets-2026/test-02/passage-q181-185-a.PNG;/images/ets-2026/test-02/passage-q181-185-b.PNG",
       "options": [
-        { "key": "A", "text": "He previously worked in the position Ms. Nguyen now holds." },
-        { "key": "B", "text": "He has been offered free tickets to the fund-raiser." },
+        {
+          "key": "A",
+          "text": "He previously worked in the position Ms. Nguyen now holds."
+        },
+        {
+          "key": "B",
+          "text": "He has been offered free tickets to the fund-raiser."
+        },
         { "key": "C", "text": "He owns one of Ms. Atkins' sculptures." },
         { "key": "D", "text": "He is an accomplished sculptor." }
       ],
@@ -2718,10 +2823,19 @@
       "text": "What is indicated on the Web page about the Artists of Delta City exhibit?",
       "imageUrl": "/images/ets-2026/test-02/passage-q186-190-a.PNG;/images/ets-2026/test-02/passage-q186-190-b.PNG;/images/ets-2026/test-02/passage-q186-190-c.PNG",
       "options": [
-        { "key": "A", "text": "It includes pottery by Native American artists." },
+        {
+          "key": "A",
+          "text": "It includes pottery by Native American artists."
+        },
         { "key": "B", "text": "It will be closed from May through August." },
-        { "key": "C", "text": "The works of art on display are regularly changed." },
-        { "key": "D", "text": "The paintings on view were created in the nineteenth century." }
+        {
+          "key": "C",
+          "text": "The works of art on display are regularly changed."
+        },
+        {
+          "key": "D",
+          "text": "The paintings on view were created in the nineteenth century."
+        }
       ],
       "correctAnswer": "C",
       "explanation": "Trang web ghi 'các tác phẩm riêng lẻ được trưng bày theo hình thức luân phiên' → thay đổi thường xuyên.",
@@ -2824,9 +2938,18 @@
       "text": "What is indicated about products sold in the type of packaging used by Green Globe?",
       "imageUrl": "/images/ets-2026/test-02/passage-q191-195-a.PNG;/images/ets-2026/test-02/passage-q191-195-b.PNG;/images/ets-2026/test-02/passage-q191-195-c.PNG",
       "options": [
-        { "key": "A", "text": "They are recommended by the National Dentifrice Council." },
-        { "key": "B", "text": "They can be purchased only at Macker Drugstores." },
-        { "key": "C", "text": "Their manufacturing cost is higher than average." },
+        {
+          "key": "A",
+          "text": "They are recommended by the National Dentifrice Council."
+        },
+        {
+          "key": "B",
+          "text": "They can be purchased only at Macker Drugstores."
+        },
+        {
+          "key": "C",
+          "text": "Their manufacturing cost is higher than average."
+        },
         { "key": "D", "text": "Their share of the market is rising." }
       ],
       "correctAnswer": "D",
@@ -2855,7 +2978,10 @@
       "imageUrl": "/images/ets-2026/test-02/passage-q191-195-a.PNG;/images/ets-2026/test-02/passage-q191-195-b.PNG;/images/ets-2026/test-02/passage-q191-195-c.PNG",
       "options": [
         { "key": "A", "text": "The same order will be delivered every month." },
-        { "key": "B", "text": "The merchandise will be used in a market test." },
+        {
+          "key": "B",
+          "text": "The merchandise will be used in a market test."
+        },
         { "key": "C", "text": "The price was discounted significantly." },
         { "key": "D", "text": "The shipping fee was refunded by Green Globe." }
       ],
@@ -2872,8 +2998,14 @@
       "options": [
         { "key": "A", "text": "To cancel a hotel reservation" },
         { "key": "B", "text": "To obtain clear directions to a hotel" },
-        { "key": "C", "text": "To request instructions for downloading an app" },
-        { "key": "D", "text": "To learn more about a hotel's social media account" }
+        {
+          "key": "C",
+          "text": "To request instructions for downloading an app"
+        },
+        {
+          "key": "D",
+          "text": "To learn more about a hotel's social media account"
+        }
       ],
       "correctAnswer": "B",
       "explanation": "Ông Cho hỏi cách di chuyển đến khách sạn → muốn lấy hướng dẫn rõ ràng.",
@@ -2902,7 +3034,10 @@
       "options": [
         { "key": "A", "text": "It has a large parking area." },
         { "key": "B", "text": "It is connected to a conference center." },
-        { "key": "C", "text": "It is across the street from the Sleepy Time Hotel." },
+        {
+          "key": "C",
+          "text": "It is across the street from the Sleepy Time Hotel."
+        },
         { "key": "D", "text": "It is being renovated." }
       ],
       "correctAnswer": "C",

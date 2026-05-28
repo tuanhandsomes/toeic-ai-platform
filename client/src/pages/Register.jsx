@@ -81,8 +81,8 @@ function PromoPanel() {
             <span className="text-amber-300">990 TOEIC</span>
           </h3>
           <p className="text-sm text-primary-100 leading-relaxed">
-            Lộ trình cá nhân hóa dựa trên AI giúp bạn đạt mục tiêu nhanh hơn
-            40% so với phương pháp truyền thống.
+            Lộ trình cá nhân hóa dựa trên AI giúp bạn đạt mục tiêu nhanh hơn 40%
+            so với phương pháp truyền thống.
           </p>
         </div>
 
@@ -164,7 +164,7 @@ export default function Register() {
                 <input
                   type="text"
                   className="input pl-10"
-                  placeholder="Nguyễn Văn A"
+                  placeholder="Nhập tên của bạn"
                   value={form.fullName}
                   onChange={(e) =>
                     setForm({ ...form, fullName: e.target.value })
