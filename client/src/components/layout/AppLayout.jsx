@@ -11,7 +11,6 @@ import {
   User,
   Bell,
   ChevronsUpDown,
-  Settings,
   KeyRound,
 } from "lucide-react";
 import { useAuthStore } from "@/store/authStore";
@@ -44,13 +43,14 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import ChangePasswordDialog from "@/components/common/ChangePasswordDialog";
 
 const HEADER_HEIGHT = "4.5rem"; // 56px (h-14)
 
 const navItems = [
   { to: ROUTES.DASHBOARD, label: "Tổng quan", icon: Home },
   { to: ROUTES.PRACTICE, label: "Luyện tập", icon: PenTool },
-  { to: ROUTES.FULL_TEST, label: "Full Test", icon: ClipboardCheck },
+  { to: ROUTES.FULL_TEST, label: "Thi thử", icon: ClipboardCheck },
   { to: ROUTES.RESULTS, label: "Lịch sử", icon: History },
   { to: ROUTES.STATISTICS, label: "Thống kê", icon: BarChart3 },
 ];
@@ -63,6 +63,7 @@ export default function AppLayout({ children }) {
 
   const [logoutOpen, setLogoutOpen] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
+  const [changePasswordOpen, setChangePasswordOpen] = useState(false);
 
   const handleLogout = async () => {
     setLoggingOut(true);
@@ -186,10 +187,7 @@ export default function AppLayout({ children }) {
                     <DropdownMenuItem onClick={() => navigate(ROUTES.PROFILE)}>
                       <User /> Hồ sơ cá nhân
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => navigate(ROUTES.PROFILE)}>
-                      <Settings /> Cài đặt tài khoản
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => navigate(ROUTES.PROFILE)}>
+                    <DropdownMenuItem onClick={() => setChangePasswordOpen(true)}>
                       <KeyRound /> Đổi mật khẩu
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
@@ -243,6 +241,11 @@ export default function AppLayout({ children }) {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <ChangePasswordDialog
+        open={changePasswordOpen}
+        onClose={() => setChangePasswordOpen(false)}
+      />
     </div>
   );
 }
