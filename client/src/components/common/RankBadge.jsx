@@ -1,54 +1,71 @@
-import { Crown, Medal } from 'lucide-react';
+import { Trophy, Medal, Award } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 /**
- * Visual rank indicator. Uses crown for #1, medal for #2-3, plain number for 4+.
+ * Visual rank indicator. Icon medal làm nền, SỐ to đậm chính giữa.
+ *   #1 — Trophy   (gold)
+ *   #2 — Medal    (silver)
+ *   #3 — Award    (bronze)
+ *   4+ — chỉ số
  *
  * @param {Object} props
  * @param {number} props.rank  1-based rank
  * @param {string} [props.className]
  */
 export function RankBadge({ rank, className }) {
-  if (rank === 1) {
+  const TOP = {
+    1: {
+      Icon: Trophy,
+      bg: 'from-yellow-300 to-amber-500',
+      ring: 'ring-amber-400/40',
+      label: 'Hạng 1',
+    },
+    2: {
+      Icon: Medal,
+      bg: 'from-slate-200 to-slate-400',
+      ring: 'ring-slate-300/60',
+      label: 'Hạng 2',
+    },
+    3: {
+      Icon: Award,
+      bg: 'from-orange-400 to-orange-700',
+      ring: 'ring-orange-500/40',
+      label: 'Hạng 3',
+    },
+  };
+
+  if (TOP[rank]) {
+    const { Icon, bg, ring, label } = TOP[rank];
     return (
       <div
         className={cn(
-          'inline-flex items-center justify-center w-8 h-8 rounded-full bg-gradient-to-br from-amber-300 to-amber-500 text-white',
+          'relative inline-flex items-center justify-center w-10 h-10 rounded-full text-white shadow-sm ring-1 bg-gradient-to-br',
+          bg,
+          ring,
           className,
         )}
+        title={label}
       >
-        <Crown className="w-4 h-4" fill="currentColor" />
+        {/* Icon medal làm nền — opacity nhẹ, kích thước full */}
+        <Icon
+          className="absolute inset-0 m-auto w-6 h-6 opacity-30"
+          strokeWidth={2}
+          aria-hidden="true"
+        />
+        {/* Số rank nổi trên cùng */}
+        <span
+          className="relative text-base font-bold leading-none drop-shadow-[0_1px_1px_rgba(0,0,0,0.35)]"
+        >
+          {rank}
+        </span>
       </div>
     );
   }
-  if (rank === 2) {
-    return (
-      <div
-        className={cn(
-          'inline-flex items-center justify-center w-8 h-8 rounded-full bg-gradient-to-br from-slate-300 to-slate-400 text-white',
-          className,
-        )}
-      >
-        <Medal className="w-4 h-4" fill="currentColor" />
-      </div>
-    );
-  }
-  if (rank === 3) {
-    return (
-      <div
-        className={cn(
-          'inline-flex items-center justify-center w-8 h-8 rounded-full bg-gradient-to-br from-amber-700 to-amber-800 text-white',
-          className,
-        )}
-      >
-        <Medal className="w-4 h-4" fill="currentColor" />
-      </div>
-    );
-  }
+
   return (
     <div
       className={cn(
-        'inline-flex items-center justify-center w-8 h-8 rounded-full bg-slate-100 text-slate-600 font-semibold text-sm',
+        'inline-flex items-center justify-center w-10 h-10 rounded-full bg-slate-100 text-slate-600 font-semibold text-sm',
         className,
       )}
     >
