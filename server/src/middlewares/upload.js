@@ -11,22 +11,18 @@ import { ApiError } from '../utils/ApiError.js';
  *   Image: 5 MB   — Part 7 multi-passage scan ≈ 1-2MB
  */
 
+// Project convention chỉ dùng MP3 + PNG (testMediaService regex `E26-TXX-NN.mp3`
+// và `*.PNG` ràng buộc cứng). Chỉ allow đúng 2 format này để tránh false
+// promise — admin upload WAV/JPG sẽ pass mimetype filter nhưng fail naming
+// convention sau đó, gây confusion.
 const ALLOWED_AUDIO = new Set([
-  'audio/mpeg',
-  'audio/mp3',
-  'audio/wav',
-  'audio/x-wav',
-  'audio/wave',
-  'audio/m4a',
-  'audio/mp4',
-  'audio/ogg',
+  'audio/mpeg', // .mp3 chuẩn (RFC 3003)
+  'audio/mp3',  // .mp3 fallback một số browser/OS gửi
 ]);
 
 const ALLOWED_IMAGE = new Set([
-  'image/jpeg',
   'image/png',
-  'image/webp',
-  'image/gif',
+  'image/jpeg',
 ]);
 
 const makeFilter = (allowed, kind) => (_req, file, cb) => {

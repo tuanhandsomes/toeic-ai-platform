@@ -20,6 +20,7 @@ import AdminDashboard from '../pages/admin/AdminDashboard.jsx';
 import ManageTests from '../pages/admin/ManageTests.jsx';
 import AdminTestDetail from '../pages/admin/AdminTestDetail.jsx';
 import ManageQuestions from '../pages/admin/ManageQuestions.jsx';
+import ManageMedia from '../pages/admin/ManageMedia.jsx';
 import ManageUsers from '../pages/admin/ManageUsers.jsx';
 import AdminUserDetail from '../pages/admin/AdminUserDetail.jsx';
 
@@ -59,6 +60,7 @@ export default function AppRoutes() {
         <Route path={ROUTES.ADMIN_TESTS} element={<ManageTests />} />
         <Route path={ROUTES.ADMIN_TEST_DETAIL} element={<AdminTestDetail />} />
         <Route path={ROUTES.ADMIN_QUESTIONS} element={<ManageQuestions />} />
+        <Route path={ROUTES.ADMIN_MEDIA} element={<ManageMedia />} />
         <Route path={ROUTES.ADMIN_USERS} element={<ManageUsers />} />
         <Route path={ROUTES.ADMIN_USER_DETAIL} element={<AdminUserDetail />} />
       </Route>

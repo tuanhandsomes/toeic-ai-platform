@@ -12,4 +12,11 @@ router.use(requireAuth, requireAdmin);
 router.post('/audio', wrapMulter(uploadAudio), uploadController.audio);
 router.post('/image', wrapMulter(uploadImage), uploadController.image);
 
+// List media — query: ?type=audio|image|all (default all)
+router.get('/', uploadController.list);
+
+// Delete media. publicId có thể chứa "/" (vd "toeic-ai/uploads/audio/file_123") →
+// dùng wildcard ":publicId(*)" để Express không tách path.
+router.delete('/:resourceType/:publicId(*)', uploadController.remove);
+
 export default router;

@@ -20,4 +20,5 @@ export const ROUTES = {
   ADMIN_QUESTIONS: '/admin/questions',
   ADMIN_TESTS: '/admin/tests',
   ADMIN_TEST_DETAIL: '/admin/tests/:testId',
+  ADMIN_MEDIA: '/admin/media',
 };

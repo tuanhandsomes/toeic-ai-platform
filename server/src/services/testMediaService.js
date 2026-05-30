@@ -23,17 +23,18 @@ import { logger } from '../utils/logger.js';
  * - Easy debugging in Cloudinary Media Library
  */
 
-const AUDIO_EXT_REGEX = /\.(mp3|wav|m4a|ogg)$/i;
-const IMAGE_EXT_REGEX = /\.(png|jpe?g|webp|gif)$/i;
+// Convention: MP3 cho audio; PNG hoặc JPG cho image. Khớp với upload.js mimetype filter.
+const AUDIO_EXT_REGEX = /\.mp3$/i;
+const IMAGE_EXT_REGEX = /\.(png|jpe?g)$/i;
 
 // Strict filename patterns — anything else is rejected so we never upload junk.
 //   audio:  E26-T02-01.mp3   or   E26-T02-32-34.mp3
 //   image:  01.PNG | 06.PNG  (Part 1)
 //           graphic-q62-64.PNG | passage-q131-134.PNG
 //           passage-q176-180-a.PNG (multi)
-const AUDIO_NAME_REGEX = /^E26-T(\d{2})-(\d{2})(?:-(\d{2,3}))?\.(mp3|wav|m4a|ogg)$/i;
-const IMAGE_PART1_REGEX = /^(0[1-9]|10)\.(png|jpe?g|webp)$/i;
-const IMAGE_PASSAGE_REGEX = /^(graphic|passage)-q\d+-\d+(-[a-c])?\.(png|jpe?g|webp)$/i;
+const AUDIO_NAME_REGEX = /^E26-T(\d{2})-(\d{2})(?:-(\d{2,3}))?\.mp3$/i;
+const IMAGE_PART1_REGEX = /^(0[1-9]|10)\.(png|jpe?g)$/i;
+const IMAGE_PASSAGE_REGEX = /^(graphic|passage)-q\d+-\d+(-[a-c])?\.(png|jpe?g)$/i;
 
 function deriveTestCode(test) {
   const match = test.title?.match(/Test\s+(\d+)/i);
@@ -83,9 +84,14 @@ function uploadBuffer(cld, buffer, { folder, resourceType, filename }) {
   return new Promise((resolve, reject) => {
     // Mirror local path structure so naming stays consistent across uploads
     const publicId = `toeic-ai/${folder}/${filename.replace(/\.[^.]+$/, '')}`;
+    // asset_folder = folder path không kèm filename — bắt buộc cho Cloudinary
+    // Dynamic Folders mode để folder browser hiện file ở đúng nhánh (không
+    // nó vào "(unsorted)" hoặc không thấy đâu cả).
+    const assetFolder = `toeic-ai/${folder}`;
     const stream = cld.uploader.upload_stream(
       {
         public_id: publicId,
+        asset_folder: assetFolder,
         resource_type: resourceType,
         overwrite: true,
         use_filename: false,
