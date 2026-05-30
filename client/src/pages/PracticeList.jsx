@@ -17,6 +17,8 @@ import {
 } from '@/components/ui/pagination';
 import { EmptyState } from '@/components/common/EmptyState';
 import { testService } from '@/services/testService';
+import { resultService } from '@/services/resultService';
+import { buildDoneTestIdSet, isNewTest } from '@/utils/newTestBadge';
 import { cn } from '@/lib/utils';
 
 const PAGE_SIZE = 9;
@@ -44,6 +46,7 @@ const FILTERS = [
 
 export default function PracticeList() {
   const [tests, setTests] = useState([]);
+  const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [filter, setFilter] = useState('all');
@@ -52,10 +55,14 @@ export default function PracticeList() {
   useEffect(() => {
     let cancelled = false;
     setLoading(true);
-    testService
-      .list({ type: 'part', limit: 50 })
-      .then((res) => {
-        if (!cancelled) setTests(res.data.items);
+    Promise.all([
+      testService.list({ type: 'part', limit: 50 }),
+      resultService.list({ limit: 100 }).catch(() => ({ data: { items: [] } })),
+    ])
+      .then(([testsRes, resultsRes]) => {
+        if (cancelled) return;
+        setTests(testsRes.data.items);
+        setResults(resultsRes.data.items || []);
       })
       .catch((err) => {
         if (!cancelled) setError(err?.message || 'Không tải được danh sách bài luyện');
@@ -67,6 +74,8 @@ export default function PracticeList() {
       cancelled = true;
     };
   }, []);
+
+  const doneIds = useMemo(() => buildDoneTestIdSet(results), [results]);
 
   const filtered = useMemo(() => {
     if (filter === 'all') return tests;
@@ -151,7 +160,7 @@ export default function PracticeList() {
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {listening.map((t) => (
-                <TestCard key={t._id} test={t} />
+                <TestCard key={t._id} test={t} isNew={isNewTest(t, doneIds)} />
               ))}
             </div>
           </section>
@@ -165,7 +174,7 @@ export default function PracticeList() {
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {reading.map((t) => (
-                <TestCard key={t._id} test={t} />
+                <TestCard key={t._id} test={t} isNew={isNewTest(t, doneIds)} />
               ))}
             </div>
           </section>
@@ -208,19 +217,21 @@ export default function PracticeList() {
   );
 }
 
-function TestCard({ test }) {
+function TestCard({ test, isNew = false }) {
   const partInfo = PART_INFO[test.part] || {};
 
   return (
     <Link to={`/tests/${test._id}`} className="block group">
       <Card className="hover:shadow-elevated transition-shadow h-full relative overflow-hidden">
-        {/* Badge Free góc trên phải */}
-        <Badge
-          variant="tertiary"
-          className="absolute top-3 right-3 z-10"
-        >
-          Free
-        </Badge>
+        {/* Badges góc trên phải — New (đề mới chưa làm) + Free */}
+        <div className="absolute top-3 right-3 z-10 flex flex-col items-end gap-1.5">
+          {isNew && (
+            <Badge className="bg-red-500 text-white border-red-500 hover:bg-red-500 animate-pulse">
+              New
+            </Badge>
+          )}
+          <Badge variant="tertiary">Free</Badge>
+        </div>
 
         <CardContent className="p-6">
           <h3 className="font-heading font-bold text-lg text-slate-900 mb-4 pr-14 group-hover:text-primary-600 transition-colors">

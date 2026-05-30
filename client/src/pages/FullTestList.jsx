@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { Loader2, ClipboardCheck } from "lucide-react";
 import AppLayout from "@/components/layout/AppLayout";
@@ -6,19 +6,26 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { EmptyState } from "@/components/common/EmptyState";
 import { testService } from "@/services/testService";
+import { resultService } from "@/services/resultService";
+import { buildDoneTestIdSet, isNewTest } from "@/utils/newTestBadge";
 
 export default function FullTestList() {
   const [tests, setTests] = useState([]);
+  const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
   useEffect(() => {
     let cancelled = false;
     setLoading(true);
-    testService
-      .list({ type: "full", limit: 50 })
-      .then((res) => {
-        if (!cancelled) setTests(res.data.items);
+    Promise.all([
+      testService.list({ type: "full", limit: 50 }),
+      resultService.list({ limit: 100 }).catch(() => ({ data: { items: [] } })),
+    ])
+      .then(([testsRes, resultsRes]) => {
+        if (cancelled) return;
+        setTests(testsRes.data.items);
+        setResults(resultsRes.data.items || []);
       })
       .catch((err) => {
         if (!cancelled) setError(err?.message || "Không tải được danh sách");
@@ -30,6 +37,8 @@ export default function FullTestList() {
       cancelled = true;
     };
   }, []);
+
+  const doneIds = useMemo(() => buildDoneTestIdSet(results), [results]);
 
   return (
     <AppLayout>
@@ -70,13 +79,15 @@ export default function FullTestList() {
           {tests.map((t) => (
             <Link key={t._id} to={`/tests/${t._id}`} className="block group">
               <Card className="hover:shadow-elevated transition-shadow h-full relative overflow-hidden">
-                {/* Badge Free góc trên phải */}
-                <Badge
-                  variant="tertiary"
-                  className="absolute top-3 right-3 z-10"
-                >
-                  Free
-                </Badge>
+                {/* Badges góc trên phải — New (nếu là đề mới chưa làm) + Free */}
+                <div className="absolute top-3 right-3 z-10 flex flex-col items-end gap-1.5">
+                  {isNewTest(t, doneIds) && (
+                    <Badge className="bg-red-500 text-white border-red-500 hover:bg-red-500 animate-pulse">
+                      New
+                    </Badge>
+                  )}
+                  <Badge variant="tertiary">Free</Badge>
+                </div>
 
                 <CardContent className="p-6">
                   <h3 className="font-heading font-bold text-lg text-slate-900 mb-4 pr-14 group-hover:text-primary-600 transition-colors">
