@@ -4,7 +4,6 @@ import {
   Mail,
   Lock,
   User,
-  Target,
   Sparkles,
   ArrowRight,
   BarChart3,
@@ -15,6 +14,7 @@ import { useAuthStore } from "../store/authStore.js";
 import { ROUTES } from "../constants/routes.js";
 import PasswordChecklist from "../components/common/PasswordChecklist.jsx";
 import PasswordInput from "../components/common/PasswordInput.jsx";
+import TargetScoreSelect from "../components/common/TargetScoreSelect.jsx";
 import { isValidPassword } from "../utils/passwordRules.js";
 
 const FEATURE_PILLS = [
@@ -169,6 +169,7 @@ export default function Register() {
                   onChange={(e) =>
                     setForm({ ...form, fullName: e.target.value })
                   }
+                  autoComplete="name"
                   required
                 />
               </div>
@@ -184,6 +185,7 @@ export default function Register() {
                   placeholder="ban@email.com"
                   value={form.email}
                   onChange={(e) => setForm({ ...form, email: e.target.value })}
+                  autoComplete="username"
                   required
                 />
               </div>
@@ -201,6 +203,7 @@ export default function Register() {
                 onChange={(e) => setForm({ ...form, password: e.target.value })}
                 minLength={8}
                 maxLength={72}
+                autoComplete="new-password"
                 required
               />
               <PasswordChecklist value={form.password} />
@@ -208,23 +211,10 @@ export default function Register() {
 
             <div>
               <label className="label">Mục tiêu điểm TOEIC</label>
-              <div className="relative">
-                <Target className="absolute left-3 top-3 w-5 h-5 text-slate-400" />
-                <select
-                  className="input pl-10"
-                  value={form.targetScore}
-                  onChange={(e) =>
-                    setForm({ ...form, targetScore: Number(e.target.value) })
-                  }
-                >
-                  <option value={500}>500</option>
-                  <option value={600}>600</option>
-                  <option value={700}>700</option>
-                  <option value={800}>800</option>
-                  <option value={900}>900</option>
-                  <option value={990}>990</option>
-                </select>
-              </div>
+              <TargetScoreSelect
+                value={form.targetScore}
+                onChange={(v) => setForm({ ...form, targetScore: v })}
+              />
               <p className="text-xs text-slate-500 mt-1">Có thể thay đổi sau</p>
             </div>
 
@@ -244,7 +234,7 @@ export default function Register() {
           </form>
 
           <p className="mt-6 text-center text-sm text-slate-600">
-            Đã có tài khoản?{" "}
+            Bạn đã có tài khoản?{" "}
             <Link
               to={ROUTES.LOGIN}
               className="text-primary-600 font-medium hover:underline"

@@ -5,14 +5,12 @@ import AdminLayout from '@/components/layout/AdminLayout';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import {
-  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
-} from '@/components/ui/select';
-import {
   Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle,
 } from '@/components/ui/dialog';
 import { toast } from 'sonner';
 import PasswordChecklist from '@/components/common/PasswordChecklist';
 import PasswordInput from '@/components/common/PasswordInput';
+import TargetScoreSelect from '@/components/common/TargetScoreSelect';
 import { useAuthStore } from '@/store/authStore';
 import { userService } from '@/services/userService';
 import { ROUTES } from '@/constants/routes';
@@ -200,23 +198,12 @@ export default function Profile() {
                   {user?.role !== 'admin' && (
                     <div className="space-y-2">
                       <Label htmlFor="targetScore">Mục tiêu điểm TOEIC</Label>
-                      <Select
-                        value={String(profileForm.targetScore)}
-                        onValueChange={(v) =>
-                          setProfileForm({ ...profileForm, targetScore: Number(v) })
+                      <TargetScoreSelect
+                        value={profileForm.targetScore}
+                        onChange={(v) =>
+                          setProfileForm({ ...profileForm, targetScore: v })
                         }
-                      >
-                        <SelectTrigger id="targetScore">
-                          <SelectValue placeholder="Chọn mục tiêu" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {[500, 600, 700, 750, 800, 850, 900, 990].map((s) => (
-                            <SelectItem key={s} value={String(s)}>
-                              {s} điểm
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
+                      />
                     </div>
                   )}
 
