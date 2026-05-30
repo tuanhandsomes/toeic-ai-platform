@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { Loader2 } from 'lucide-react';
 import {
   Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle,
@@ -10,6 +10,7 @@ import {
 } from '@/components/ui/select';
 import PasswordChecklist from '@/components/common/PasswordChecklist';
 import PasswordInput from '@/components/common/PasswordInput';
+import TargetScoreSelect from '@/components/common/TargetScoreSelect';
 import { isValidPassword } from '@/utils/passwordRules';
 
 /**
@@ -41,23 +42,40 @@ function UserForm({ mode, initialUser, onClose, onSubmit }) {
   );
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState('');
+  // fullName uncontrolled (defaultValue) để tránh bug controlled input
+  // "ăn" ký tự khi gõ tiếng Việt có dấu — đọc qua ref khi submit.
+  const fullNameRef = useRef(null);
 
-  const setField = (k, v) => setForm((f) => ({ ...f, [k]: v }));
+  const setField = (k, v) => {
+    setForm((f) => ({ ...f, [k]: v }));
+    // User đang sửa form → xoá message lỗi cũ để không gây nhầm "vẫn còn lỗi".
+    if (err) setErr('');
+  };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  // Field uncontrolled (fullName) cần wire onChange thủ công để xoá err.
+  const clearErrOnInput = () => {
+    if (err) setErr('');
+  };
+
+  const handleSubmit = async () => {
     setErr('');
+    const fullName = (fullNameRef.current?.value || '').trim();
+    if (!fullName || fullName.length < 2) {
+      setErr('Họ tên phải có ít nhất 2 ký tự');
+      return;
+    }
+    if (!form.email.trim()) {
+      setErr('Vui lòng nhập email');
+      return;
+    }
     if (isCreate && !isValidPassword(form.password)) {
       setErr('Mật khẩu chưa đủ mạnh. Vui lòng kiểm tra các yêu cầu bên dưới.');
       return;
     }
     setBusy(true);
     try {
-      // Đọc fullName từ FormData vì field này uncontrolled (defaultValue + name)
-      // để tránh bug controlled input "ăn" ký tự khi gõ tiếng Việt có dấu.
-      const fd = new FormData(e.currentTarget);
       const payload = {
-        fullName: (fd.get('fullName') || '').toString().trim(),
+        fullName,
         email: form.email.trim().toLowerCase(),
         role: form.role,
         targetScore: Number(form.targetScore),
@@ -68,6 +86,14 @@ function UserForm({ mode, initialUser, onClose, onSubmit }) {
       setErr(e2?.message || 'Thao tác thất bại');
     } finally {
       setBusy(false);
+    }
+  };
+
+  // Phím Enter trên input (trừ textarea) submit như form thường.
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter' && e.target.tagName !== 'TEXTAREA' && !busy) {
+      e.preventDefault();
+      handleSubmit();
     }
   };
 
@@ -82,16 +108,22 @@ function UserForm({ mode, initialUser, onClose, onSubmit }) {
         </DialogDescription>
       </DialogHeader>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
+      {/* Dùng <div> thay vì <form> để Chrome KHÔNG detect "credentials form
+          submission" → không hiện popup "Lưu mật khẩu" cho session admin.
+          autoComplete="off" Chrome vẫn ignore nên không đáng tin. Cách chắc
+          chắn nhất là không có form element. Enter key được wire thủ công. */}
+      <div className="space-y-4" onKeyDown={handleKeyDown}>
         <div>
           <Label htmlFor="fullName">Họ tên</Label>
           <Input
             id="fullName"
-            name="fullName"
+            ref={fullNameRef}
             required
             minLength={2}
             maxLength={100}
             defaultValue={isCreate ? '' : initialUser?.fullName || ''}
+            onChange={clearErrOnInput}
+            autoComplete="off"
           />
         </div>
 
@@ -103,6 +135,7 @@ function UserForm({ mode, initialUser, onClose, onSubmit }) {
             required
             value={form.email}
             onChange={(e) => setField('email', e.target.value)}
+            autoComplete="off"
           />
         </div>
 
@@ -116,6 +149,7 @@ function UserForm({ mode, initialUser, onClose, onSubmit }) {
               maxLength={72}
               value={form.password}
               onChange={(e) => setField('password', e.target.value)}
+              autoComplete="new-password"
             />
             <PasswordChecklist value={form.password} />
           </div>
@@ -138,21 +172,16 @@ function UserForm({ mode, initialUser, onClose, onSubmit }) {
           {form.role !== 'admin' && (
             <div>
               <Label htmlFor="targetScore">Mục tiêu điểm</Label>
-              <Input
-                id="targetScore"
-                type="number"
-                min={10}
-                max={990}
-                required
+              <TargetScoreSelect
                 value={form.targetScore}
-                onChange={(e) => setField('targetScore', e.target.value)}
+                onChange={(v) => setField('targetScore', v)}
               />
             </div>
           )}
         </div>
 
         {err && (
-          <p className="text-sm text-tertiary-700 bg-tertiary-50 border border-tertiary-200 rounded-md px-3 py-2">
+          <p className="text-sm text-red-700 bg-red-50 border border-red-200 rounded-md px-3 py-2">
             {err}
           </p>
         )}
@@ -167,7 +196,8 @@ function UserForm({ mode, initialUser, onClose, onSubmit }) {
             Hủy
           </button>
           <button
-            type="submit"
+            type="button"
+            onClick={handleSubmit}
             disabled={busy}
             className="btn-primary text-sm"
           >
@@ -175,7 +205,7 @@ function UserForm({ mode, initialUser, onClose, onSubmit }) {
             {isCreate ? 'Tạo' : 'Lưu'}
           </button>
         </DialogFooter>
-      </form>
+      </div>
     </>
   );
 }
@@ -202,8 +232,7 @@ function ResetPasswordForm({ user, onClose, onSubmit }) {
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState('');
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleSubmit = async () => {
     setErr('');
     if (!isValidPassword(password)) {
       setErr('Mật khẩu chưa đủ mạnh. Vui lòng kiểm tra các yêu cầu bên dưới.');
@@ -219,6 +248,13 @@ function ResetPasswordForm({ user, onClose, onSubmit }) {
     }
   };
 
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter' && e.target.tagName !== 'TEXTAREA' && !busy) {
+      e.preventDefault();
+      handleSubmit();
+    }
+  };
+
   return (
     <>
       <DialogHeader>
@@ -230,7 +266,9 @@ function ResetPasswordForm({ user, onClose, onSubmit }) {
         </DialogDescription>
       </DialogHeader>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
+      {/* Không dùng <form> để Chrome không hỏi "Lưu mật khẩu" — xem
+          UserForm bên trên cho lý do chi tiết. */}
+      <div className="space-y-4" onKeyDown={handleKeyDown}>
         <div>
           <Label htmlFor="newPassword">Mật khẩu mới</Label>
           <PasswordInput
@@ -239,13 +277,17 @@ function ResetPasswordForm({ user, onClose, onSubmit }) {
             minLength={8}
             maxLength={72}
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={(e) => {
+              setPassword(e.target.value);
+              if (err) setErr('');
+            }}
+            autoComplete="new-password"
           />
           <PasswordChecklist value={password} />
         </div>
 
         {err && (
-          <p className="text-sm text-tertiary-700 bg-tertiary-50 border border-tertiary-200 rounded-md px-3 py-2">
+          <p className="text-sm text-red-700 bg-red-50 border border-red-200 rounded-md px-3 py-2">
             {err}
           </p>
         )}
@@ -260,7 +302,8 @@ function ResetPasswordForm({ user, onClose, onSubmit }) {
             Hủy
           </button>
           <button
-            type="submit"
+            type="button"
+            onClick={handleSubmit}
             disabled={busy}
             className="btn-primary text-sm"
           >
@@ -268,7 +311,7 @@ function ResetPasswordForm({ user, onClose, onSubmit }) {
             Đặt lại
           </button>
         </DialogFooter>
-      </form>
+      </div>
     </>
   );
 }

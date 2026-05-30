@@ -178,7 +178,7 @@ export default function AdminLayout({ children }) {
                     <DropdownMenuSeparator />
                     <DropdownMenuItem
                       onClick={() => setLogoutOpen(true)}
-                      className="text-tertiary-600 focus:text-tertiary-700"
+                      className="text-red-600 focus:text-red-700"
                     >
                       <LogOut /> Đăng xuất
                     </DropdownMenuItem>
@@ -218,7 +218,7 @@ export default function AdminLayout({ children }) {
               type="button"
               onClick={handleLogout}
               disabled={loggingOut}
-              className="btn text-sm text-white bg-tertiary-500 hover:bg-tertiary-600"
+              className="btn text-sm text-white bg-red-500 hover:bg-red-600 px-4 py-2"
             >
               <LogOut className="w-4 h-4" />
               {loggingOut ? "Đang đăng xuất…" : "Đăng xuất"}
