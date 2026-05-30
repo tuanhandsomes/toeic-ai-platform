@@ -505,10 +505,10 @@ export default function ManageTests() {
       )}
 
       <Dialog open={!!confirmDelete} onOpenChange={(open) => !open && setConfirmDelete(null)}>
-        <DialogContent>
+        <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <AlertCircle className="w-5 h-5 text-tertiary-500" />
+              <AlertCircle className="w-5 h-5 text-red-500" />
               Xóa đề thi?
             </DialogTitle>
             <DialogDescription>
@@ -529,9 +529,9 @@ export default function ManageTests() {
               type="button"
               onClick={handleDelete}
               disabled={busy}
-              className="btn bg-tertiary-500 text-white hover:bg-tertiary-600 text-sm"
+              className="btn text-sm text-white bg-red-500 hover:bg-red-600 px-4 py-2"
             >
-              {busy && <Loader2 className="w-4 h-4 animate-spin mr-1" />}
+              {busy && <Loader2 className="w-4 h-4 animate-spin" />}
               Xóa
             </button>
           </DialogFooter>
@@ -701,7 +701,7 @@ export default function ManageTests() {
                 <input
                   ref={mediaInputRef}
                   type="file"
-                  accept="audio/*,image/*"
+                  accept="audio/mpeg,.mp3,image/png,image/jpeg,.png,.jpg,.jpeg"
                   multiple
                   onChange={handleMediaPick}
                   className="hidden"

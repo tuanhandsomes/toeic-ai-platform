@@ -354,7 +354,7 @@ function DeleteUserBody({ user, onClose, onConfirm }) {
       </DialogHeader>
 
       {err && (
-        <p className="text-sm text-tertiary-700 bg-tertiary-50 border border-tertiary-200 rounded-md px-3 py-2">
+        <p className="text-sm text-red-700 bg-red-50 border border-red-200 rounded-md px-3 py-2">
           {err}
         </p>
       )}
@@ -372,9 +372,9 @@ function DeleteUserBody({ user, onClose, onConfirm }) {
           type="button"
           onClick={handleConfirm}
           disabled={busy}
-          className="btn text-sm text-white bg-tertiary-500 hover:bg-tertiary-600 px-5 py-2.5"
+          className="btn text-sm text-white bg-red-500 hover:bg-red-600 px-4 py-2"
         >
-          {busy && <Loader2 className="w-4 h-4 animate-spin mr-1" />}
+          {busy && <Loader2 className="w-4 h-4 animate-spin" />}
           Xóa vĩnh viễn
         </button>
       </DialogFooter>

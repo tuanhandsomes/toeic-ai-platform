@@ -679,7 +679,7 @@ export default function AdminUserDetail() {
               type="button"
               onClick={handleDelete}
               disabled={busy}
-              className="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium rounded-md bg-tertiary-500 text-white hover:bg-tertiary-600 disabled:opacity-50"
+              className="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium rounded-md bg-red-500 text-white hover:bg-red-600 disabled:opacity-50"
             >
               {busy && <Loader2 className="w-4 h-4 animate-spin" />}
               Xóa

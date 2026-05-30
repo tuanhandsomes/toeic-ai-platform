@@ -505,9 +505,14 @@ export default function ManageUsers() {
         open={!!lockTarget}
         onOpenChange={(open) => !open && setLockTarget(null)}
       >
-        <DialogContent>
+        <DialogContent className="max-w-md">
           <DialogHeader>
-            <DialogTitle>
+            <DialogTitle className="flex items-center gap-2">
+              {lockTarget?.isActive ? (
+                <Lock className="w-5 h-5 text-red-500" />
+              ) : (
+                <Unlock className="w-5 h-5 text-secondary-600" />
+              )}
               {lockTarget?.isActive ? "Khóa tài khoản?" : "Mở khóa tài khoản?"}
             </DialogTitle>
             <DialogDescription>
@@ -529,13 +534,13 @@ export default function ManageUsers() {
               type="button"
               onClick={handleToggleLock}
               disabled={lockBusy}
-              className={`btn text-sm text-white ${
+              className={`btn text-sm text-white px-4 py-2 ${
                 lockTarget?.isActive
-                  ? "bg-tertiary-500 hover:bg-tertiary-600"
+                  ? "bg-red-500 hover:bg-red-600"
                   : "bg-secondary-500 hover:bg-secondary-600"
               }`}
             >
-              {lockBusy && <Loader2 className="w-4 h-4 animate-spin mr-1" />}
+              {lockBusy && <Loader2 className="w-4 h-4 animate-spin" />}
               {lockTarget?.isActive ? "Khóa" : "Mở khóa"}
             </button>
           </DialogFooter>
