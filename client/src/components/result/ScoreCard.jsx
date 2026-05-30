@@ -1,4 +1,4 @@
-import { Flag } from 'lucide-react';
+import { Flag } from "lucide-react";
 
 /**
  * Card hiển thị điểm TOEIC quy đổi + tách Listening/Reading hoặc Part cụ thể.
@@ -19,24 +19,29 @@ import { Flag } from 'lucide-react';
  */
 
 const PART_STANDARD_QUESTIONS = {
-  1: 6, 2: 25, 3: 39, 4: 30,
-  5: 30, 6: 16, 7: 54,
+  1: 6,
+  2: 25,
+  3: 39,
+  4: 30,
+  5: 30,
+  6: 16,
+  7: 54,
 };
 
 // Max scaled score cho từng Part — proportional của 495/section.
 // Round nhẹ cho dễ nhìn.
 const PART_MAX_SCALED = {
-  1: 30,   // 6  × 4.95 ≈ 30
-  2: 124,  // 25 × 4.95 ≈ 124
-  3: 193,  // 39 × 4.95 ≈ 193
-  4: 149,  // 30 × 4.95 ≈ 149
-  5: 149,  // 30 × 4.95 ≈ 149
-  6: 79,   // 16 × 4.95 ≈ 79
-  7: 268,  // 54 × 4.95 ≈ 268
+  1: 30, // 6  × 4.95 ≈ 30
+  2: 124, // 25 × 4.95 ≈ 124
+  3: 193, // 39 × 4.95 ≈ 193
+  4: 149, // 30 × 4.95 ≈ 149
+  5: 149, // 30 × 4.95 ≈ 149
+  6: 79, // 16 × 4.95 ≈ 79
+  7: 268, // 54 × 4.95 ≈ 268
 };
 
 const PART_LABEL = (part) => {
-  const section = part <= 4 ? 'Listening' : 'Reading';
+  const section = part <= 4 ? "Listening" : "Reading";
   return `${section} Part ${part}`;
 };
 
@@ -69,32 +74,32 @@ export default function ScoreCard({ result, isFullTest, compact = false }) {
     practiceParts = Object.entries(result.partBreakdown || {})
       .filter(([, v]) => v && v.total > 0)
       .map(([key, v]) => ({
-        part: Number(key.replace('part', '')),
+        part: Number(key.replace("part", "")),
         correct: v.correct,
         total: v.total,
       }));
   }
 
   return (
-    <div className="rounded-2xl border border-slate-200 overflow-hidden bg-white">
+    <div className="shrink-0 rounded-2xl border border-slate-200 overflow-hidden bg-white">
       {/* TOP — Điểm tổng */}
-      <div className={`bg-white text-center ${compact ? 'py-5' : 'py-8'}`}>
+      <div className={`bg-white text-center ${compact ? "py-5" : "py-8"}`}>
         <Flag
           className={`${
-            compact ? 'w-7 h-7' : 'w-10 h-10'
+            compact ? "w-7 h-7" : "w-10 h-10"
           } text-yellow-500 mx-auto mb-1`}
           fill="currentColor"
         />
         <p
           className={`text-slate-500 uppercase tracking-wider ${
-            compact ? 'text-xs' : 'text-sm'
+            compact ? "text-xs" : "text-sm"
           }`}
         >
           Điểm TOEIC
         </p>
         <p
           className={`font-mono font-bold text-slate-900 leading-none ${
-            compact ? 'text-4xl mt-2' : 'text-6xl mt-3'
+            compact ? "text-4xl mt-2" : "text-6xl mt-3"
           }`}
         >
           {result.scoreTotal}
@@ -104,15 +109,15 @@ export default function ScoreCard({ result, isFullTest, compact = false }) {
       {/* BOTTOM — Section / Part breakdown */}
       <div
         className={`bg-slate-50 border-t border-slate-200 ${
-          compact ? 'px-4 py-4' : 'px-6 py-5'
+          compact ? "px-4 py-4" : "px-6 py-5"
         }`}
       >
         {isFullTest ? (
           <div
             className={
               hasListening && hasReading
-                ? 'grid grid-cols-2 gap-4'
-                : 'grid grid-cols-1'
+                ? "grid grid-cols-2 gap-4"
+                : "grid grid-cols-1"
             }
           >
             {hasListening && (
@@ -142,14 +147,15 @@ export default function ScoreCard({ result, isFullTest, compact = false }) {
           <div
             className={
               practiceParts.length > 1
-                ? 'grid grid-cols-2 gap-4'
-                : 'grid grid-cols-1'
+                ? "grid grid-cols-2 gap-4"
+                : "grid grid-cols-1"
             }
           >
             {practiceParts.map((p) => {
               // BE đã tính: scoreListening = sum scaled các Part 1-4, scoreReading = sum Part 5-7
               // Practice luôn chỉ 1 Part nên scoreListening (hoặc scoreReading) = Part scaled.
-              const partScaled = p.part <= 4 ? result.scoreListening : result.scoreReading;
+              const partScaled =
+                p.part <= 4 ? result.scoreListening : result.scoreReading;
               const partMax =
                 PART_MAX_SCALED[p.part] ||
                 (PART_STANDARD_QUESTIONS[p.part] || p.total) * 5;
@@ -172,17 +178,22 @@ export default function ScoreCard({ result, isFullTest, compact = false }) {
   );
 }
 
-function SectionStat({ label, scaledScore, sectionMax, correct, total, compact }) {
+function SectionStat({
+  label,
+  scaledScore,
+  sectionMax,
+  correct,
+  total,
+  compact,
+}) {
   return (
     <div className="text-center">
-      <p
-        className={`text-slate-600 ${compact ? 'text-xs' : 'text-sm'} mb-0.5`}
-      >
+      <p className={`text-slate-600 ${compact ? "text-xs" : "text-sm"} mb-0.5`}>
         {label}:
       </p>
       <p
         className={`font-mono font-semibold text-slate-900 ${
-          compact ? 'text-xl' : 'text-2xl'
+          compact ? "text-xl" : "text-2xl"
         }`}
       >
         {scaledScore}
@@ -191,13 +202,13 @@ function SectionStat({ label, scaledScore, sectionMax, correct, total, compact }
         )}
       </p>
       <p
-        className={`text-slate-600 ${compact ? 'text-xs mt-1.5' : 'text-sm mt-2'} mb-0.5`}
+        className={`text-slate-600 ${compact ? "text-xs mt-1.5" : "text-sm mt-2"} mb-0.5`}
       >
         Trả lời đúng:
       </p>
       <p
         className={`font-mono font-semibold text-slate-700 ${
-          compact ? 'text-base' : 'text-xl'
+          compact ? "text-base" : "text-xl"
         }`}
       >
         {correct}/{total}
