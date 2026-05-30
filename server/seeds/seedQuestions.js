@@ -36,14 +36,16 @@ const seed = async () => {
   }, {});
 
   // 4. Build Practice tests — 1 set per Part
+  // Duration calibrate theo Full Test 120 phút (tổng 122 phút, ~61 LC/RC).
+  // Match với testImportService + seedRealTest PART_META.
   const practiceTests = [
-    { part: 1, title: "Part 1 — Mô tả tranh (Set 01)", duration: 8 },
-    { part: 2, title: "Part 2 — Hỏi đáp (Set 01)", duration: 10 },
-    { part: 3, title: "Part 3 — Hội thoại (Set 01)", duration: 15 },
-    { part: 4, title: "Part 4 — Bài nói ngắn (Set 01)", duration: 10 },
-    { part: 5, title: "Part 5 — Hoàn thành câu (Set 01)", duration: 15 },
-    { part: 6, title: "Part 6 — Hoàn thành đoạn (Set 01)", duration: 8 },
-    { part: 7, title: "Part 7 — Đọc hiểu (Set 01)", duration: 25 },
+    { part: 1, title: "Part 1 — Mô tả tranh (Set 01)", duration: 4 },
+    { part: 2, title: "Part 2 — Hỏi đáp (Set 01)", duration: 15 },
+    { part: 3, title: "Part 3 — Hội thoại (Set 01)", duration: 24 },
+    { part: 4, title: "Part 4 — Bài nói ngắn (Set 01)", duration: 18 },
+    { part: 5, title: "Part 5 — Hoàn thành câu (Set 01)", duration: 18 },
+    { part: 6, title: "Part 6 — Hoàn thành đoạn (Set 01)", duration: 10 },
+    { part: 7, title: "Part 7 — Đọc hiểu (Set 01)", duration: 33 },
   ];
 
   const practiceTestDocs = practiceTests.map(({ part, title, duration }) => ({

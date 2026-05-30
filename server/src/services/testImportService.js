@@ -25,13 +25,13 @@ const PART_TYPE = {
 };
 
 const PART_META = {
-  1: { name: "Mô tả tranh", duration: 5 },
-  2: { name: "Hỏi đáp", duration: 9 },
-  3: { name: "Đoạn hội thoại", duration: 17 },
-  4: { name: "Bài nói ngắn", duration: 12 },
-  5: { name: "Hoàn thành câu", duration: 12 },
-  6: { name: "Hoàn thành đoạn", duration: 8 },
-  7: { name: "Đọc hiểu", duration: 25 },
+  1: { name: "Mô tả tranh", duration: 4 },
+  2: { name: "Hỏi đáp", duration: 15 },
+  3: { name: "Đoạn hội thoại", duration: 24 },
+  4: { name: "Bài nói ngắn", duration: 18 },
+  5: { name: "Hoàn thành câu", duration: 18 },
+  6: { name: "Hoàn thành đoạn", duration: 10 },
+  7: { name: "Đọc hiểu", duration: 33 },
 };
 
 /**

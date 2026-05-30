@@ -86,32 +86,14 @@ export function parseAudioRange(audioUrl) {
 }
 
 /**
- * Thời gian khuyến nghị (phút) khi luyện tập từng Part — bám theo phân bổ
- * thời gian thực tế trên thị trường (LC = 60 phút, RC = 61 phút).
- *
- * LƯU Ý: số này CHỈ dùng cho hiển thị trên thẻ UI / preview.
- * Practice page (PracticeDetail) vẫn luôn dùng timer count-up,
- * KHÔNG countdown theo số này.
- */
-export const PART_RECOMMENDED_DURATION_MIN = {
-  1: 4,
-  2: 15,
-  3: 24,
-  4: 18,
-  5: 18,
-  6: 10,
-  7: 33,
-};
-
-/**
  * Lấy thời gian hiển thị (phút) cho 1 test trên các thẻ list / preview.
- *   - Practice (type='part') → bảng khuyến nghị thị trường
- *   - Full Test / khác       → giá trị trong DB
+ * DB là source of truth — Practice tests đã được migrate sang giá trị calibrate
+ * theo Full Test 120 phút (Part 1=4, 2=15, 3=24, 4=18, 5=18, 6=10, 7=33).
+ *
+ * LƯU Ý: Practice page (PracticeDetail) vẫn luôn dùng timer count-up,
+ * KHÔNG countdown theo durationMinutes — đây chỉ là số "khuyến nghị" hiển thị.
  */
 export function getDisplayDuration(test) {
-  if (test?.type === 'part' && PART_RECOMMENDED_DURATION_MIN[test.part]) {
-    return PART_RECOMMENDED_DURATION_MIN[test.part];
-  }
   return test?.durationMinutes || 0;
 }
 
