@@ -1,7 +1,9 @@
 import { useEffect, useState, useCallback, useRef } from 'react';
 import {
   Plus, Pencil, Trash2, Search, Loader2, Upload, AlertCircle, FileJson,
+  Eye, X, CheckCircle2, ImageIcon, Headphones,
 } from 'lucide-react';
+import { cn } from '@/lib/utils';
 import AdminLayout from '@/components/layout/AdminLayout';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -39,7 +41,11 @@ function MediaUploadField({ label, value, onChange, kind, placeholder }) {
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState('');
 
-  const accept = kind === 'audio' ? 'audio/*' : 'image/*';
+  // Audio: chỉ MP3. Image: PNG hoặc JPG (xem upload.js + testMediaService).
+  const accept =
+    kind === 'audio'
+      ? 'audio/mpeg,.mp3'
+      : 'image/png,image/jpeg,.png,.jpg,.jpeg';
   const uploader = kind === 'audio' ? uploadService.uploadAudio : uploadService.uploadImage;
 
   const handleFileChange = async (e) => {
@@ -160,6 +166,33 @@ export default function ManageQuestions() {
   const [confirmDelete, setConfirmDelete] = useState(null);
   const [busy, setBusy] = useState(false);
 
+  // Detail panel — câu hỏi đang được chọn xem chi tiết ở panel bên phải.
+  const [selectedId, setSelectedId] = useState(null);
+  const [selectedQ, setSelectedQ] = useState(null);
+  const [selectedLoading, setSelectedLoading] = useState(false);
+
+  const handleSelectQuestion = async (q) => {
+    if (!q) return;
+    if (selectedId === q._id) return; // đã chọn rồi
+    setSelectedId(q._id);
+    setSelectedLoading(true);
+    try {
+      const res = await adminService.getQuestion(q._id);
+      setSelectedQ(res.data.question);
+    } catch (err) {
+      toast.error(err?.message || 'Không tải được câu hỏi');
+      setSelectedQ(null);
+      setSelectedId(null);
+    } finally {
+      setSelectedLoading(false);
+    }
+  };
+
+  const closeDetail = () => {
+    setSelectedId(null);
+    setSelectedQ(null);
+  };
+
   const fetchQuestions = useCallback(
     async (page = 1) => {
       setLoading(true);
@@ -212,8 +245,19 @@ export default function ManageQuestions() {
         await adminService.updateQuestion(editing._id, payload);
       }
       setEditorOpen(false);
+      const editedId = editing?._id;
       setEditing(null);
       await fetchQuestions(pagination.page);
+      // Nếu câu vừa sửa đang được hiển thị ở panel phải → refetch để panel
+      // thấy data mới.
+      if (!isCreate && editedId && selectedId === editedId) {
+        try {
+          const res = await adminService.getQuestion(editedId);
+          setSelectedQ(res.data.question);
+        } catch {
+          /* không bắt buộc reload — fallback giữ data cũ */
+        }
+      }
       toast.success(isCreate ? 'Đã tạo câu hỏi mới' : 'Đã cập nhật câu hỏi');
     } catch (err) {
       toast.error(err?.message || 'Lưu thất bại');
@@ -225,10 +269,13 @@ export default function ManageQuestions() {
   const handleDelete = async () => {
     if (!confirmDelete) return;
     setBusy(true);
+    const deletedId = confirmDelete._id;
     try {
-      await adminService.deleteQuestion(confirmDelete._id);
+      await adminService.deleteQuestion(deletedId);
       setConfirmDelete(null);
       await fetchQuestions(pagination.page);
+      // Nếu câu vừa xóa đang chọn ở panel → đóng panel.
+      if (selectedId === deletedId) closeDetail();
       toast.success('Đã xóa câu hỏi');
     } catch (err) {
       toast.error(err?.message || 'Xóa thất bại');
@@ -343,121 +390,167 @@ export default function ManageQuestions() {
           </CardContent>
         </Card>
 
-        <Card>
-          <CardContent className="p-0">
-            {loading ? (
-              <div className="flex items-center justify-center py-16">
-                <Loader2 className="w-6 h-6 text-primary-500 animate-spin" />
-              </div>
-            ) : items.length === 0 ? (
-              <p className="py-16 text-center text-sm text-slate-500">
-                Ngân hàng trống. Bấm “Thêm câu hỏi” hoặc “Import JSON”.
-              </p>
-            ) : (
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Nội dung</TableHead>
-                    <TableHead>Part</TableHead>
-                    <TableHead>Đáp án</TableHead>
-                    <TableHead>Độ khó</TableHead>
-                    <TableHead>Tags</TableHead>
-                    <TableHead className="text-right">Hành động</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {items.map((q) => (
-                    <TableRow key={q._id}>
-                      <TableCell className="max-w-md">
-                        <p className="text-sm truncate">
-                          {q.content?.text || (
-                            <span className="italic text-slate-400">(Không có text)</span>
-                          )}
-                        </p>
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant="muted">Part {q.part}</Badge>
-                      </TableCell>
-                      <TableCell>
-                        <span className="font-mono font-semibold text-secondary-600">
-                          {q.correctAnswer}
-                        </span>
-                      </TableCell>
-                      <TableCell className="text-sm capitalize">{q.difficulty}</TableCell>
-                      <TableCell>
-                        <div className="flex flex-wrap gap-1 max-w-[180px]">
-                          {(q.tags || []).slice(0, 3).map((t) => (
-                            <Badge key={t} variant="muted" className="text-xs">
-                              {t}
-                            </Badge>
-                          ))}
-                          {(q.tags || []).length > 3 && (
-                            <span className="text-xs text-slate-500">
-                              +{q.tags.length - 3}
-                            </span>
-                          )}
-                        </div>
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <div className="flex justify-end gap-2">
-                          <button
-                            type="button"
-                            onClick={() => openEdit(q)}
-                            className="inline-flex items-center gap-1 text-xs font-medium px-2.5 py-1 rounded-md border border-slate-200 text-slate-700 hover:bg-slate-50"
+        {/* 2 cột ở xl+: list trái + detail panel phải.
+            Dưới xl: chỉ list, detail panel ẩn (Edit button vẫn mở dialog như cũ). */}
+        <div className="grid grid-cols-1 xl:grid-cols-[1fr_420px] gap-4 items-start">
+          <div className="min-w-0">
+            <Card>
+              <CardContent className="p-0">
+                {loading ? (
+                  <div className="flex items-center justify-center py-16">
+                    <Loader2 className="w-6 h-6 text-primary-500 animate-spin" />
+                  </div>
+                ) : items.length === 0 ? (
+                  <p className="py-16 text-center text-sm text-slate-500">
+                    Ngân hàng trống. Bấm "Thêm câu hỏi" hoặc "Import JSON".
+                  </p>
+                ) : (
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Nội dung</TableHead>
+                        <TableHead>Part</TableHead>
+                        <TableHead>Đáp án</TableHead>
+                        <TableHead>Độ khó</TableHead>
+                        <TableHead>Tags</TableHead>
+                        <TableHead className="text-right">Hành động</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {items.map((q) => {
+                        const isSelected = selectedId === q._id;
+                        return (
+                          <TableRow
+                            key={q._id}
+                            onClick={() => handleSelectQuestion(q)}
+                            className={cn(
+                              'cursor-pointer transition-colors',
+                              isSelected && 'bg-primary-50 hover:bg-primary-50',
+                            )}
                           >
-                            <Pencil className="w-3 h-3" /> Sửa
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => setConfirmDelete(q)}
-                            className="inline-flex items-center gap-1 text-xs font-medium px-2.5 py-1 rounded-md border border-tertiary-200 text-tertiary-700 hover:bg-tertiary-50"
-                          >
-                            <Trash2 className="w-3 h-3" /> Xóa
-                          </button>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            )}
-          </CardContent>
-        </Card>
+                            <TableCell className="max-w-md">
+                              <p className="text-sm truncate">
+                                {q.content?.text || (
+                                  <span className="italic text-slate-400">
+                                    (Không có text)
+                                  </span>
+                                )}
+                              </p>
+                            </TableCell>
+                            <TableCell>
+                              <Badge variant="muted">Part {q.part}</Badge>
+                            </TableCell>
+                            <TableCell>
+                              <span className="font-mono font-semibold text-secondary-600">
+                                {q.correctAnswer}
+                              </span>
+                            </TableCell>
+                            <TableCell className="text-sm capitalize">
+                              {q.difficulty}
+                            </TableCell>
+                            <TableCell>
+                              <div className="flex flex-wrap gap-1 max-w-[180px]">
+                                {(q.tags || []).slice(0, 3).map((t) => (
+                                  <Badge
+                                    key={t}
+                                    variant="muted"
+                                    className="text-xs"
+                                  >
+                                    {t}
+                                  </Badge>
+                                ))}
+                                {(q.tags || []).length > 3 && (
+                                  <span className="text-xs text-slate-500">
+                                    +{q.tags.length - 3}
+                                  </span>
+                                )}
+                              </div>
+                            </TableCell>
+                            <TableCell
+                              className="text-right"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              <div className="flex justify-end gap-1.5">
+                                <button
+                                  type="button"
+                                  onClick={() => handleSelectQuestion(q)}
+                                  className="inline-flex items-center gap-1 text-xs font-medium px-2.5 py-1 rounded-md border border-slate-200 text-slate-700 hover:bg-slate-50"
+                                  title="Xem chi tiết"
+                                >
+                                  <Eye className="w-3 h-3" />
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => openEdit(q)}
+                                  className="inline-flex items-center gap-1 text-xs font-medium px-2.5 py-1 rounded-md border border-slate-200 text-slate-700 hover:bg-slate-50"
+                                >
+                                  <Pencil className="w-3 h-3" /> Sửa
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => setConfirmDelete(q)}
+                                  className="inline-flex items-center gap-1 text-xs font-medium px-2.5 py-1 rounded-md border border-red-200 text-red-700 hover:bg-red-50"
+                                >
+                                  <Trash2 className="w-3 h-3" /> Xóa
+                                </button>
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        );
+                      })}
+                    </TableBody>
+                  </Table>
+                )}
+              </CardContent>
+            </Card>
 
-        {pagination.totalPages > 1 && (
-          <Pagination className="mt-4">
-            <PaginationContent>
-              <PaginationItem>
-                <PaginationPrevious
-                  disabled={pagination.page <= 1}
-                  onClick={() => fetchQuestions(pagination.page - 1)}
-                />
-              </PaginationItem>
-              {getPageRange(pagination.page, pagination.totalPages).map(
-                (p, idx) => (
-                  <PaginationItem key={`${p}-${idx}`}>
-                    {p === '...' ? (
-                      <PaginationEllipsis />
-                    ) : (
-                      <PaginationLink
-                        isActive={p === pagination.page}
-                        onClick={() => fetchQuestions(p)}
-                      >
-                        {p}
-                      </PaginationLink>
-                    )}
+            {pagination.totalPages > 1 && (
+              <Pagination className="mt-4">
+                <PaginationContent>
+                  <PaginationItem>
+                    <PaginationPrevious
+                      disabled={pagination.page <= 1}
+                      onClick={() => fetchQuestions(pagination.page - 1)}
+                    />
                   </PaginationItem>
-                )
-              )}
-              <PaginationItem>
-                <PaginationNext
-                  disabled={pagination.page >= pagination.totalPages}
-                  onClick={() => fetchQuestions(pagination.page + 1)}
-                />
-              </PaginationItem>
-            </PaginationContent>
-          </Pagination>
-        )}
+                  {getPageRange(pagination.page, pagination.totalPages).map(
+                    (p, idx) => (
+                      <PaginationItem key={`${p}-${idx}`}>
+                        {p === '...' ? (
+                          <PaginationEllipsis />
+                        ) : (
+                          <PaginationLink
+                            isActive={p === pagination.page}
+                            onClick={() => fetchQuestions(p)}
+                          >
+                            {p}
+                          </PaginationLink>
+                        )}
+                      </PaginationItem>
+                    ),
+                  )}
+                  <PaginationItem>
+                    <PaginationNext
+                      disabled={pagination.page >= pagination.totalPages}
+                      onClick={() => fetchQuestions(pagination.page + 1)}
+                    />
+                  </PaginationItem>
+                </PaginationContent>
+              </Pagination>
+            )}
+          </div>
+
+          {/* Detail panel — sticky bên phải, chỉ hiện ở xl+ */}
+          <aside className="hidden xl:block sticky top-4 max-h-[calc(100dvh-2rem)] overflow-y-auto">
+            <QuestionDetailPanel
+              question={selectedQ}
+              loading={selectedLoading}
+              onClose={closeDetail}
+              onEdit={() => selectedQ && openEdit(selectedQ)}
+              onDelete={() => selectedQ && setConfirmDelete(selectedQ)}
+            />
+          </aside>
+        </div>
       </div>
 
       {editorOpen && editing && (
@@ -484,10 +577,10 @@ export default function ManageQuestions() {
       )}
 
       <Dialog open={!!confirmDelete} onOpenChange={(open) => !open && setConfirmDelete(null)}>
-        <DialogContent>
+        <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <AlertCircle className="w-5 h-5 text-tertiary-500" />
+              <AlertCircle className="w-5 h-5 text-red-500" />
               Xóa câu hỏi?
             </DialogTitle>
             <DialogDescription>
@@ -508,15 +601,223 @@ export default function ManageQuestions() {
               type="button"
               onClick={handleDelete}
               disabled={busy}
-              className="btn bg-tertiary-500 text-white hover:bg-tertiary-600 text-sm"
+              className="btn text-sm text-white bg-red-500 hover:bg-red-600 px-4 py-2"
             >
-              {busy && <Loader2 className="w-4 h-4 animate-spin mr-1" />}
+              {busy && <Loader2 className="w-4 h-4 animate-spin" />}
               Xóa
             </button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
     </AdminLayout>
+  );
+}
+
+// ────────────────────────────────────────────────────────────────────────
+// Detail panel — read-only view of a single question on the right side
+// ────────────────────────────────────────────────────────────────────────
+
+const PART_NAME = {
+  1: 'Mô tả tranh',
+  2: 'Hỏi đáp',
+  3: 'Hội thoại',
+  4: 'Bài nói ngắn',
+  5: 'Hoàn thành câu',
+  6: 'Hoàn thành đoạn',
+  7: 'Đọc hiểu',
+};
+
+const DIFFICULTY_LABEL = { easy: 'Dễ', medium: 'Trung bình', hard: 'Khó' };
+
+function QuestionDetailPanel({ question, loading, onClose, onEdit, onDelete }) {
+  if (loading) {
+    return (
+      <Card>
+        <CardContent className="flex items-center justify-center py-16">
+          <Loader2 className="w-6 h-6 text-primary-500 animate-spin" />
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (!question) {
+    return (
+      <Card>
+        <CardContent className="py-12 px-6 text-center">
+          <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-slate-100 flex items-center justify-center">
+            <Eye className="w-5 h-5 text-slate-400" />
+          </div>
+          <p className="text-sm font-medium text-slate-700 mb-1">
+            Chọn câu hỏi để xem chi tiết
+          </p>
+          <p className="text-xs text-slate-500">
+            Click vào hàng trong bảng hoặc bấm icon mắt để xem chi tiết câu hỏi
+            ở đây.
+          </p>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  const { part, content, options = [], correctAnswer, explanation, tags = [], difficulty } = question;
+
+  return (
+    <Card>
+      <div className="flex items-center justify-between p-4 border-b border-slate-100">
+        <div className="flex items-center gap-2 min-w-0">
+          <Badge variant="muted">Part {part}</Badge>
+          <span className="text-xs text-slate-500 truncate">
+            {PART_NAME[part]}
+          </span>
+        </div>
+        <div className="flex items-center gap-1">
+          <button
+            type="button"
+            onClick={onEdit}
+            title="Sửa câu hỏi"
+            className="inline-flex items-center justify-center w-7 h-7 rounded-md text-slate-500 hover:bg-slate-100 hover:text-slate-700"
+          >
+            <Pencil className="w-3.5 h-3.5" />
+          </button>
+          <button
+            type="button"
+            onClick={onDelete}
+            title="Xóa câu hỏi"
+            className="inline-flex items-center justify-center w-7 h-7 rounded-md text-red-500 hover:bg-red-50 hover:text-red-600"
+          >
+            <Trash2 className="w-3.5 h-3.5" />
+          </button>
+          <button
+            type="button"
+            onClick={onClose}
+            title="Đóng"
+            className="inline-flex items-center justify-center w-7 h-7 rounded-md text-slate-500 hover:bg-slate-100 hover:text-slate-700"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+      </div>
+
+      <CardContent className="p-4 space-y-4">
+        {/* Audio */}
+        {content?.audioUrl && (
+          <div>
+            <div className="flex items-center gap-1.5 mb-1.5 text-xs font-medium text-slate-700">
+              <Headphones className="w-3.5 h-3.5" /> Audio
+            </div>
+            <audio
+              controls
+              src={content.audioUrl}
+              className="w-full h-9"
+            />
+          </div>
+        )}
+
+        {/* Image */}
+        {content?.imageUrl && (
+          <div>
+            <div className="flex items-center gap-1.5 mb-1.5 text-xs font-medium text-slate-700">
+              <ImageIcon className="w-3.5 h-3.5" /> Hình ảnh
+            </div>
+            <div className="rounded-md border border-slate-200 overflow-hidden bg-slate-50">
+              {content.imageUrl.split(';').map((url, i) => (
+                <img
+                  key={i}
+                  src={url.trim()}
+                  alt={`Question ${i + 1}`}
+                  className="w-full"
+                  loading="lazy"
+                />
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Question text */}
+        {content?.text && (
+          <div>
+            <div className="text-xs font-medium text-slate-700 mb-1.5">
+              Nội dung câu hỏi
+            </div>
+            <p className="text-sm text-slate-900 leading-relaxed whitespace-pre-wrap">
+              {content.text}
+            </p>
+          </div>
+        )}
+
+        {/* Options + correct answer */}
+        <div>
+          <div className="text-xs font-medium text-slate-700 mb-1.5">
+            Đáp án
+          </div>
+          <ul className="space-y-1.5">
+            {options.map((opt) => {
+              const isCorrect = opt.key === correctAnswer;
+              return (
+                <li
+                  key={opt.key}
+                  className={cn(
+                    'flex items-start gap-2 rounded-md px-2.5 py-2 text-sm border',
+                    isCorrect
+                      ? 'bg-secondary-50 border-secondary-200 text-secondary-900'
+                      : 'bg-white border-slate-200 text-slate-700',
+                  )}
+                >
+                  <span
+                    className={cn(
+                      'font-mono font-semibold shrink-0 w-5',
+                      isCorrect ? 'text-secondary-600' : 'text-slate-500',
+                    )}
+                  >
+                    {opt.key}.
+                  </span>
+                  <span className="flex-1 leading-relaxed">
+                    {opt.text || (
+                      <em className="text-slate-400">(trống)</em>
+                    )}
+                  </span>
+                  {isCorrect && (
+                    <CheckCircle2 className="w-4 h-4 text-secondary-600 shrink-0 mt-0.5" />
+                  )}
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+
+        {/* Explanation */}
+        {explanation && (
+          <div>
+            <div className="text-xs font-medium text-slate-700 mb-1.5">
+              Giải thích
+            </div>
+            <p className="text-sm text-slate-700 leading-relaxed whitespace-pre-wrap bg-slate-50 border border-slate-200 rounded-md px-3 py-2">
+              {explanation}
+            </p>
+          </div>
+        )}
+
+        {/* Meta — difficulty + tags */}
+        <div className="pt-3 border-t border-slate-100 flex flex-wrap items-center gap-x-3 gap-y-2 text-xs">
+          <div className="flex items-center gap-1.5">
+            <span className="text-slate-500">Độ khó:</span>
+            <span className="font-medium text-slate-700 capitalize">
+              {DIFFICULTY_LABEL[difficulty] || difficulty}
+            </span>
+          </div>
+          {tags.length > 0 && (
+            <div className="flex items-center gap-1.5 flex-wrap">
+              <span className="text-slate-500">Tags:</span>
+              {tags.map((t) => (
+                <Badge key={t} variant="muted" className="text-xs">
+                  {t}
+                </Badge>
+              ))}
+            </div>
+          )}
+        </div>
+      </CardContent>
+    </Card>
   );
 }
 
