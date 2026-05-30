@@ -214,7 +214,10 @@ export default function ManageUsers() {
 
         <Card className="mb-4">
           <CardContent className="p-4">
-            <form onSubmit={handleSearch} className="flex flex-wrap items-end gap-3">
+            <form
+              onSubmit={handleSearch}
+              className="flex flex-wrap items-end gap-3"
+            >
               <div className="flex-1 min-w-[240px]">
                 <label className="text-xs font-medium text-slate-700 block mb-1">
                   Tìm kiếm
@@ -238,9 +241,7 @@ export default function ManageUsers() {
                 </label>
                 <Select
                   value={pending.role}
-                  onValueChange={(v) =>
-                    setPending((p) => ({ ...p, role: v }))
-                  }
+                  onValueChange={(v) => setPending((p) => ({ ...p, role: v }))}
                 >
                   <SelectTrigger className="w-36">
                     <SelectValue />
@@ -275,10 +276,7 @@ export default function ManageUsers() {
               </div>
 
               <div className="flex gap-2">
-                <button
-                  type="submit"
-                  className="btn-primary text-sm"
-                >
+                <button type="submit" className="btn-primary text-sm">
                   <Search className="w-4 h-4" /> Tìm
                 </button>
                 <button
@@ -301,7 +299,7 @@ export default function ManageUsers() {
               </div>
             ) : items.length === 0 ? (
               <p className="py-16 text-center text-sm text-slate-500">
-                Không có người dùng nào khớp bộ lọc.
+                Không có người dùng nào khớp với bộ lọc.
               </p>
             ) : (
               <Table>
@@ -345,7 +343,7 @@ export default function ManageUsers() {
                           )}
                         </TableCell>
                         <TableCell className="font-mono text-sm">
-                          {u.role === 'admin' ? (
+                          {u.role === "admin" ? (
                             <span className="text-slate-400">—</span>
                           ) : (
                             u.targetScore
@@ -388,7 +386,8 @@ export default function ManageUsers() {
                                       navigate(`/admin/users/${u._id}`)
                                     }
                                   >
-                                    <Eye className="w-4 h-4 mr-2" /> Xem chi tiết
+                                    <Eye className="w-4 h-4 mr-2" /> Xem chi
+                                    tiết
                                   </DropdownMenuItem>
                                 )}
                                 <DropdownMenuItem
@@ -465,7 +464,7 @@ export default function ManageUsers() {
                       </PaginationLink>
                     )}
                   </PaginationItem>
-                )
+                ),
               )}
               <PaginationItem>
                 <PaginationNext

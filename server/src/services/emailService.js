@@ -1,6 +1,6 @@
-import { Resend } from 'resend';
-import { env } from '../config/env.js';
-import { logger } from '../utils/logger.js';
+import { Resend } from "resend";
+import { env } from "../config/env.js";
+import { logger } from "../utils/logger.js";
 
 let _resend = null;
 
@@ -29,7 +29,7 @@ function getResendClient() {
 async function send({ to, subject, html, text }) {
   const client = getResendClient();
   if (!client) {
-    logger.warn('Email skipped: RESEND_API_KEY not set', { to, subject });
+    logger.warn("Email skipped: RESEND_API_KEY not set", { to, subject });
     return false;
   }
 
@@ -42,13 +42,17 @@ async function send({ to, subject, html, text }) {
       text,
     });
     if (error) {
-      logger.error('Resend send error', { to, subject, err: error.message || error });
+      logger.error("Resend send error", {
+        to,
+        subject,
+        err: error.message || error,
+      });
       return false;
     }
-    logger.info('Email sent', { to, subject, id: data?.id });
+    logger.info("Email sent", { to, subject, id: data?.id });
     return true;
   } catch (err) {
-    logger.error('Resend send threw', { to, subject, err: err.message });
+    logger.error("Resend send threw", { to, subject, err: err.message });
     return false;
   }
 }
@@ -59,13 +63,13 @@ async function send({ to, subject, html, text }) {
  */
 async function sendPasswordReset({ to, fullName, token }) {
   const link = `${env.CLIENT_URL}/reset-password?token=${encodeURIComponent(token)}`;
-  const greeting = fullName ? `Xin chào ${fullName},` : 'Xin chào,';
+  const greeting = fullName ? `Xin chào ${fullName},` : "Xin chào,";
 
   const html = `
     <div style="font-family: Inter, system-ui, sans-serif; max-width: 560px; margin: 0 auto; padding: 24px; color: #1e293b;">
       <h1 style="color: #4F46E5; font-size: 22px; margin: 0 0 16px;">Đặt lại mật khẩu</h1>
       <p>${greeting}</p>
-      <p>Chúng tôi nhận được yêu cầu đặt lại mật khẩu cho tài khoản TOEIC AI Platform của bạn.</p>
+      <p>Chúng tôi nhận được yêu cầu đặt lại mật khẩu cho tài khoản TOEIC AI của bạn.</p>
       <p>Bấm vào nút dưới đây để tạo mật khẩu mới. Liên kết có hiệu lực trong <strong>30 phút</strong>.</p>
       <p style="text-align: center; margin: 32px 0;">
         <a href="${link}" style="background: #4F46E5; color: #fff; padding: 12px 24px; border-radius: 8px; text-decoration: none; display: inline-block; font-weight: 600;">
@@ -81,11 +85,11 @@ async function sendPasswordReset({ to, fullName, token }) {
     </div>
   `;
 
-  const text = `${greeting}\n\nĐặt lại mật khẩu TOEIC AI Platform: ${link}\nLiên kết có hiệu lực 30 phút.\n\nNếu không phải bạn yêu cầu, bỏ qua email này.`;
+  const text = `${greeting}\n\nĐặt lại mật khẩu TOEIC AI: ${link}\nLiên kết có hiệu lực 30 phút.\n\nNếu không phải bạn yêu cầu, bỏ qua email này.`;
 
   return send({
     to,
-    subject: 'Đặt lại mật khẩu — TOEIC AI Platform',
+    subject: "Đặt lại mật khẩu — TOEIC AI",
     html,
     text,
   });
@@ -99,18 +103,26 @@ async function sendPasswordReset({ to, fullName, token }) {
 async function sendContactMessage({ name, email, message }) {
   const recipient = env.CONTACT_RECIPIENT;
   if (!recipient) {
-    logger.warn('Contact message skipped: CONTACT_RECIPIENT not set');
+    logger.warn("Contact message skipped: CONTACT_RECIPIENT not set");
     return false;
   }
 
   const escape = (s) =>
-    String(s).replace(/[&<>"']/g, (c) =>
-      ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]),
+    String(s).replace(
+      /[&<>"']/g,
+      (c) =>
+        ({
+          "&": "&amp;",
+          "<": "&lt;",
+          ">": "&gt;",
+          '"': "&quot;",
+          "'": "&#39;",
+        })[c],
     );
 
   const html = `
     <div style="font-family: Inter, system-ui, sans-serif; max-width: 560px; margin: 0 auto; padding: 24px; color: #1e293b;">
-      <h2 style="color: #4F46E5; font-size: 20px; margin: 0 0 16px;">Tin nhắn mới từ Landing Page</h2>
+      <h2 style="color: #4F46E5; font-size: 20px; margin: 0 0 16px;">Tin nhắn mới từ TOEIC AI</h2>
       <table style="width: 100%; border-collapse: collapse; margin-bottom: 16px;">
         <tr>
           <td style="padding: 8px 0; color: #64748b; width: 100px;">Họ tên:</td>
@@ -134,7 +146,7 @@ async function sendContactMessage({ name, email, message }) {
 
   const client = getResendClient();
   if (!client) {
-    logger.warn('Email skipped: RESEND_API_KEY not set', { to: recipient });
+    logger.warn("Email skipped: RESEND_API_KEY not set", { to: recipient });
     return false;
   }
 
@@ -148,13 +160,13 @@ async function sendContactMessage({ name, email, message }) {
       text,
     });
     if (error) {
-      logger.error('Contact email send error', { err: error.message || error });
+      logger.error("Contact email send error", { err: error.message || error });
       return false;
     }
-    logger.info('Contact email sent', { from: email, id: data?.id });
+    logger.info("Contact email sent", { from: email, id: data?.id });
     return true;
   } catch (err) {
-    logger.error('Contact email send threw', { err: err.message });
+    logger.error("Contact email send threw", { err: err.message });
     return false;
   }
 }
