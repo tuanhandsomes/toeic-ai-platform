@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 import {
   Shield,
@@ -9,6 +9,7 @@ import {
   Users,
   ChevronsUpDown,
   User,
+  Image as ImageIcon,
 } from "lucide-react";
 import { useAuthStore } from "@/store/authStore";
 import { ROUTES } from "@/constants/routes";
@@ -31,6 +32,7 @@ import {
   SidebarMenuItem,
   SidebarProvider,
   SidebarRail,
+  SidebarTrigger,
 } from "@/components/ui/sidebar";
 import {
   DropdownMenu,
@@ -47,6 +49,7 @@ const navItems = [
   { to: ROUTES.ADMIN, label: "Tổng quan", icon: LayoutDashboard, end: true },
   { to: ROUTES.ADMIN_TESTS, label: "Đề thi", icon: ClipboardList },
   { to: ROUTES.ADMIN_QUESTIONS, label: "Câu hỏi", icon: FileQuestion },
+  { to: ROUTES.ADMIN_MEDIA, label: "Media", icon: ImageIcon },
   { to: ROUTES.ADMIN_USERS, label: "Người dùng", icon: Users },
 ];
 
@@ -58,6 +61,13 @@ export default function AdminLayout({ children }) {
 
   const [logoutOpen, setLogoutOpen] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
+
+  // Khoá body/root scroll khi đang trong admin layout — chỉ <main> bên trong
+  // mới scroll. Cleanup tự động khi rời layout (vd điều hướng sang Landing).
+  useEffect(() => {
+    document.body.classList.add('app-layout-active');
+    return () => document.body.classList.remove('app-layout-active');
+  }, []);
 
   const handleLogout = async () => {
     setLoggingOut(true);
@@ -72,28 +82,36 @@ export default function AdminLayout({ children }) {
   const initial = user?.fullName?.charAt(0).toUpperCase() || "A";
 
   return (
-    <div className="flex flex-col h-screen overflow-hidden bg-slate-50">
+    // SidebarProvider phải wrap cả header để SidebarTrigger (trong header)
+    // gọi được useSidebar() từ context. !flex-col override default flex (row).
+    <SidebarProvider className="!min-h-0 !flex-col h-dvh overflow-hidden bg-slate-50">
       {/* TOP HEADER (full width, spans across sidebar + content) */}
       <header
-        className="flex items-center justify-between border-b border-slate-200 bg-white px-6 shrink-0 z-30"
+        className="flex items-center justify-between border-b border-slate-200 bg-white px-4 sm:px-6 shrink-0 z-30"
         style={{ height: HEADER_HEIGHT }}
       >
-        <Link to={ROUTES.ADMIN} className="flex items-center gap-2.5">
-          <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary-500 text-white">
-            <Shield className="w-4 h-4" />
-          </div>
-          <div className="leading-tight">
-            <p className="text-lg font-heading font-bold text-slate-900">
-              TOEIC AI
-            </p>
-            <p className="text-[11px] text-slate-500 -mt-0.5">Quản trị viên</p>
-          </div>
-        </Link>
-
+        <div className="flex items-center gap-2 sm:gap-3">
+          {/* Hamburger toggle — chỉ hiện ở mobile (< 768px) để mở Sheet sidebar */}
+          <SidebarTrigger className="md:hidden -ml-1" />
+          <Link to={ROUTES.ADMIN} className="flex items-center gap-2.5">
+            <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary-500 text-white">
+              <Shield className="w-4 h-4" />
+            </div>
+            <div className="leading-tight">
+              <p className="text-lg font-heading font-bold text-slate-900">
+                TOEIC AI
+              </p>
+              <p className="text-[11px] text-slate-500 -mt-0.5">Quản trị viên</p>
+            </div>
+          </Link>
+        </div>
       </header>
 
-      {/* SIDEBAR + CONTENT (below header) */}
-      <SidebarProvider className="!min-h-0 flex-1 overflow-hidden">
+      {/* SIDEBAR + CONTENT (below header).
+          min-h-0 cần thiết để flex-1 children (main) shrink đúng và
+          overflow-auto trong main hoạt động — nếu không, content tràn ra
+          body → 2 scrollbar (body + main). */}
+      <div className="flex flex-1 min-h-0 overflow-hidden">
         <Sidebar
           variant="floating"
           collapsible="icon"
@@ -191,8 +209,10 @@ export default function AdminLayout({ children }) {
           <SidebarRail />
         </Sidebar>
 
-        <main className="flex-1 overflow-auto py-4 pr-4">{children}</main>
-      </SidebarProvider>
+        <main className="flex-1 min-h-0 overflow-auto py-4 pr-4">
+          {children}
+        </main>
+      </div>
 
       <Dialog
         open={logoutOpen}
@@ -226,6 +246,6 @@ export default function AdminLayout({ children }) {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </div>
+    </SidebarProvider>
   );
 }

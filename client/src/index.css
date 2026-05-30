@@ -76,6 +76,21 @@
 }
 
 @layer base {
+  /**
+   * Khoá scroll chỉ khi đang ở trong AppLayout / AdminLayout (toggle qua
+   * useEffect trong 2 layout). Class này áp dụng cho body để chỉ có 1 scroll
+   * duy nhất bên trong <main>. Landing/Login/Register KHÔNG có class này → vẫn
+   * scroll body như bình thường.
+   */
+  body.app-layout-active {
+    height: 100%;
+    overflow: hidden;
+  }
+  body.app-layout-active #root {
+    height: 100%;
+    overflow: hidden;
+  }
+
   html {
     font-family: 'Inter', system-ui, sans-serif;
   }
