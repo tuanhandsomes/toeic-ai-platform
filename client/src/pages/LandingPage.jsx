@@ -262,27 +262,105 @@ function RoadmapSection() {
   );
 }
 
+// Local-part và domain của email "tạm thời" rõ ràng — chặn tại FE để
+// có message tiếng Việt rõ ràng, BE vẫn double-check (defense in depth).
+const SUSPICIOUS_LOCAL = /^(trash|temp|fake|throwaway|spam|junk|disposable|burner|noreply|no-reply)(mail|email|inbox)?\d*$/i;
+const DISPOSABLE_DOMAINS_FE = new Set([
+  "mailinator.com", "tempmail.com", "tempmail.net", "10minutemail.com",
+  "yopmail.com", "guerrillamail.com", "throwawaymail.com", "fakeinbox.com",
+  "trashmail.com", "maildrop.cc", "getnada.com", "sharklasers.com",
+  "dispostable.com", "mintemail.com",
+]);
+
 function ContactSection() {
   const [ref, inView] = useInView(0.15);
-  const [form, setForm] = useState({ name: "", email: "", message: "" });
+  // `website` là honeypot — bot tự fill, user thật không thấy field.
+  // BE reject nếu non-empty (xem contactValidation.js).
+  const [form, setForm] = useState({
+    name: "",
+    email: "",
+    message: "",
+    website: "",
+  });
+  const [errors, setErrors] = useState({});
+  const [touched, setTouched] = useState({});
   const [sending, setSending] = useState(false);
+
+  // Trả về message lỗi cho 1 field, hoặc null nếu OK.
+  const validateField = (field, value) => {
+    const v = (value ?? "").trim();
+    if (field === "name") {
+      if (v.length < 2) return "Họ và tên phải có ít nhất 2 ký tự";
+      if (!/[\p{L}]/u.test(v)) return "Họ và tên phải chứa chữ cái";
+      return null;
+    }
+    if (field === "email") {
+      const lower = v.toLowerCase();
+      if (!lower) return "Vui lòng nhập email";
+      if (!/^[^\s@]+@[^\s@]+\.[a-z]{2,24}$/i.test(lower))
+        return "Email không đúng định dạng";
+      const [local, domain] = lower.split("@");
+      if (SUSPICIOUS_LOCAL.test(local))
+        return "Vui lòng dùng email cá nhân thật (không nhận email tạm thời)";
+      if (DISPOSABLE_DOMAINS_FE.has(domain))
+        return "Vui lòng dùng email cá nhân thật (không nhận email tạm thời)";
+      return null;
+    }
+    if (field === "message") {
+      if (v.length < 10) return "Nội dung tin nhắn phải có ít nhất 10 ký tự";
+      if (v.length > 2000) return "Nội dung tin nhắn tối đa 2000 ký tự";
+      return null;
+    }
+    return null;
+  };
+
+  const setField = (field, value) => {
+    setForm((f) => ({ ...f, [field]: value }));
+    // Nếu đã touched + đang có lỗi → re-validate live cho user thấy sửa OK.
+    if (touched[field] && errors[field]) {
+      const err = validateField(field, value);
+      setErrors((e) => ({ ...e, [field]: err || undefined }));
+    }
+  };
+
+  const handleBlur = (field) => {
+    setTouched((t) => ({ ...t, [field]: true }));
+    const err = validateField(field, form[field]);
+    setErrors((e) => ({ ...e, [field]: err || undefined }));
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const newErrors = {};
+    ["name", "email", "message"].forEach((f) => {
+      const err = validateField(f, form[f]);
+      if (err) newErrors[f] = err;
+    });
+    setErrors(newErrors);
+    setTouched({ name: true, email: true, message: true });
+    if (Object.keys(newErrors).length > 0) return;
+
     setSending(true);
     try {
       await contactService.send(form);
       toast.success("Đã gửi tin nhắn — chúng tôi sẽ phản hồi sớm nhất!");
-      setForm({ name: "", email: "", message: "" });
+      setForm({ name: "", email: "", message: "", website: "" });
+      setTouched({});
+      setErrors({});
     } catch (err) {
-      // Validation errors từ BE có shape { message, details: [{field, message}] }.
-      // Ưu tiên message field-specific nếu có để user biết lỗi cụ thể.
       const fieldMsg = err?.details?.[0]?.message;
-      toast.error(
+      const msg =
         fieldMsg ||
-          err?.message ||
-          "Không gửi được tin nhắn. Vui lòng thử lại sau ít phút.",
-      );
+        err?.message ||
+        "Không gửi được tin nhắn. Vui lòng thử lại sau ít phút.";
+      // Nếu BE chỉ rõ field nào lỗi → gắn inline + scroll vào field đó.
+      const field = err?.details?.[0]?.field;
+      if (field && ["name", "email", "message"].includes(field)) {
+        setErrors((e) => ({ ...e, [field]: fieldMsg }));
+        setTouched((t) => ({ ...t, [field]: true }));
+      } else {
+        toast.error(msg);
+      }
     } finally {
       setSending(false);
     }
@@ -314,11 +392,24 @@ function ContactSection() {
 
         <form
           onSubmit={handleSubmit}
+          noValidate
           style={{ animationDelay: "200ms" }}
           className={`rounded-2xl bg-white border border-slate-200 shadow-card p-6 md:p-8 space-y-4 ${
             inView ? "animate-fade-in-up" : "opacity-0"
           }`}
         >
+          {/* Honeypot — ẩn hoàn toàn với user thật, bot tự động fill */}
+          <input
+            type="text"
+            name="website"
+            tabIndex={-1}
+            autoComplete="off"
+            value={form.website}
+            onChange={(e) => setField("website", e.target.value)}
+            className="absolute opacity-0 pointer-events-none h-0 w-0 overflow-hidden"
+            aria-hidden="true"
+          />
+
           <div className="grid sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-1.5">
@@ -326,25 +417,43 @@ function ContactSection() {
               </label>
               <input
                 type="text"
-                required
                 value={form.name}
-                onChange={(e) => setForm({ ...form, name: e.target.value })}
-                className="input"
+                onChange={(e) => setField("name", e.target.value)}
+                onBlur={() => handleBlur("name")}
+                className={`input ${
+                  errors.name
+                    ? "border-red-300 focus:border-red-400 focus:ring-red-100"
+                    : ""
+                }`}
                 placeholder="Nhập tên của bạn"
+                aria-invalid={!!errors.name}
               />
+              {errors.name && (
+                <p className="text-xs text-red-600 mt-1">{errors.name}</p>
+              )}
             </div>
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-1.5">
                 Email
               </label>
               <input
-                type="email"
-                required
+                type="text"
                 value={form.email}
-                onChange={(e) => setForm({ ...form, email: e.target.value })}
-                className="input"
+                onChange={(e) => setField("email", e.target.value)}
+                onBlur={() => handleBlur("email")}
+                className={`input ${
+                  errors.email
+                    ? "border-red-300 focus:border-red-400 focus:ring-red-100"
+                    : ""
+                }`}
                 placeholder="email@example.com"
+                inputMode="email"
+                autoComplete="email"
+                aria-invalid={!!errors.email}
               />
+              {errors.email && (
+                <p className="text-xs text-red-600 mt-1">{errors.email}</p>
+              )}
             </div>
           </div>
           <div>
@@ -352,13 +461,21 @@ function ContactSection() {
               Nội dung
             </label>
             <textarea
-              required
               rows={5}
               value={form.message}
-              onChange={(e) => setForm({ ...form, message: e.target.value })}
-              className="input resize-none"
+              onChange={(e) => setField("message", e.target.value)}
+              onBlur={() => handleBlur("message")}
+              className={`input resize-none ${
+                errors.message
+                  ? "border-red-300 focus:border-red-400 focus:ring-red-100"
+                  : ""
+              }`}
               placeholder="Câu hỏi hoặc góp ý của bạn..."
+              aria-invalid={!!errors.message}
             />
+            {errors.message && (
+              <p className="text-xs text-red-600 mt-1">{errors.message}</p>
+            )}
           </div>
           <div className="flex justify-end pt-2">
             <button
