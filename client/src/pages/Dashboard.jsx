@@ -18,7 +18,7 @@ import { KpiCard } from "@/components/common/KpiCard";
 import { useAuthStore } from "@/store/authStore";
 import { resultService } from "@/services/resultService";
 import { ROUTES } from "@/constants/routes";
-import { formatDuration } from "@/utils/formatTime";
+import { formatDuration, formatDurationVi } from "@/utils/formatTime";
 import { computeCurrentStreak } from "@/utils/statsHelpers";
 
 export default function Dashboard() {
@@ -114,9 +114,11 @@ export default function Dashboard() {
           <KpiCard
             icon={Clock}
             color="violet"
-            label="Tổng thời gian"
+            label="Tổng thời gian đã luyện tập"
             value={
-              stats.totalDuration ? formatDuration(stats.totalDuration) : "0p"
+              stats.totalDuration
+                ? formatDurationVi(stats.totalDuration)
+                : "0 phút"
             }
           />
         </div>
