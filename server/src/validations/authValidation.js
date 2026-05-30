@@ -15,6 +15,8 @@ export const registerSchema = Joi.object({
 export const loginSchema = Joi.object({
   email: emailField,
   password: Joi.string().required(),
+  // "Ghi nhớ đăng nhập" — cấp refresh token dài hơn (30d thay vì 7d) nếu true.
+  remember: Joi.boolean().default(false),
 });
 
 export const refreshSchema = Joi.object({

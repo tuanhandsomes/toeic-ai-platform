@@ -12,6 +12,9 @@ export const env = {
   JWT_REFRESH_SECRET: required('JWT_REFRESH_SECRET'),
   JWT_ACCESS_EXPIRES: process.env.JWT_ACCESS_EXPIRES || '15m',
   JWT_REFRESH_EXPIRES: process.env.JWT_REFRESH_EXPIRES || '7d',
+  // Khi user tick "Ghi nhớ đăng nhập trong 30 ngày" ở Login → cấp refresh
+  // token dài hơn để stay-signed-in qua nhiều session browser.
+  JWT_REFRESH_EXPIRES_LONG: process.env.JWT_REFRESH_EXPIRES_LONG || '30d',
   OPENAI_API_KEY: process.env.OPENAI_API_KEY || '',
   OPENAI_MODEL: process.env.OPENAI_MODEL || 'gpt-4o-mini',
   RESEND_API_KEY: process.env.RESEND_API_KEY || '',

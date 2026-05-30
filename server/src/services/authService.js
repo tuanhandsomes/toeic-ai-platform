@@ -15,9 +15,11 @@ const signAccessToken = (user) =>
     expiresIn: env.JWT_ACCESS_EXPIRES,
   });
 
-const signRefreshToken = (user) =>
+const signRefreshToken = (user, remember = false) =>
   jwt.sign({ sub: user._id.toString() }, env.JWT_REFRESH_SECRET, {
-    expiresIn: env.JWT_REFRESH_EXPIRES,
+    expiresIn: remember
+      ? env.JWT_REFRESH_EXPIRES_LONG // 30d khi user tick "Ghi nhớ"
+      : env.JWT_REFRESH_EXPIRES, //      7d mặc định
   });
 
 const hashToken = (token) => crypto.createHash('sha256').update(token).digest('hex');
@@ -56,7 +58,7 @@ export const authService = {
     return { user, accessToken, refreshToken };
   },
 
-  async login({ email, password }) {
+  async login({ email, password, remember = false }) {
     const user = await User.findOne({ email }).select('+passwordHash');
     if (!user) throw ApiError.unauthorized('Email hoặc mật khẩu không đúng');
 
@@ -66,7 +68,7 @@ export const authService = {
     if (!user.isActive) throw ApiError.forbidden('Tài khoản đã bị khóa');
 
     const accessToken = signAccessToken(user);
-    const refreshToken = signRefreshToken(user);
+    const refreshToken = signRefreshToken(user, remember);
     await persistRefreshToken(user._id, refreshToken);
 
     return { user, accessToken, refreshToken };

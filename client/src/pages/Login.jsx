@@ -120,8 +120,16 @@ export default function Login() {
   const login = useAuthStore((s) => s.login);
   const isLoading = useAuthStore((s) => s.isLoading);
 
-  const [form, setForm] = useState({ email: "", password: "" });
-  const [remember, setRemember] = useState(false);
+  // Auto-fill email từ lần đăng nhập trước nếu user đã tick "Ghi nhớ".
+  // Mật khẩu KHÔNG bao giờ lưu (rely vào browser autofill nếu cần).
+  // Lazy initializer chạy 1 lần khi mount — không cần useEffect.
+  const [form, setForm] = useState(() => ({
+    email: localStorage.getItem("rememberedEmail") || "",
+    password: "",
+  }));
+  const [remember, setRemember] = useState(
+    () => !!localStorage.getItem("rememberedEmail"),
+  );
   const [error, setError] = useState("");
 
   const reason = searchParams.get("reason");
@@ -131,7 +139,13 @@ export default function Login() {
     e.preventDefault();
     setError("");
     try {
-      const user = await login(form);
+      const user = await login({ ...form, remember });
+      // Sau khi đăng nhập OK: lưu hoặc xoá email tuỳ checkbox.
+      if (remember) {
+        localStorage.setItem("rememberedEmail", form.email.trim().toLowerCase());
+      } else {
+        localStorage.removeItem("rememberedEmail");
+      }
       navigate(user?.role === "admin" ? ROUTES.ADMIN : ROUTES.DASHBOARD);
     } catch (err) {
       setError(err?.message || "Đăng nhập thất bại");
@@ -191,6 +205,7 @@ export default function Login() {
                     clearReason();
                     setForm({ ...form, email: e.target.value });
                   }}
+                  autoComplete="username"
                   required
                 />
               </div>
@@ -217,6 +232,7 @@ export default function Login() {
                   clearReason();
                   setForm({ ...form, password: e.target.value });
                 }}
+                autoComplete="current-password"
                 required
               />
             </div>
@@ -247,7 +263,7 @@ export default function Login() {
           </form>
 
           <p className="mt-4 text-center text-sm text-slate-600">
-            Chưa có tài khoản?{" "}
+            Bạn chưa có tài khoản?{" "}
             <Link
               to={ROUTES.REGISTER}
               className="text-primary-600 font-medium hover:underline"
