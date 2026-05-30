@@ -22,8 +22,14 @@ const isAuthEndpoint = (url = '') => AUTH_PATHS.some((p) => url.includes(p));
 
 // Redirect tới /login kèm reason để Login page hiển thị message thân thiện
 // thay vì để user bối rối với raw error từ BE.
+//
+// CHỈ xóa key auth — KHÔNG dùng localStorage.clear() vì sẽ wipe luôn
+// `notif-read:{userId}`, exam drafts, v.v. (user mất state đã đọc khi
+// đăng nhập lại).
 function redirectToLogin(reason = 'session-expired') {
-  localStorage.clear();
+  localStorage.removeItem('accessToken');
+  localStorage.removeItem('refreshToken');
+  localStorage.removeItem('auth-storage');
   // Tránh redirect loop nếu user đã đang ở /login
   if (window.location.pathname !== '/login') {
     window.location.href = `/login?reason=${reason}`;

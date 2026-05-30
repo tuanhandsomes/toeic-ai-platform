@@ -2,6 +2,16 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { authService } from '../services/authService.js';
 
+/**
+ * Chỉ xóa các key liên quan auth — KHÔNG dùng localStorage.clear() vì
+ * sẽ wipe luôn dữ liệu app khác (vd `notif-read:{userId}`, exam drafts).
+ */
+function clearAuthStorage() {
+  localStorage.removeItem('accessToken');
+  localStorage.removeItem('refreshToken');
+  localStorage.removeItem('auth-storage');
+}
+
 export const useAuthStore = create(
   persist(
     (set, get) => ({
@@ -49,7 +59,7 @@ export const useAuthStore = create(
           const res = await authService.me();
           set({ user: res.data.user, isAuthenticated: true });
         } catch {
-          localStorage.clear();
+          clearAuthStorage();
           set({ user: null, isAuthenticated: false });
         }
       },
@@ -60,7 +70,7 @@ export const useAuthStore = create(
         } catch {
           // ignore — clear local anyway
         }
-        localStorage.clear();
+        clearAuthStorage();
         set({ user: null, isAuthenticated: false });
       },
     }),
