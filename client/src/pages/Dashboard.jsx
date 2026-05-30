@@ -19,6 +19,7 @@ import { useAuthStore } from "@/store/authStore";
 import { resultService } from "@/services/resultService";
 import { ROUTES } from "@/constants/routes";
 import { formatDuration } from "@/utils/formatTime";
+import { computeCurrentStreak } from "@/utils/statsHelpers";
 
 export default function Dashboard() {
   const user = useAuthStore((s) => s.user);
@@ -47,10 +48,12 @@ export default function Dashboard() {
     );
     const latestScore = fullTests[0]?.scoreTotal || null;
     const totalDuration = results.reduce((s, r) => s + (r.durationSec || 0), 0);
+    const streak = computeCurrentStreak(results);
     return {
       latestScore,
       totalAttempts: results.length,
       totalDuration,
+      streak,
     };
   }, [results]);
 
@@ -69,7 +72,21 @@ export default function Dashboard() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
+          <KpiCard
+            icon={Flame}
+            color="orange"
+            label="Chuỗi học tập"
+            value={stats.streak}
+            unit={stats.streak > 0 ? "ngày" : ""}
+            sub={
+              stats.streak === 0
+                ? "Bắt đầu chuỗi học hôm nay"
+                : stats.streak === 1
+                ? "Khởi đầu tốt — giữ lửa nhé!"
+                : "Tiếp tục giữ vững nhịp độ!"
+            }
+          />
           <KpiCard
             icon={Target}
             color="primary"
@@ -96,7 +113,7 @@ export default function Dashboard() {
           />
           <KpiCard
             icon={Clock}
-            color="orange"
+            color="violet"
             label="Tổng thời gian"
             value={
               stats.totalDuration ? formatDuration(stats.totalDuration) : "0p"

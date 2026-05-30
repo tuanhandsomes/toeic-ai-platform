@@ -63,6 +63,35 @@ export function build7DayBuckets(results, offsetDays = 0) {
   }));
 }
 
+/**
+ * Đếm số ngày liên tiếp gần nhất user có ít nhất 1 bài làm.
+ *
+ * Quy tắc:
+ *   - Nếu hôm nay có ít nhất 1 bài → bắt đầu đếm từ hôm nay đi ngược.
+ *   - Nếu hôm nay chưa có bài nhưng hôm qua có → bắt đầu đếm từ hôm qua
+ *     (cho user đang trong streak chưa kịp làm hôm nay, tránh reset oan).
+ *   - Khi gặp 1 ngày không có bài thì dừng.
+ *
+ * @param {Array} results - Bài làm có trường submittedAt
+ * @returns {number}      - Số ngày liên tiếp (0 nếu chưa có bài nào)
+ */
+export function computeCurrentStreak(results) {
+  if (!results?.length) return 0;
+  const dayKeys = new Set(results.map((r) => dayKey(r.submittedAt)));
+  const cursor = new Date(TODAY);
+  // Hôm nay chưa làm nhưng hôm qua có → cho phép bắt đầu từ hôm qua.
+  if (!dayKeys.has(dayKey(cursor))) {
+    cursor.setDate(cursor.getDate() - 1);
+    if (!dayKeys.has(dayKey(cursor))) return 0;
+  }
+  let streak = 0;
+  while (dayKeys.has(dayKey(cursor))) {
+    streak++;
+    cursor.setDate(cursor.getDate() - 1);
+  }
+  return streak;
+}
+
 const sum = (arr, key) => arr.reduce((s, b) => s + b[key], 0);
 
 function avgPerDay(n) {

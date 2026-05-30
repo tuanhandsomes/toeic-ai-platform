@@ -6,6 +6,7 @@ import {
 import AdminLayout from '@/components/layout/AdminLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { KpiCard } from '@/components/common/KpiCard';
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
@@ -86,9 +87,9 @@ export default function AdminDashboard() {
     {
       label: 'Người dùng',
       value: stats.users.total,
-      sub: `${stats.users.active} active • ${stats.users.admins} admin`,
+      sub: `${stats.users.active} đang hoạt động • ${stats.users.admins} quản trị`,
       icon: Users,
-      color: 'bg-blue-100 text-blue-600',
+      color: 'primary',
       to: ROUTES.ADMIN_USERS,
     },
     {
@@ -96,7 +97,7 @@ export default function AdminDashboard() {
       value: stats.tests.total,
       sub: `${stats.tests.published} đã xuất bản`,
       icon: ClipboardList,
-      color: 'bg-emerald-100 text-emerald-600',
+      color: 'secondary',
       to: ROUTES.ADMIN_TESTS,
     },
     {
@@ -104,15 +105,15 @@ export default function AdminDashboard() {
       value: stats.questions.total,
       sub: 'Trong ngân hàng',
       icon: FileQuestion,
-      color: 'bg-purple-100 text-purple-600',
+      color: 'violet',
       to: ROUTES.ADMIN_QUESTIONS,
     },
     {
       label: 'Lượt làm bài',
       value: stats.activity.totalResults,
-      sub: `${stats.activity.totalAIAnalyses} phân tích AI`,
+      sub: `${stats.activity.totalAIAnalyses} lần phân tích AI`,
       icon: Activity,
-      color: 'bg-tertiary-100 text-tertiary-600',
+      color: 'tertiary',
       to: null,
     },
   ];
@@ -129,26 +130,22 @@ export default function AdminDashboard() {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
           {kpis.map((kpi) => {
-            const Inner = (
-              <Card className="hover:shadow-md transition-shadow">
-                <CardContent className="p-5">
-                  <div className="flex items-start justify-between gap-3 mb-3">
-                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${kpi.color}`}>
-                      <kpi.icon className="w-5 h-5" />
-                    </div>
-                  </div>
-                  <p className="font-mono text-3xl font-bold text-slate-900">{kpi.value}</p>
-                  <p className="text-sm text-slate-700 mt-0.5">{kpi.label}</p>
-                  <p className="text-xs text-slate-500 mt-1">{kpi.sub}</p>
-                </CardContent>
-              </Card>
+            const card = (
+              <KpiCard
+                icon={kpi.icon}
+                color={kpi.color}
+                label={kpi.label}
+                value={kpi.value}
+                sub={kpi.sub}
+                className={kpi.to ? 'hover:shadow-md transition-shadow' : ''}
+              />
             );
             return kpi.to ? (
-              <Link key={kpi.label} to={kpi.to}>
-                {Inner}
+              <Link key={kpi.label} to={kpi.to} className="block">
+                {card}
               </Link>
             ) : (
-              <div key={kpi.label}>{Inner}</div>
+              <div key={kpi.label}>{card}</div>
             );
           })}
         </div>
