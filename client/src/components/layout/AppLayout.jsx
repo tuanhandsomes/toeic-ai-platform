@@ -9,7 +9,6 @@ import {
   BarChart3,
   History,
   User,
-  Bell,
   ChevronsUpDown,
   KeyRound,
 } from "lucide-react";
@@ -44,6 +43,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import ChangePasswordDialog from "@/components/common/ChangePasswordDialog";
+import NotificationDropdown from "@/components/common/NotificationDropdown";
 
 const HEADER_HEIGHT = "4.5rem"; // 56px (h-14)
 
@@ -94,13 +94,7 @@ export default function AppLayout({ children }) {
         </Link>
 
         <div className="flex items-center gap-3">
-          <button
-            type="button"
-            className="relative w-9 h-9 rounded-full flex items-center justify-center hover:bg-slate-100 transition-colors"
-            aria-label="Thông báo"
-          >
-            <Bell className="w-5 h-5 text-slate-600" />
-          </button>
+          <NotificationDropdown />
         </div>
       </header>
 
@@ -193,7 +187,7 @@ export default function AppLayout({ children }) {
                     <DropdownMenuSeparator />
                     <DropdownMenuItem
                       onClick={() => setLogoutOpen(true)}
-                      className="text-tertiary-600 focus:text-tertiary-700"
+                      className="text-red-600 focus:text-red-700"
                     >
                       <LogOut /> Đăng xuất
                     </DropdownMenuItem>
@@ -233,7 +227,7 @@ export default function AppLayout({ children }) {
               type="button"
               onClick={handleLogout}
               disabled={loggingOut}
-              className="btn text-sm text-white bg-tertiary-500 hover:bg-tertiary-600"
+              className="btn text-sm text-white bg-red-500 hover:bg-red-600 px-4 py-2"
             >
               <LogOut className="w-4 h-4" />
               {loggingOut ? "Đang đăng xuất…" : "Đăng xuất"}
