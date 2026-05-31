@@ -360,8 +360,16 @@ export default function ManageUsers() {
                             </Badge>
                           )}
                         </TableCell>
-                        <TableCell className="text-xs text-slate-500">
-                          {new Date(u.createdAt).toLocaleDateString("vi-VN")}
+                        <TableCell className="text-xs text-slate-500 whitespace-nowrap">
+                          {new Date(u.createdAt).toLocaleString("vi-VN", {
+                            day: "2-digit",
+                            month: "2-digit",
+                            year: "numeric",
+                            hour: "2-digit",
+                            minute: "2-digit",
+                            second: "2-digit",
+                            hour12: false,
+                          })}
                         </TableCell>
                         <TableCell className="text-right">
                           {isSelf ? (
