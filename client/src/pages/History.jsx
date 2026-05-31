@@ -132,7 +132,7 @@ export default function History() {
           <KpiCard
             icon={Award}
             color="secondary"
-            label="Cao nhất (Full)"
+            label="Cao nhất (Full Test)"
             value={stats.bestScore || "--"}
             bordered={false}
           />
