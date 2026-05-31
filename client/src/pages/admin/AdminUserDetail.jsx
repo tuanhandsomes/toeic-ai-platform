@@ -18,7 +18,6 @@ import {
   Unlock,
   KeyRound,
   Trash2,
-  AtSign,
   FileQuestion,
   Clock,
   TrendingUp,
@@ -72,7 +71,7 @@ const studyTimeConfig = {
   minutes: { label: "Phút học", color: "hsl(var(--chart-3))" },
 };
 const scoreProgressConfig = {
-  avgAccuracy: { label: "Độ chính xác", color: "hsl(var(--chart-1))" },
+  maxScore: { label: "Điểm Full Test cao nhất", color: "hsl(var(--chart-1))" },
 };
 
 export default function AdminUserDetail() {
@@ -268,18 +267,18 @@ export default function AdminUserDetail() {
 
         {/* Profile + meta */}
         <Card>
-          <CardContent className="p-6 grid grid-cols-1 lg:grid-cols-[300px_1fr] gap-8 lg:gap-12 items-center">
+          <CardContent className="p-6 grid grid-cols-1 lg:grid-cols-[minmax(320px,420px)_1fr] gap-8 lg:gap-16 items-center">
             {/* Left: avatar + name + email */}
-            <div className="flex items-center gap-4 lg:pr-8">
+            <div className="flex items-center gap-4">
               <div className="w-20 h-20 rounded-full bg-primary-100 text-primary-700 flex items-center justify-center text-3xl font-heading font-bold shrink-0">
                 {initial}
               </div>
-              <div className="min-w-0">
-                <h2 className="text-xl font-heading font-bold text-slate-900 truncate">
+              <div className="min-w-0 flex-1">
+                <h2 className="text-xl font-heading font-bold text-slate-900 break-words">
                   {user.fullName}
                 </h2>
-                <p className="text-sm text-slate-500 inline-flex items-center gap-1.5 mt-0.5 truncate">
-                  <AtSign className="w-3.5 h-3.5 shrink-0" /> {user.email}
+                <p className="text-sm text-slate-500 inline-flex items-start gap-1.5 mt-0.5 break-all">
+                  <span>@{user.email}</span>
                 </p>
                 {isSelf && (
                   <Badge variant="muted" className="mt-2">
@@ -290,7 +289,7 @@ export default function AdminUserDetail() {
             </div>
 
             {/* Right: metadata grid */}
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-3 text-sm">
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-3 text-sm lg:pl-4">
               <InfoItem label="Vai trò">
                 {user.role === "admin" ? (
                   <Badge className="bg-primary-100 text-primary-700 border-primary-200">
@@ -401,131 +400,134 @@ export default function AdminUserDetail() {
               <p className="text-sm text-slate-500">{stats.dateRange}</p>
             </div>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-base">
-                  <Clock className="w-4 h-4 text-tertiary-600" />
-                  Thời gian học 7 ngày qua
-                </CardTitle>
-                <CardDescription>Tổng phút học mỗi ngày</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <ChartContainer
-                  config={studyTimeConfig}
-                  className="h-[220px] w-full"
-                >
-                  <LineChart
-                    data={stats.thisWeek}
-                    margin={{ top: 24, right: 16, left: 16, bottom: 4 }}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-base">
+                    <Clock className="w-4 h-4 text-tertiary-600" />
+                    Thời gian học 7 ngày qua
+                  </CardTitle>
+                  <CardDescription>Tổng phút học mỗi ngày</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <ChartContainer
+                    config={studyTimeConfig}
+                    className="h-[220px] w-full"
                   >
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                    <XAxis
-                      dataKey="label"
-                      tickLine={false}
-                      axisLine={false}
-                      tickMargin={8}
-                      fontSize={11}
-                    />
-                    <YAxis hide domain={[0, "dataMax + 20"]} />
-                    <ChartTooltip
-                      cursor={false}
-                      content={
-                        <ChartTooltipContent
-                          labelFormatter={(label) => `Ngày ${label}`}
-                          indicator="dot"
-                        />
-                      }
-                    />
-                    <Line
-                      dataKey="minutes"
-                      type="monotone"
-                      stroke="var(--color-minutes)"
-                      strokeWidth={2.5}
-                      dot={{
-                        r: 4,
-                        fill: "var(--color-minutes)",
-                        strokeWidth: 0,
-                      }}
-                      activeDot={{ r: 6, strokeWidth: 2, stroke: "white" }}
+                    <LineChart
+                      data={stats.thisWeek}
+                      margin={{ top: 24, right: 16, left: 16, bottom: 4 }}
                     >
-                      <LabelList
+                      <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                      <XAxis
+                        dataKey="label"
+                        tickLine={false}
+                        axisLine={false}
+                        tickMargin={8}
+                        fontSize={11}
+                      />
+                      <YAxis hide domain={[0, "dataMax + 20"]} />
+                      <ChartTooltip
+                        cursor={false}
+                        content={
+                          <ChartTooltipContent
+                            labelFormatter={(label) => `Ngày ${label}`}
+                            indicator="dot"
+                          />
+                        }
+                      />
+                      <Line
                         dataKey="minutes"
-                        position="top"
-                        offset={10}
-                        className="fill-slate-900"
-                        fontSize={12}
-                        fontWeight={600}
-                      />
-                    </Line>
-                  </LineChart>
-                </ChartContainer>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-base">
-                  <TrendingUp className="w-4 h-4 text-primary-600" />
-                  Tiến độ điểm số 7 ngày qua
-                </CardTitle>
-                <CardDescription>
-                  Độ chính xác trung bình mỗi ngày
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <ChartContainer
-                  config={scoreProgressConfig}
-                  className="h-[220px] w-full"
-                >
-                  <LineChart
-                    data={stats.thisWeek}
-                    margin={{ top: 24, right: 16, left: 16, bottom: 4 }}
-                  >
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                    <XAxis
-                      dataKey="label"
-                      tickLine={false}
-                      axisLine={false}
-                      tickMargin={8}
-                      fontSize={11}
-                    />
-                    <YAxis hide domain={[0, 100]} />
-                    <ChartTooltip
-                      cursor={false}
-                      content={
-                        <ChartTooltipContent
-                          labelFormatter={(label) => `Ngày ${label}`}
-                          indicator="dot"
-                          formatter={(value) => [`${value}%`, " Độ chính xác"]}
+                        type="monotone"
+                        stroke="var(--color-minutes)"
+                        strokeWidth={2.5}
+                        dot={{
+                          r: 4,
+                          fill: "var(--color-minutes)",
+                          strokeWidth: 0,
+                        }}
+                        activeDot={{ r: 6, strokeWidth: 2, stroke: "white" }}
+                      >
+                        <LabelList
+                          dataKey="minutes"
+                          position="top"
+                          offset={10}
+                          className="fill-slate-900"
+                          fontSize={12}
+                          fontWeight={600}
                         />
-                      }
-                    />
-                    <Line
-                      dataKey="avgAccuracy"
-                      type="monotone"
-                      stroke="var(--color-avgAccuracy)"
-                      strokeWidth={2.5}
-                      dot={{
-                        r: 4,
-                        fill: "var(--color-avgAccuracy)",
-                        strokeWidth: 0,
-                      }}
-                      activeDot={{ r: 6, strokeWidth: 2, stroke: "white" }}
+                      </Line>
+                    </LineChart>
+                  </ChartContainer>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-base">
+                    <TrendingUp className="w-4 h-4 text-primary-600" />
+                    Tiến độ điểm số 7 ngày qua
+                  </CardTitle>
+                  <CardDescription>
+                    Điểm Full Test cao nhất mỗi ngày
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <ChartContainer
+                    config={scoreProgressConfig}
+                    className="h-[220px] w-full"
+                  >
+                    <LineChart
+                      data={stats.thisWeek}
+                      margin={{ top: 24, right: 16, left: 16, bottom: 4 }}
                     >
-                      <LabelList
-                        dataKey="avgAccuracy"
-                        position="top"
-                        offset={10}
-                        className="fill-slate-900"
-                        fontSize={12}
-                        fontWeight={600}
-                        formatter={(v) => (v > 0 ? `${v}%` : "")}
+                      <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                      <XAxis
+                        dataKey="label"
+                        tickLine={false}
+                        axisLine={false}
+                        tickMargin={8}
+                        fontSize={11}
                       />
-                    </Line>
-                  </LineChart>
-                </ChartContainer>
-              </CardContent>
-            </Card>
+                      <YAxis hide domain={[0, 990]} />
+                      <ChartTooltip
+                        cursor={false}
+                        content={
+                          <ChartTooltipContent
+                            labelFormatter={(label) => `Ngày ${label}`}
+                            indicator="dot"
+                            formatter={(value) => [
+                              `${value} điểm`,
+                              " Full Test cao nhất",
+                            ]}
+                          />
+                        }
+                      />
+                      <Line
+                        dataKey="maxScore"
+                        type="monotone"
+                        stroke="var(--color-maxScore)"
+                        strokeWidth={2.5}
+                        dot={{
+                          r: 4,
+                          fill: "var(--color-maxScore)",
+                          strokeWidth: 0,
+                        }}
+                        activeDot={{ r: 6, strokeWidth: 2, stroke: "white" }}
+                      >
+                        <LabelList
+                          dataKey="maxScore"
+                          position="top"
+                          offset={10}
+                          className="fill-slate-900"
+                          fontSize={12}
+                          fontWeight={600}
+                          formatter={(v) => (v > 0 ? `${v}` : "")}
+                        />
+                      </Line>
+                    </LineChart>
+                  </ChartContainer>
+                </CardContent>
+              </Card>
             </div>
           </section>
         )}
@@ -555,7 +557,7 @@ export default function AdminUserDetail() {
                     </TableHead>
                     <TableHead>Bài thi</TableHead>
                     <TableHead className="w-28">Loại</TableHead>
-                    <TableHead className="w-32">Ngày làm</TableHead>
+                    <TableHead className="w-44">Ngày làm</TableHead>
                     <TableHead className="w-32 text-right">Điểm</TableHead>
                     <TableHead className="w-12 pr-6"></TableHead>
                   </TableRow>
@@ -563,8 +565,17 @@ export default function AdminUserDetail() {
                 <TableBody>
                   {stats.ranked.map((r, i) => {
                     const isFullTest = r.testType === "full";
-                    const date = new Date(r.submittedAt).toLocaleDateString(
+                    const date = new Date(r.submittedAt).toLocaleString(
                       "vi-VN",
+                      {
+                        day: "2-digit",
+                        month: "2-digit",
+                        year: "numeric",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                        second: "2-digit",
+                        hour12: false,
+                      },
                     );
                     return (
                       <TableRow key={r._id}>
@@ -577,7 +588,9 @@ export default function AdminUserDetail() {
                         <TableCell className="font-medium text-slate-900">
                           {isFullTest ? "Full Test" : "Luyện tập"}
                         </TableCell>
-                        <TableCell className="text-slate-600">{date}</TableCell>
+                        <TableCell className="text-slate-600 whitespace-nowrap">
+                          {date}
+                        </TableCell>
                         <TableCell className="text-right font-mono font-bold">
                           {isFullTest ? (
                             <>

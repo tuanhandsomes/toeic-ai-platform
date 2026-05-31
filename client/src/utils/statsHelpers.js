@@ -43,6 +43,10 @@ export function build7DayBuckets(results, offsetDays = 0) {
       accuracySum: 0,
       questions: 0,
       count: 0,
+      // Điểm Full Test cao nhất trong ngày (0 nếu không có Full Test).
+      // Default 0 → LineChart vẽ liền không bị gap; ngày nhiều Full Test
+      // chỉ lấy điểm cao nhất (đẹp hơn là average — user muốn thấy best).
+      maxScore: 0,
     });
   }
 
@@ -54,6 +58,10 @@ export function build7DayBuckets(results, offsetDays = 0) {
       b.questions += r.totalQuestions || 0;
       b.accuracySum += r.accuracy || 0;
       b.count += 1;
+      // Full Test: giữ điểm cao nhất trong ngày.
+      if (r.testType === 'full' && r.scoreTotal > 0) {
+        if (r.scoreTotal > b.maxScore) b.maxScore = r.scoreTotal;
+      }
     }
   });
 

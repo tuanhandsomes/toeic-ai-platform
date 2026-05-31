@@ -54,8 +54,8 @@ const studyTimeConfig = {
 };
 
 const scoreProgressConfig = {
-  avgAccuracy: {
-    label: "Độ chính xác",
+  maxScore: {
+    label: "Điểm Full Test cao nhất",
     color: "hsl(var(--chart-1))", // indigo
   },
 };
@@ -265,7 +265,7 @@ export default function Statistics() {
                       Tiến độ điểm số trong 7 ngày
                     </CardTitle>
                     <CardDescription>
-                      Độ chính xác trung bình mỗi ngày
+                      Điểm Full Test cao nhất mỗi ngày
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
@@ -285,7 +285,7 @@ export default function Statistics() {
                           tickMargin={8}
                           fontSize={11}
                         />
-                        <YAxis hide domain={[0, 100]} />
+                        <YAxis hide domain={[0, 990]} />
                         <ChartTooltip
                           cursor={false}
                           content={
@@ -293,34 +293,32 @@ export default function Statistics() {
                               labelFormatter={(label) => `Ngày ${label}`}
                               indicator="dot"
                               formatter={(value) => [
-                                `${value}%`,
-                                " Độ chính xác",
+                                `${value} điểm`,
+                                " Full Test cao nhất",
                               ]}
                             />
                           }
                         />
                         <Line
-                          dataKey="avgAccuracy"
+                          dataKey="maxScore"
                           type="monotone"
-                          stroke="var(--color-avgAccuracy)"
+                          stroke="var(--color-maxScore)"
                           strokeWidth={2.5}
                           dot={{
                             r: 4,
-                            fill: "var(--color-avgAccuracy)",
+                            fill: "var(--color-maxScore)",
                             strokeWidth: 0,
                           }}
                           activeDot={{ r: 6, strokeWidth: 2, stroke: "white" }}
                         >
                           <LabelList
-                            dataKey="avgAccuracy"
+                            dataKey="maxScore"
                             position="top"
                             offset={10}
                             className="fill-slate-900"
                             fontSize={12}
                             fontWeight={600}
-                            formatter={(value) =>
-                              value > 0 ? `${value}%` : ""
-                            }
+                            formatter={(value) => (value > 0 ? `${value}` : "")}
                           />
                         </Line>
                       </LineChart>
@@ -355,7 +353,7 @@ export default function Statistics() {
                         </TableHead>
                         <TableHead>Bài thi</TableHead>
                         <TableHead className="w-28">Loại</TableHead>
-                        <TableHead className="w-32">Ngày làm</TableHead>
+                        <TableHead className="w-44">Ngày làm</TableHead>
                         <TableHead className="w-32 text-right">Điểm</TableHead>
                         <TableHead className="w-12 pr-6"></TableHead>
                       </TableRow>
@@ -363,8 +361,17 @@ export default function Statistics() {
                     <TableBody>
                       {stats.ranked.map((r, i) => {
                         const isFullTest = r.testType === "full";
-                        const date = new Date(r.submittedAt).toLocaleDateString(
+                        const date = new Date(r.submittedAt).toLocaleString(
                           "vi-VN",
+                          {
+                            day: "2-digit",
+                            month: "2-digit",
+                            year: "numeric",
+                            hour: "2-digit",
+                            minute: "2-digit",
+                            second: "2-digit",
+                            hour12: false,
+                          },
                         );
                         return (
                           <TableRow key={r._id}>
@@ -377,7 +384,7 @@ export default function Statistics() {
                             <TableCell className="font-medium text-slate-900">
                               {isFullTest ? "Full Test" : "Luyện tập"}
                             </TableCell>
-                            <TableCell className="text-slate-600">
+                            <TableCell className="text-slate-600 whitespace-nowrap">
                               {date}
                             </TableCell>
                             <TableCell className="text-right font-mono font-bold">
