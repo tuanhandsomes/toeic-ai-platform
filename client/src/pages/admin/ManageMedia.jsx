@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, useCallback } from 'react';
+import { useEffect, useMemo, useState, useCallback } from "react";
 import {
   Loader2,
   Search,
@@ -8,17 +8,26 @@ import {
   AlertCircle,
   Copy,
   Check,
-} from 'lucide-react';
-import AdminLayout from '@/components/layout/AdminLayout';
-import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
+} from "lucide-react";
+import AdminLayout from "@/components/layout/AdminLayout";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
 import {
-  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
-} from '@/components/ui/select';
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
-  Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle,
-} from '@/components/ui/dialog';
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import {
   Pagination,
   PaginationContent,
@@ -28,14 +37,14 @@ import {
   PaginationNext,
   PaginationEllipsis,
   getPageRange,
-} from '@/components/ui/pagination';
-import { KpiCard } from '@/components/common/KpiCard';
-import { uploadService } from '@/services/uploadService';
-import { toast } from 'sonner';
-import { cn } from '@/lib/utils';
+} from "@/components/ui/pagination";
+import { KpiCard } from "@/components/common/KpiCard";
+import { uploadService } from "@/services/uploadService";
+import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 
 const PAGE_SIZE = 12;
-const INITIAL_FILTERS = { type: 'all', search: '', usage: 'all' };
+const INITIAL_FILTERS = { type: "all", search: "", usage: "all" };
 
 export default function ManageMedia() {
   const [items, setItems] = useState([]);
@@ -60,7 +69,7 @@ export default function ManageMedia() {
         image: res.data.totalImage || 0,
       });
     } catch (err) {
-      toast.error(err?.message || 'Không tải được danh sách media');
+      toast.error(err?.message || "Không tải được danh sách media");
     } finally {
       setLoading(false);
     }
@@ -81,8 +90,8 @@ export default function ManageMedia() {
           it.publicId?.toLowerCase().includes(q),
       );
     }
-    if (filters.usage === 'used') arr = arr.filter((it) => it.usageCount > 0);
-    if (filters.usage === 'unused') arr = arr.filter((it) => !it.usageCount);
+    if (filters.usage === "used") arr = arr.filter((it) => it.usageCount > 0);
+    if (filters.usage === "unused") arr = arr.filter((it) => !it.usageCount);
     // Sort: chưa dùng + mới nhất lên đầu (để dễ xóa)
     return [...arr].sort(
       (a, b) => new Date(b.createdAt) - new Date(a.createdAt),
@@ -108,11 +117,11 @@ export default function ManageMedia() {
         confirmDelete.resourceType,
         confirmDelete.publicId,
       );
-      toast.success('Đã xóa media');
+      toast.success("Đã xóa media");
       setConfirmDelete(null);
       await fetchMedia();
     } catch (err) {
-      toast.error(err?.message || 'Xóa thất bại');
+      toast.error(err?.message || "Xóa thất bại");
     } finally {
       setDeleting(false);
     }
@@ -124,7 +133,7 @@ export default function ManageMedia() {
       setCopiedUrl(url);
       setTimeout(() => setCopiedUrl((v) => (v === url ? null : v)), 1500);
     } catch {
-      toast.error('Không sao chép được URL');
+      toast.error("Không sao chép được URL");
     }
   };
 
@@ -290,7 +299,7 @@ export default function ManageMedia() {
               </PaginationItem>
               {getPageRange(safePage, totalPages).map((p, idx) => (
                 <PaginationItem key={`${p}-${idx}`}>
-                  {p === '...' ? (
+                  {p === "..." ? (
                     <PaginationEllipsis />
                   ) : (
                     <PaginationLink
@@ -325,10 +334,10 @@ export default function ManageMedia() {
               Xóa media?
             </DialogTitle>
             <DialogDescription>
-              File{' '}
+              File{" "}
               <span className="font-mono text-slate-900">
                 {confirmDelete?.filename}
-              </span>{' '}
+              </span>{" "}
               sẽ bị xóa vĩnh viễn khỏi Cloudinary. Nếu đang được dùng ở câu hỏi
               nào, hệ thống sẽ chặn.
             </DialogDescription>
@@ -359,14 +368,14 @@ export default function ManageMedia() {
 }
 
 function MediaCard({ item, onDelete, onCopy, copied }) {
-  const isAudio = item.resourceType === 'audio';
+  const isAudio = item.resourceType === "audio";
   const isUsed = item.usageCount > 0;
 
   return (
     <div
       className={cn(
-        'rounded-lg border bg-white overflow-hidden flex flex-col',
-        isUsed ? 'border-slate-200' : 'border-orange-200',
+        "rounded-lg border bg-white overflow-hidden flex flex-col",
+        isUsed ? "border-slate-200" : "border-orange-200",
       )}
     >
       {/* Preview */}
@@ -403,13 +412,13 @@ function MediaCard({ item, onDelete, onCopy, copied }) {
           <Badge
             variant="muted"
             className={cn(
-              'text-[10px] shrink-0',
+              "text-[10px] shrink-0",
               isAudio
-                ? 'bg-primary-100 text-primary-700 border-primary-200'
-                : 'bg-violet-100 text-violet-700 border-violet-200',
+                ? "bg-primary-100 text-primary-700 border-primary-200"
+                : "bg-violet-100 text-violet-700 border-violet-200",
             )}
           >
-            {item.format?.toUpperCase() || (isAudio ? 'AUDIO' : 'IMG')}
+            {item.format?.toUpperCase() || (isAudio ? "AUDIO" : "IMG")}
           </Badge>
         </div>
 
@@ -420,9 +429,7 @@ function MediaCard({ item, onDelete, onCopy, copied }) {
               · {item.width}×{item.height}
             </span>
           )}
-          {item.duration && (
-            <span>· {Math.round(item.duration)}s</span>
-          )}
+          {item.duration && <span>· {Math.round(item.duration)}s</span>}
         </div>
 
         <div>
@@ -446,7 +453,7 @@ function MediaCard({ item, onDelete, onCopy, copied }) {
           >
             {copied ? (
               <>
-                <Check className="w-3 h-3 text-secondary-600" /> Đã chép
+                <Check className="w-3 h-3 text-secondary-600" /> Đã sao chép
               </>
             ) : (
               <>
@@ -460,8 +467,8 @@ function MediaCard({ item, onDelete, onCopy, copied }) {
             disabled={isUsed}
             title={
               isUsed
-                ? 'Gỡ khỏi câu hỏi đang dùng trước khi xóa'
-                : 'Xóa file khỏi Cloudinary'
+                ? "Gỡ khỏi câu hỏi đang dùng trước khi xóa"
+                : "Xóa file khỏi Cloudinary"
             }
             className="inline-flex items-center justify-center px-2 py-1.5 rounded-md border border-red-200 text-red-600 hover:bg-red-50 disabled:opacity-40 disabled:cursor-not-allowed"
           >
@@ -474,7 +481,7 @@ function MediaCard({ item, onDelete, onCopy, copied }) {
 }
 
 function formatBytes(b) {
-  if (!b) return '0 B';
+  if (!b) return "0 B";
   if (b < 1024) return `${b} B`;
   if (b < 1024 * 1024) return `${(b / 1024).toFixed(1)} KB`;
   return `${(b / 1024 / 1024).toFixed(1)} MB`;
