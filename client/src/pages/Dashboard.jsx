@@ -64,7 +64,11 @@ export default function Dashboard() {
       <div className="px-6 lg:px-8 py-6">
         <div className="mb-8">
           <h1 className="text-3xl font-heading font-bold mb-2">
-            Xin chào, {user?.fullName?.split(" ").pop() || "bạn"} 👋
+            Xin chào,{" "}
+            {user?.role === "admin"
+              ? user?.fullName
+              : user?.fullName?.split(" ").pop() || "bạn"}{" "}
+            👋
           </h1>
           <p className="text-slate-600">
             Mục tiêu của bạn: {user?.targetScore || 700} điểm. Hôm nay luyện gì

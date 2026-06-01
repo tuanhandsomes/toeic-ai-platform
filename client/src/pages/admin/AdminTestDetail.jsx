@@ -253,7 +253,7 @@ export default function AdminTestDetail() {
         <div className="mb-4">
           <Link
             to={ROUTES.ADMIN_TESTS}
-            className="inline-flex items-center gap-1 text-sm text-slate-600 hover:text-primary-600"
+            className="inline-flex items-center gap-1 text-sm font-semibold text-slate-600 hover:text-primary-600"
           >
             <ArrowLeft className="w-4 h-4" /> Quay lại danh sách đề
           </Link>

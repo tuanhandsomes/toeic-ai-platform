@@ -34,7 +34,7 @@ export default function ForgotPassword() {
           </span>
           <Link
             to={ROUTES.LOGIN}
-            className="inline-flex items-center gap-1.5 text-sm text-primary-600 hover:underline"
+            className="inline-flex items-center gap-1.5 text-sm font-semibold text-primary-600 hover:underline"
           >
             <ArrowLeft className="w-4 h-4" /> Quay lại đăng nhập
           </Link>
@@ -103,9 +103,9 @@ export default function ForgotPassword() {
 
         {/* Footer */}
         <div className="mt-6 pt-5 border-t border-slate-100 text-center text-sm text-slate-600">
-          Gặp khó khăn?{" "}
+          Bạn gặp khó khăn?{" "}
           <a
-            href="mailto:support@toeicai.vn"
+            href="/#contact"
             className="text-primary-600 font-medium hover:underline"
           >
             Liên hệ bộ phận hỗ trợ

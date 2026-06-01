@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import {
   Sparkles,
   Library,
@@ -610,6 +610,21 @@ function HeroPreviewCard() {
 }
 
 export default function LandingPage() {
+  const location = useLocation();
+
+  // Scroll smooth tới section khi URL có hash (vd link "/#contact" từ
+  // ForgotPassword/ResetPassword). React Router v6 không auto-scroll hash —
+  // phải làm thủ công. Delay 1 tick để section mount xong rồi mới scroll.
+  useEffect(() => {
+    if (!location.hash) return;
+    const id = location.hash.slice(1);
+    const t = setTimeout(() => {
+      const el = document.getElementById(id);
+      if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 80);
+    return () => clearTimeout(t);
+  }, [location.hash]);
+
   return (
     <div className="min-h-screen bg-white">
       {/* Header */}
