@@ -12,6 +12,7 @@ import {
   TrendingUp,
   AlertTriangle,
   Target,
+  ArrowRight,
 } from "lucide-react";
 import AppLayout from "@/components/layout/AppLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -108,7 +109,7 @@ export default function ResultDetail() {
         <div className="mb-3 shrink-0">
           <Link
             to={ROUTES.RESULTS}
-            className="inline-flex items-center gap-1 text-sm text-slate-600 hover:text-primary-600"
+            className="inline-flex items-center gap-1 text-sm font-semibold text-slate-600 hover:text-primary-600"
           >
             <ArrowLeft className="w-4 h-4" />
             Quay lại lịch sử
@@ -550,6 +551,26 @@ function AIAnalysisTab({ analysis, testType }) {
                     <p className="text-sm text-slate-600 leading-relaxed">
                       {rec.action}
                     </p>
+                    {rec.suggestedTestId && (
+                      <div className="mt-3 flex items-center justify-between gap-3 flex-wrap pt-3 border-t border-slate-100">
+                        <div className="text-xs text-slate-500 min-w-0">
+                          <span className="text-slate-400">Bài luyện gợi ý:</span>{" "}
+                          <span
+                            className="text-slate-700 font-medium truncate inline-block max-w-full align-bottom"
+                            title={rec.suggestedTestTitle}
+                          >
+                            {rec.suggestedTestTitle}
+                          </span>
+                        </div>
+                        <Link
+                          to={`/tests/${rec.suggestedTestId}`}
+                          className="inline-flex items-center gap-1 text-xs font-medium text-primary-600 hover:text-primary-700"
+                        >
+                          Luyện ngay
+                          <ArrowRight className="w-3.5 h-3.5" />
+                        </Link>
+                      </div>
+                    )}
                   </div>
                 );
               })}

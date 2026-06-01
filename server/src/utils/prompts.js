@@ -18,9 +18,18 @@
  *     trung nâng cao TRONG Part đó (tốc độ, dạng khó), KHÔNG ép Full Test cadence
  *     (Full Test 5 lần/tuần là dành cho người đang ôn Full Test, không phải đang
  *     luyện 1 Part)
+ *
+ * v1.5 (2026-05-31):
+ *   - Inject error-level data (errorBreakdown) vào prompt: per-Part liệt kê
+ *     subskill tags + difficulty + slow questions của các câu SAI → AI bám sát
+ *     lỗi thực tế thay vì khái quát theo % Part
+ *   - Thêm field `targetPart` (1-7 hoặc null) vào mỗi recommendation → BE sau đó
+ *     map sang Practice test cụ thể để FE render nút "Luyện ngay"
+ *   - Hướng dẫn AI gán targetPart cho rec liên quan đến 1 Part cụ thể, và để
+ *     null cho rec chiến lược chung (tốc độ, đa dạng đề, Full Test mô phỏng)
  */
 
-export const PROMPT_VERSION = "v1.4";
+export const PROMPT_VERSION = "v1.5";
 
 const PART_LABELS = {
   part1: "Part 1 — Mô tả tranh (Listening)",
@@ -99,13 +108,24 @@ NGUYÊN TẮC PHÂN TÍCH — ĐỌC KỸ VÀ TUÂN THỦ:
    - ĐÚNG: "Luyện 15 câu Part 5 mỗi ngày, ưu tiên các câu có giới từ + động từ (look at, depend on, agree with) để củng cố collocation."
    - CONDITIONAL theo điểm: tỉ lệ ≥ 90% → recommendations focus vào ĐA DẠNG HÓA (thử nhiều dạng bài, làm Full Test mô phỏng, tăng tốc độ) thay vì drill kỹ năng cơ bản.
 
-5. ĐIỂM MẠNH: dựa trên Part có tỉ lệ cao nhất (tương đối hoặc tuyệt đối), gọi tên kỹ năng cụ thể của Part đó (vd: "Phản xạ nhanh với WH-question trong Part 2", "Nhận diện đúng action verb trong Part 1").
+5. GẮN RECOMMENDATION VỚI PART CỤ THỂ (targetPart):
+   - Nếu recommendation nói về luyện 1 Part cụ thể → đặt targetPart = số Part đó (1-7).
+   - Nếu recommendation chiến lược chung (ôn lại cả Listening, làm thêm Full Test, quản lý thời gian, đa dạng đề từ nhiều nguồn) → đặt targetPart = null.
+   - Hệ thống dùng targetPart để gắn link tới bài Practice phù hợp — phải gán đúng, KHÔNG được để null khi rec rõ ràng thuộc 1 Part.
 
-6. ĐẦU RA: JSON đúng schema, KHÔNG kèm markdown / text bên ngoài JSON.`;
+6. BÁM SÁT LỖI THỰC TẾ (errorBreakdown):
+   - Khi userPrompt có phần CHI TIẾT LỖI TỪNG PART, recommendation và weakness PHẢI tham chiếu các SUBSKILL (tag) + ĐỘ KHÓ thực sự sai, không phán đoán chung chung.
+   - Ví dụ tốt: "Trong các câu sai có 3 câu thuộc 'word-form' và 2 câu 'preposition' — luyện thêm 20 câu Part 5 word-form trong 3 ngày tới."
+   - Khi không có subskill cụ thể (tags rỗng) → suy luận từ Part + độ khó là chính, không bịa tag.
+
+7. ĐIỂM MẠNH: dựa trên Part có tỉ lệ cao nhất (tương đối hoặc tuyệt đối), gọi tên kỹ năng cụ thể của Part đó (vd: "Phản xạ nhanh với WH-question trong Part 2", "Nhận diện đúng action verb trong Part 1").
+
+8. ĐẦU RA: JSON đúng schema, KHÔNG kèm markdown / text bên ngoài JSON.`;
 
 /**
  * JSON Schema cho Structured Outputs (response_format).
  * Strict mode: additionalProperties=false, mọi field đều required.
+ * targetPart dùng type ["integer", "null"] để vừa cho phép null vừa giữ strict.
  */
 export const ANALYSIS_JSON_SCHEMA = {
   type: "json_schema",
@@ -124,13 +144,13 @@ export const ANALYSIS_JSON_SCHEMA = {
         weaknesses: {
           type: "array",
           description:
-            "Số lượng phụ thuộc điểm: ≥90% trả [] hoặc 1-2 ý maintenance, 70-89% trả 2-4 ý, <70% trả 3-5 ý. TUYỆT ĐỐI KHÔNG bịa weakness khi điểm cao.",
+            "Số lượng phụ thuộc điểm: ≥90% trả [] hoặc 1-2 ý maintenance, 70-89% trả 2-4 ý, <70% trả 3-5 ý. TUYỆT ĐỐI KHÔNG bịa weakness khi điểm cao. Khi có errorBreakdown, tham chiếu subskill thực tế.",
           items: { type: "string" },
         },
         recommendations: {
           type: "array",
           description:
-            "3-6 gợi ý ĐO LƯỜNG ĐƯỢC. Điểm cao thì ưu tiên đa dạng hóa + Full Test; điểm thấp thì drill kỹ năng yếu.",
+            "3-6 gợi ý ĐO LƯỜNG ĐƯỢC. Điểm cao thì ưu tiên đa dạng hóa + Full Test; điểm thấp thì drill kỹ năng yếu. Mỗi rec liên quan 1 Part cụ thể PHẢI có targetPart.",
           items: {
             type: "object",
             properties: {
@@ -142,14 +162,21 @@ export const ANALYSIS_JSON_SCHEMA = {
               action: {
                 type: "string",
                 description:
-                  "Hành động ≥20 từ: ĐỘNG TỪ + SỐ LƯỢNG/NGÀY + PHƯƠNG PHÁP cụ thể.",
+                  "Hành động ≥20 từ: ĐỘNG TỪ + SỐ LƯỢNG/NGÀY + PHƯƠNG PHÁP cụ thể, bám sát subskill thực tế nếu có.",
               },
               priority: {
                 type: "string",
                 enum: ["high", "medium", "low"],
               },
+              targetPart: {
+                type: ["integer", "null"],
+                description:
+                  "Part mà rec này nhắm tới (1-7). null nếu là rec chiến lược chung (ví dụ làm thêm Full Test, quản lý thời gian, đa dạng đề).",
+                minimum: 1,
+                maximum: 7,
+              },
             },
-            required: ["topic", "action", "priority"],
+            required: ["topic", "action", "priority", "targetPart"],
             additionalProperties: false,
           },
         },
@@ -191,6 +218,59 @@ function getPartsInResult(partBreakdown) {
     .sort((a, b) => a - b);
 }
 
+/**
+ * Format errorBreakdown (per-Part wrong-answer patterns) thành text human-readable
+ * để inject vào prompt. Shape errorBreakdown[partNum]:
+ *   { wrongCount, totalCount, tagCounts: { 'word-form': 3, ... },
+ *     difficultyCounts: { easy: 1, medium: 4, hard: 2 },
+ *     slowCount: số câu sai có timeSpentSec >= 1.5 * avgTime }
+ *
+ * Nếu errorBreakdown rỗng hoặc không có Part nào sai → trả empty string.
+ */
+function formatErrorBreakdown(errorBreakdown) {
+  if (!errorBreakdown || Object.keys(errorBreakdown).length === 0) return "";
+
+  const lines = [];
+  Object.entries(errorBreakdown)
+    .map(([k, v]) => [Number(k), v])
+    .filter(([, v]) => v && v.wrongCount > 0)
+    .sort(([a], [b]) => a - b)
+    .forEach(([partNum, data]) => {
+      const partLabel = PART_LABELS[`part${partNum}`] || `Part ${partNum}`;
+      const parts = [`${partLabel}: sai ${data.wrongCount}/${data.totalCount} câu`];
+
+      // Difficulty breakdown — nếu có ≥1 mục, in ra
+      const diffEntries = Object.entries(data.difficultyCounts || {})
+        .filter(([, n]) => n > 0)
+        .map(([k, n]) => `${n} câu ${k}`);
+      if (diffEntries.length > 0) {
+        parts.push(`độ khó: ${diffEntries.join(", ")}`);
+      }
+
+      // Tag breakdown — top 5 subskill xuất hiện nhiều nhất trong câu sai
+      const topTags = Object.entries(data.tagCounts || {})
+        .filter(([t]) => !/^part\d+$/.test(t) && !/^(ets|hacker)/i.test(t))
+        .sort(([, a], [, b]) => b - a)
+        .slice(0, 5);
+      if (topTags.length > 0) {
+        parts.push(
+          `subskill thường sai: ${topTags.map(([t, n]) => `${t} (${n})`).join(", ")}`,
+        );
+      }
+
+      // Slow questions — câu sai mà tiêu tốn thời gian bất thường
+      if (data.slowCount > 0) {
+        parts.push(`${data.slowCount} câu sai do quá chậm (≥1.5× thời gian TB)`);
+      }
+
+      lines.push(`- ${parts.join(" | ")}`);
+    });
+
+  if (lines.length === 0) return "";
+
+  return `\nCHI TIẾT LỖI TỪNG PART (bám sát các con số này khi recommend):\n${lines.join("\n")}\n`;
+}
+
 // Mức độ điểm → hướng dẫn phân tích phù hợp (tránh bịa weakness khi điểm cao)
 function scoreTier(accuracy) {
   if (accuracy === 100) return "perfect";
@@ -224,12 +304,12 @@ function buildScoreGuidance(accuracy, isFull) {
   if (tier === "good") {
     return `MỨC ĐỘ: KHÁ (${accuracy}%).
 - strengths: 2-4 ý dựa trên các câu làm đúng, gọi tên kỹ năng cụ thể của Part.
-- weaknesses: 2-4 ý, nêu kỹ năng còn chưa vững dựa trên các câu sai (đối chiếu với BẪY phổ biến của Part).
+- weaknesses: 2-4 ý, nêu kỹ năng còn chưa vững dựa trên các câu sai (đối chiếu với BẪY phổ biến của Part + CHI TIẾT LỖI nếu có).
 - recommendations: 4-5 ý, cân bằng giữa củng cố điểm yếu + nâng cao tốc độ + đa dạng dạng bài.`;
   }
   return `MỨC ĐỘ: CẦN CẢI THIỆN (${accuracy}%).
 - strengths: 2-3 ý — vẫn tìm điểm tích cực (kỹ năng tương đối ổn nhất, sự kiên trì hoàn thành bài), KHÔNG mỉa mai hay tiêu cực.
-- weaknesses: 3-5 ý, focus rõ kỹ năng yếu dựa trên đặc điểm Part và bẫy phổ biến.
+- weaknesses: 3-5 ý, focus rõ kỹ năng yếu dựa trên đặc điểm Part và bẫy phổ biến + CHI TIẾT LỖI nếu có.
 - recommendations: 4-6 ý, drill kỹ năng cụ thể, số lượng ngày/tuần rõ ràng, ưu tiên 'high' cho nội dung yếu nhất.`;
 }
 
@@ -237,13 +317,17 @@ function buildScoreGuidance(accuracy, isFull) {
  * Build prompt for OpenAI analysis.
  *
  * @param {Object} params
- * @param {Object} params.result    - Result document (lean)
- * @param {Object} [params.user]    - User document (lean), to get targetScore
+ * @param {Object} params.result          - Result document (lean)
+ * @param {Object} [params.user]          - User document (lean), to get targetScore
+ * @param {Object} [params.errorBreakdown] - Per-Part wrong-answer patterns (xem
+ *   formatErrorBreakdown). Optional — nếu không có, prompt vẫn build OK với
+ *   data Part-level cơ bản.
  * @returns {{ systemPrompt: string, userPrompt: string }}
  */
-export function buildAnalysisPrompt({ result, user }) {
+export function buildAnalysisPrompt({ result, user, errorBreakdown }) {
   const targetScore = user?.targetScore ?? 700;
   const partLines = formatPartBreakdown(result.partBreakdown);
+  const errorLines = formatErrorBreakdown(errorBreakdown);
   const durationMin = Math.round((result.durationSec || 0) / 60);
   const isFull = result.testType === "full";
 
@@ -265,13 +349,13 @@ export function buildAnalysisPrompt({ result, user }) {
 
 TỈ LỆ ĐÚNG TỪNG PART:
 ${partLines}
-
+${errorLines}
 ${guidance}
 
 YÊU CẦU PHÂN TÍCH:
 1. strengths: dựa trên Part có tỉ lệ cao nhất, gọi tên kỹ năng cụ thể của Part đó.
-2. weaknesses: chỉ nêu Part dưới 70% (nếu có); nếu mọi Part ≥ 90% thì trả mảng rỗng.
-3. recommendations: ưu tiên Part đóng góp điểm cao nhất so với mục tiêu ${targetScore} (Part 1-2 mỗi câu ~7-8 điểm; Part 3-4-7 mỗi câu ~5 điểm). Theo guidance ở trên.
+2. weaknesses: chỉ nêu Part dưới 70% (nếu có); nếu mọi Part ≥ 90% thì trả mảng rỗng. Khi có CHI TIẾT LỖI, tham chiếu subskill thực tế.
+3. recommendations: ưu tiên Part đóng góp điểm cao nhất so với mục tiêu ${targetScore} (Part 1-2 mỗi câu ~7-8 điểm; Part 3-4-7 mỗi câu ~5 điểm). Theo guidance ở trên. Gán targetPart cho rec thuộc 1 Part cụ thể, null cho rec chiến lược chung.
 4. estimatedTargetWeeks: gap so với ${targetScore}, giả định 5 buổi/tuần × 90 phút. Trả 0 nếu đã đạt.
 
 Trả về JSON đúng schema.`;
@@ -287,18 +371,18 @@ Trả về JSON đúng schema.`;
 - Mục tiêu điểm TOEIC TỔNG: ${targetScore}
 - Tỉ lệ đúng ${partName}: ${result.accuracy}% (${result.correctCount}/${result.totalQuestions} câu)
 - Thời gian: ${durationMin} phút
-
+${errorLines}
 ${guidance}
 
 YÊU CẦU PHÂN TÍCH — TẤT CẢ xoay quanh ${partName}, KHÔNG lan sang Part khác:
 
 1. strengths: gọi tên kỹ năng cụ thể của ${partName} mà học viên đang nắm tốt (dựa trên đặc điểm Part đã liệt kê trong KIẾN THỨC NỀN).
 
-2. weaknesses: TUÂN THỦ guidance ở trên. Nếu ${result.accuracy}% ≥ 90, KHÔNG bịa weakness — trả [] hoặc 1-2 ý "duy trì / sẵn sàng cho Full Test".
+2. weaknesses: TUÂN THỦ guidance ở trên. Nếu ${result.accuracy}% ≥ 90, KHÔNG bịa weakness — trả [] hoặc 1-2 ý "duy trì / sẵn sàng cho Full Test". Khi có CHI TIẾT LỖI, tham chiếu subskill thực tế.
 
-3. recommendations: topic = "Part ${partNum} — [kỹ năng]"; action = ≥20 từ có động từ + số lượng/ngày + phương pháp.
+3. recommendations: topic = "Part ${partNum} — [kỹ năng]"; action = ≥20 từ có động từ + số lượng/ngày + phương pháp. Gán targetPart = ${partNum} cho mọi rec luyện thẳng Part đó, null nếu là rec chiến lược (vd thử Full Test).
    - Điểm cao: đa dạng hóa dạng bài + thử Full Test + tăng tốc.
-   - Điểm trung bình/thấp: drill kỹ năng yếu, tham chiếu bẫy phổ biến của Part đã liệt kê.
+   - Điểm trung bình/thấp: drill kỹ năng yếu, tham chiếu bẫy phổ biến của Part đã liệt kê + CHI TIẾT LỖI nếu có.
 
 4. estimatedTargetWeeks: TRẢ 0.
 
