@@ -11,6 +11,7 @@ import {
   User,
   ChevronsUpDown,
   KeyRound,
+  Shield,
 } from "lucide-react";
 import { useAuthStore } from "@/store/authStore";
 import { ROUTES } from "@/constants/routes";
@@ -203,6 +204,13 @@ export default function AppLayout({ children }) {
                     <DropdownMenuItem onClick={() => setChangePasswordOpen(true)}>
                       <KeyRound /> Đổi mật khẩu
                     </DropdownMenuItem>
+                    {user?.role === "admin" && (
+                      <DropdownMenuItem
+                        onClick={() => navigate(ROUTES.ADMIN)}
+                      >
+                        <Shield /> Quay lại trang quản trị
+                      </DropdownMenuItem>
+                    )}
                     <DropdownMenuSeparator />
                     <DropdownMenuItem
                       onClick={() => setLogoutOpen(true)}

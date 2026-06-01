@@ -10,6 +10,7 @@ import {
   ChevronsUpDown,
   User,
   Image as ImageIcon,
+  ExternalLink,
 } from "lucide-react";
 import { useAuthStore } from "@/store/authStore";
 import { ROUTES } from "@/constants/routes";
@@ -192,6 +193,11 @@ export default function AdminLayout({ children }) {
                     <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={() => navigate(ROUTES.PROFILE)}>
                       <User /> Hồ sơ cá nhân
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={() => navigate(ROUTES.DASHBOARD)}
+                    >
+                      <ExternalLink /> Xem giao diện người dùng
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem
