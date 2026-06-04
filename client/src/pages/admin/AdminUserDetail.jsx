@@ -760,7 +760,6 @@ function ResetPasswordDialog({ open, user, onClose }) {
               onChange={(e) => setPwd(e.target.value)}
               placeholder="••••••••"
               required
-              minLength={8}
             />
             <PasswordChecklist value={pwd} />
             {err && <p className="text-xs text-tertiary-600 mt-1">{err}</p>}

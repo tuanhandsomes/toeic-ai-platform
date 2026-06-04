@@ -159,7 +159,6 @@ export default function ResetPassword() {
                     setForm({ ...form, password: e.target.value })
                   }
                   required
-                  minLength={8}
                   maxLength={72}
                 />
                 <PasswordChecklist value={form.password} />
@@ -178,7 +177,6 @@ export default function ResetPassword() {
                     setForm({ ...form, confirm: e.target.value })
                   }
                   required
-                  minLength={8}
                   maxLength={72}
                 />
               </div>

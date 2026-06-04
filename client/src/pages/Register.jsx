@@ -201,7 +201,6 @@ export default function Register() {
                 placeholder="********"
                 value={form.password}
                 onChange={(e) => setForm({ ...form, password: e.target.value })}
-                minLength={8}
                 maxLength={72}
                 autoComplete="new-password"
                 required

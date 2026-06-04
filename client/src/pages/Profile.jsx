@@ -257,7 +257,6 @@ export default function Profile() {
                           newPassword: e.target.value,
                         })
                       }
-                      minLength={8}
                       maxLength={72}
                       required
                     />
