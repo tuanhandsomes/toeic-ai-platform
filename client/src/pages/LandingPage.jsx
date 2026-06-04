@@ -264,12 +264,23 @@ function RoadmapSection() {
 
 // Local-part và domain của email "tạm thời" rõ ràng — chặn tại FE để
 // có message tiếng Việt rõ ràng, BE vẫn double-check (defense in depth).
-const SUSPICIOUS_LOCAL = /^(trash|temp|fake|throwaway|spam|junk|disposable|burner|noreply|no-reply)(mail|email|inbox)?\d*$/i;
+const SUSPICIOUS_LOCAL =
+  /^(trash|temp|fake|throwaway|spam|junk|disposable|burner|noreply|no-reply)(mail|email|inbox)?\d*$/i;
 const DISPOSABLE_DOMAINS_FE = new Set([
-  "mailinator.com", "tempmail.com", "tempmail.net", "10minutemail.com",
-  "yopmail.com", "guerrillamail.com", "throwawaymail.com", "fakeinbox.com",
-  "trashmail.com", "maildrop.cc", "getnada.com", "sharklasers.com",
-  "dispostable.com", "mintemail.com",
+  "mailinator.com",
+  "tempmail.com",
+  "tempmail.net",
+  "10minutemail.com",
+  "yopmail.com",
+  "guerrillamail.com",
+  "throwawaymail.com",
+  "fakeinbox.com",
+  "trashmail.com",
+  "maildrop.cc",
+  "getnada.com",
+  "sharklasers.com",
+  "dispostable.com",
+  "mintemail.com",
 ]);
 
 function ContactSection() {
@@ -343,7 +354,9 @@ function ContactSection() {
     setSending(true);
     try {
       await contactService.send(form);
-      toast.success("Đã gửi tin nhắn — chúng tôi sẽ phản hồi sớm nhất!");
+      toast.success(
+        "Đã gửi tin nhắn — chúng tôi sẽ phản hồi lại bạn sớm nhất có thể!",
+      );
       setForm({ name: "", email: "", message: "", website: "" });
       setTouched({});
       setErrors({});
@@ -473,9 +486,20 @@ function ContactSection() {
               placeholder="Câu hỏi hoặc góp ý của bạn..."
               aria-invalid={!!errors.message}
             />
-            {errors.message && (
-              <p className="text-xs text-red-600 mt-1">{errors.message}</p>
-            )}
+            <div className="flex items-start justify-between gap-3 mt-1 min-h-[18px]">
+              <p className="text-xs text-red-600 flex-1">
+                {errors.message || ""}
+              </p>
+              <p
+                className={`text-xs tabular-nums ${
+                  form.message.length > 2000
+                    ? "text-red-600 font-medium"
+                    : "text-slate-500"
+                }`}
+              >
+                {form.message.length} / 2000 ký tự
+              </p>
+            </div>
           </div>
           <div className="flex justify-end pt-2">
             <button
