@@ -27,12 +27,14 @@ const aiRateLimitHandler = (_req, res) => {
 
 /**
  * /auth/* — chống brute-force login/register/forgot-password.
- * 10 request / 1 phút / IP. Đủ thoáng cho user vừa login vừa typo password,
- * vẫn chặn được bot dò mật khẩu (bot thường >100 req/phút).
+ * 20 request / 1 phút / IP. Đủ thoáng cho user mở nhiều tab admin (mỗi tab
+ * tự refresh khi access token hết hạn → vài tab × 1-2 refresh + user typo
+ * password vài lần dễ vượt 10) nhưng vẫn chặn được bot dò mật khẩu
+ * (bot thường >100 req/phút).
  */
 export const authLimiter = rateLimit({
   windowMs: 60 * 1000,
-  max: 10,
+  max: 20,
   standardHeaders: true,
   legacyHeaders: false,
   handler: rateLimitHandler,
