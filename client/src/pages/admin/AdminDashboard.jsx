@@ -204,7 +204,7 @@ export default function AdminDashboard() {
                         <TableRow>
                           <TableHead>Người dùng</TableHead>
                           <TableHead>Đề</TableHead>
-                          <TableHead className="text-right">Điểm/Độ chính xác</TableHead>
+                          <TableHead className="text-right whitespace-nowrap">Điểm/Độ chính xác</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>

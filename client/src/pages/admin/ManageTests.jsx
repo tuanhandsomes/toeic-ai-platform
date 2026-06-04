@@ -1,23 +1,48 @@
-import { useEffect, useState, useCallback, useRef } from 'react';
-import { Link } from 'react-router-dom';
+import { useEffect, useState, useCallback, useRef } from "react";
+import { Link } from "react-router-dom";
 import {
-  Plus, Pencil, Trash2, Search, Loader2, X, AlertCircle, Upload, FileJson, CheckCircle2,
-  UploadCloud, FileAudio, FileImage,
-} from 'lucide-react';
-import AdminLayout from '@/components/layout/AdminLayout';
-import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+  Plus,
+  Pencil,
+  Trash2,
+  Search,
+  Loader2,
+  X,
+  AlertCircle,
+  Upload,
+  FileJson,
+  CheckCircle2,
+  UploadCloud,
+  FileAudio,
+  FileImage,
+} from "lucide-react";
+import AdminLayout from "@/components/layout/AdminLayout";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
-  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
-} from '@/components/ui/select';
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
-  Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle,
-} from '@/components/ui/dialog';
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import {
-  Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
-} from '@/components/ui/table';
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import {
   Pagination,
   PaginationContent,
@@ -27,43 +52,54 @@ import {
   PaginationNext,
   PaginationEllipsis,
   getPageRange,
-} from '@/components/ui/pagination';
-import { adminService } from '@/services/adminService';
-import { toast } from 'sonner';
+} from "@/components/ui/pagination";
+import { adminService } from "@/services/adminService";
+import { toast } from "sonner";
 
 const PART_LABEL = (p) =>
-  p === 1 ? 'Part 1 — Tranh'
-  : p === 2 ? 'Part 2 — Hỏi đáp'
-  : p === 3 ? 'Part 3 — Hội thoại'
-  : p === 4 ? 'Part 4 — Bài nói'
-  : p === 5 ? 'Part 5 — Câu hoàn'
-  : p === 6 ? 'Part 6 — Đoạn hoàn'
-  : p === 7 ? 'Part 7 — Đọc hiểu'
-  : `Part ${p}`;
+  p === 1
+    ? "Part 1 — Tranh"
+    : p === 2
+      ? "Part 2 — Hỏi đáp"
+      : p === 3
+        ? "Part 3 — Hội thoại"
+        : p === 4
+          ? "Part 4 — Bài nói"
+          : p === 5
+            ? "Part 5 — Câu hoàn"
+            : p === 6
+              ? "Part 6 — Đoạn hoàn"
+              : p === 7
+                ? "Part 7 — Đọc hiểu"
+                : `Part ${p}`;
 
 const blankTest = {
-  title: '',
-  description: '',
-  type: 'part',
+  title: "",
+  description: "",
+  type: "part",
   part: 1,
   questionIds: [],
   durationMinutes: 10,
-  difficulty: 'medium',
-  series: '',
-  year: '',
+  difficulty: "medium",
+  series: "",
+  year: "",
   isPublished: true,
 };
 
 export default function ManageTests() {
   const [items, setItems] = useState([]);
-  const [pagination, setPagination] = useState({ page: 1, totalPages: 1, total: 0 });
+  const [pagination, setPagination] = useState({
+    page: 1,
+    totalPages: 1,
+    total: 0,
+  });
   const [loading, setLoading] = useState(false);
-  const INITIAL_FILTERS = { type: 'all', isPublished: 'all', search: '' };
+  const INITIAL_FILTERS = { type: "all", isPublished: "all", search: "" };
   const [filters, setFilters] = useState(INITIAL_FILTERS);
   const [pending, setPending] = useState(INITIAL_FILTERS);
 
   const [editorOpen, setEditorOpen] = useState(false);
-  const [editorMode, setEditorMode] = useState('create'); // 'create' | 'edit'
+  const [editorMode, setEditorMode] = useState("create"); // 'create' | 'edit'
   const [editing, setEditing] = useState(null);
 
   const [confirmDelete, setConfirmDelete] = useState(null);
@@ -72,14 +108,14 @@ export default function ManageTests() {
   // ─── Import full test bundle (1-click upload JSON) ──────────────────────
   const [importOpen, setImportOpen] = useState(false);
   const [importing, setImporting] = useState(false);
-  const [importError, setImportError] = useState('');
+  const [importError, setImportError] = useState("");
   const [importResult, setImportResult] = useState(null);
   const importInputRef = useRef(null);
 
   const handleImportFile = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    setImportError('');
+    setImportError("");
     setImportResult(null);
     setImporting(true);
     try {
@@ -88,26 +124,26 @@ export default function ManageTests() {
       try {
         bundle = JSON.parse(text);
       } catch {
-        throw new Error('File JSON không hợp lệ — kiểm tra cú pháp.');
+        throw new Error("File JSON không hợp lệ — kiểm tra cú pháp.");
       }
       if (!bundle.testInfo || !Array.isArray(bundle.questions)) {
-        throw new Error('JSON phải có shape { testInfo, questions }.');
+        throw new Error("JSON phải có shape { testInfo, questions }.");
       }
       const res = await adminService.importTestBundle(bundle);
       setImportResult(res.data);
       await fetchTests(1);
     } catch (err) {
-      setImportError(err?.message || 'Import thất bại');
+      setImportError(err?.message || "Import thất bại");
     } finally {
       setImporting(false);
-      if (importInputRef.current) importInputRef.current.value = '';
+      if (importInputRef.current) importInputRef.current.value = "";
     }
   };
 
   const closeImport = () => {
     if (importing) return;
     setImportOpen(false);
-    setImportError('');
+    setImportError("");
     setImportResult(null);
   };
 
@@ -117,14 +153,14 @@ export default function ManageTests() {
   const [mediaUploading, setMediaUploading] = useState(false);
   const [mediaProgress, setMediaProgress] = useState(0);
   const [mediaResult, setMediaResult] = useState(null);
-  const [mediaError, setMediaError] = useState('');
+  const [mediaError, setMediaError] = useState("");
   const mediaInputRef = useRef(null);
 
   const openMediaDialog = (test) => {
     setMediaTest(test);
     setMediaFiles([]);
     setMediaResult(null);
-    setMediaError('');
+    setMediaError("");
     setMediaProgress(0);
   };
 
@@ -133,7 +169,7 @@ export default function ManageTests() {
     setMediaTest(null);
     setMediaFiles([]);
     setMediaResult(null);
-    setMediaError('');
+    setMediaError("");
   };
 
   const handleMediaPick = (e) => {
@@ -145,7 +181,7 @@ export default function ManageTests() {
       picked.forEach((f) => map.set(f.name, f));
       return Array.from(map.values());
     });
-    if (mediaInputRef.current) mediaInputRef.current.value = '';
+    if (mediaInputRef.current) mediaInputRef.current.value = "";
   };
 
   const removeMediaFile = (name) => {
@@ -155,13 +191,17 @@ export default function ManageTests() {
   const handleMediaUpload = async () => {
     if (mediaFiles.length === 0) return;
     setMediaUploading(true);
-    setMediaError('');
+    setMediaError("");
     setMediaProgress(0);
     try {
-      const res = await adminService.uploadTestMedia(mediaTest._id, mediaFiles, setMediaProgress);
+      const res = await adminService.uploadTestMedia(
+        mediaTest._id,
+        mediaFiles,
+        setMediaProgress,
+      );
       setMediaResult(res.data);
     } catch (err) {
-      setMediaError(err?.message || 'Tải lên thất bại');
+      setMediaError(err?.message || "Tải lên thất bại");
     } finally {
       setMediaUploading(false);
     }
@@ -172,8 +212,9 @@ export default function ManageTests() {
       setLoading(true);
       try {
         const params = { page, limit: 10 };
-        if (filters.type !== 'all') params.type = filters.type;
-        if (filters.isPublished !== 'all') params.isPublished = filters.isPublished === 'true';
+        if (filters.type !== "all") params.type = filters.type;
+        if (filters.isPublished !== "all")
+          params.isPublished = filters.isPublished === "true";
         if (filters.search) params.search = filters.search;
         const res = await adminService.listTests(params);
         setItems(res.data.items);
@@ -191,7 +232,7 @@ export default function ManageTests() {
 
   const openCreate = () => {
     setEditing({ ...blankTest });
-    setEditorMode('create');
+    setEditorMode("create");
     setEditorOpen(true);
   };
 
@@ -203,13 +244,13 @@ export default function ManageTests() {
       setEditing({
         ...blankTest,
         ...full,
-        year: full.year ?? '',
+        year: full.year ?? "",
         part: full.part ?? 1,
       });
-      setEditorMode('edit');
+      setEditorMode("edit");
       setEditorOpen(true);
     } catch (err) {
-      toast.error(err?.message || 'Không tải được đề');
+      toast.error(err?.message || "Không tải được đề");
     } finally {
       setBusy(false);
     }
@@ -217,7 +258,7 @@ export default function ManageTests() {
 
   const handleSave = async (payload) => {
     setBusy(true);
-    const isCreate = editorMode === 'create';
+    const isCreate = editorMode === "create";
     try {
       if (isCreate) {
         await adminService.createTest(payload);
@@ -227,9 +268,13 @@ export default function ManageTests() {
       setEditorOpen(false);
       setEditing(null);
       await fetchTests(pagination.page);
-      toast.success(isCreate ? `Đã tạo đề "${payload.title}"` : `Đã cập nhật đề "${payload.title}"`);
+      toast.success(
+        isCreate
+          ? `Đã tạo đề "${payload.title}"`
+          : `Đã cập nhật đề "${payload.title}"`,
+      );
     } catch (err) {
-      toast.error(err?.message || 'Lưu thất bại');
+      toast.error(err?.message || "Lưu thất bại");
     } finally {
       setBusy(false);
     }
@@ -245,7 +290,7 @@ export default function ManageTests() {
       await fetchTests(pagination.page);
       toast.success(`Đã xóa đề "${target.title}"`);
     } catch (err) {
-      toast.error(err?.message || 'Xóa thất bại');
+      toast.error(err?.message || "Xóa thất bại");
     } finally {
       setBusy(false);
     }
@@ -256,7 +301,9 @@ export default function ManageTests() {
       <div className="px-6 lg:px-8 py-6">
         <div className="mb-6 flex items-center justify-between flex-wrap gap-3">
           <div>
-            <h1 className="text-2xl font-heading font-bold text-slate-900">Quản lý đề thi</h1>
+            <h1 className="text-2xl font-heading font-bold text-slate-900">
+              Quản lý đề thi
+            </h1>
             <p className="text-sm text-slate-600 mt-1">
               Tạo, sửa, xóa các bài Practice và Full Test.
             </p>
@@ -285,7 +332,9 @@ export default function ManageTests() {
               className="flex flex-wrap items-end gap-3"
             >
               <div className="flex-1 min-w-[240px]">
-                <label className="text-xs font-medium text-slate-700 block mb-1">Tìm kiếm</label>
+                <label className="text-xs font-medium text-slate-700 block mb-1">
+                  Tìm kiếm
+                </label>
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                   <Input
@@ -300,7 +349,9 @@ export default function ManageTests() {
               </div>
 
               <div>
-                <label className="text-xs font-medium text-slate-700 block mb-1">Loại</label>
+                <label className="text-xs font-medium text-slate-700 block mb-1">
+                  Loại
+                </label>
                 <Select
                   value={pending.type}
                   onValueChange={(v) => setPending((p) => ({ ...p, type: v }))}
@@ -317,7 +368,9 @@ export default function ManageTests() {
               </div>
 
               <div>
-                <label className="text-xs font-medium text-slate-700 block mb-1">Trạng thái</label>
+                <label className="text-xs font-medium text-slate-700 block mb-1">
+                  Trạng thái
+                </label>
                 <Select
                   value={pending.isPublished}
                   onValueChange={(v) =>
@@ -336,10 +389,7 @@ export default function ManageTests() {
               </div>
 
               <div className="flex gap-2">
-                <button
-                  type="submit"
-                  className="btn-primary text-sm"
-                >
+                <button type="submit" className="btn-primary text-sm">
                   <Search className="w-4 h-4" /> Tìm
                 </button>
                 <button
@@ -391,12 +441,13 @@ export default function ManageTests() {
                         </Link>
                         {t.series && (
                           <p className="text-xs text-slate-500">
-                            {t.series}{t.year ? ` • ${t.year}` : ''}
+                            {t.series}
+                            {t.year ? ` • ${t.year}` : ""}
                           </p>
                         )}
                       </TableCell>
                       <TableCell>
-                        {t.type === 'full' ? (
+                        {t.type === "full" ? (
                           <Badge className="bg-primary-100 text-primary-700 border-primary-200">
                             Full Test
                           </Badge>
@@ -421,7 +472,7 @@ export default function ManageTests() {
                       </TableCell>
                       <TableCell className="text-right">
                         <div className="flex justify-end gap-2">
-                          {t.type === 'full' && (
+                          {t.type === "full" && (
                             <button
                               type="button"
                               onClick={() => openMediaDialog(t)}
@@ -467,7 +518,7 @@ export default function ManageTests() {
               {getPageRange(pagination.page, pagination.totalPages).map(
                 (p, idx) => (
                   <PaginationItem key={`${p}-${idx}`}>
-                    {p === '...' ? (
+                    {p === "..." ? (
                       <PaginationEllipsis />
                     ) : (
                       <PaginationLink
@@ -478,7 +529,7 @@ export default function ManageTests() {
                       </PaginationLink>
                     )}
                   </PaginationItem>
-                )
+                ),
               )}
               <PaginationItem>
                 <PaginationNext
@@ -504,7 +555,10 @@ export default function ManageTests() {
         />
       )}
 
-      <Dialog open={!!confirmDelete} onOpenChange={(open) => !open && setConfirmDelete(null)}>
+      <Dialog
+        open={!!confirmDelete}
+        onOpenChange={(open) => !open && setConfirmDelete(null)}
+      >
         <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
@@ -512,8 +566,9 @@ export default function ManageTests() {
               Xóa đề thi?
             </DialogTitle>
             <DialogDescription>
-              Đề <strong>{confirmDelete?.title}</strong> sẽ bị xóa vĩnh viễn. Nếu đã có người làm bài
-              thì sẽ không xóa được — hãy chuyển sang trạng thái “Nháp” thay vì xóa.
+              Đề <strong>{confirmDelete?.title}</strong> sẽ bị xóa vĩnh viễn.
+              Nếu đã có người làm bài thì sẽ không xóa được — hãy chuyển sang
+              trạng thái “Nháp” thay vì xóa.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
@@ -539,7 +594,10 @@ export default function ManageTests() {
       </Dialog>
 
       {/* TẢI LÊN CẢ ĐỀ THI */}
-      <Dialog open={importOpen} onOpenChange={(o) => (o ? setImportOpen(true) : closeImport())}>
+      <Dialog
+        open={importOpen}
+        onOpenChange={(o) => (o ? setImportOpen(true) : closeImport())}
+      >
         <DialogContent className="max-w-lg">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
@@ -547,8 +605,9 @@ export default function ManageTests() {
               Tải lên cả đề thi
             </DialogTitle>
             <DialogDescription>
-              Chỉ với 1 file, hệ thống sẽ tự tạo cả đề thi đầy đủ (200 câu) và 7 bài luyện tập theo từng Part —
-              bạn không phải chọn từng câu hỏi thủ công.
+              Chỉ với 1 file, hệ thống sẽ tự tạo cả đề thi đầy đủ (200 câu) và 7
+              bài luyện tập theo từng Part — bạn không phải chọn từng câu hỏi
+              thủ công.
             </DialogDescription>
           </DialogHeader>
 
@@ -558,13 +617,15 @@ export default function ManageTests() {
                 <CheckCircle2 className="w-5 h-5 flex-shrink-0 mt-0.5" />
                 <div className="space-y-1">
                   <p className="font-medium">Tải lên thành công</p>
-                  <p>Tên đề thi: <strong>{importResult.test.title}</strong></p>
-                  <p>Số câu hỏi: <strong>{importResult.questionCount}</strong></p>
-                  <p>Số bài luyện tập theo Part: <strong>{importResult.practiceSets.length}</strong></p>
-                  <p className="text-xs text-secondary-700/80 mt-2">
-                    💡 Bước tiếp theo: nếu đề có Part 1-4 (phần Nghe) hoặc Part 6-7 (phần Đọc có ảnh),
-                    hãy nhờ team kỹ thuật tải kho âm thanh và hình ảnh của đề lên hệ thống. Tên file
-                    phải theo quy tắc đã chuẩn bị để tự khớp với câu hỏi.
+                  <p>
+                    Tên đề thi: <strong>{importResult.test.title}</strong>
+                  </p>
+                  <p>
+                    Số câu hỏi: <strong>{importResult.questionCount}</strong>
+                  </p>
+                  <p>
+                    Số bài luyện tập theo Part:{" "}
+                    <strong>{importResult.practiceSets.length}</strong>
                   </p>
                 </div>
               </div>
@@ -573,28 +634,46 @@ export default function ManageTests() {
             <>
               <div className="rounded-md bg-slate-50 border border-slate-200 px-3 py-3 text-xs text-slate-600 space-y-2">
                 <div>
-                  <p className="font-medium text-slate-700 mb-1">📄 File đề thi cần có gì?</p>
+                  <p className="font-medium text-slate-700 mb-1">
+                    📄 File đề thi cần có gì?
+                  </p>
                   <p>
-                    Một file văn bản đuôi <code className="px-1 py-0.5 bg-slate-200 rounded">.json</code> chứa
-                    đầy đủ thông tin đề (tên, năm, độ khó) và <strong>200 câu hỏi</strong> kèm đáp án, lời giải.
-                    File này được chuẩn bị sẵn theo mẫu cố định — bạn có thể dùng file mẫu đã có trong dự án
-                    làm gốc, hoặc nhờ team kỹ thuật tạo từ file đề PDF.
+                    Một file văn bản đuôi{" "}
+                    <code className="px-1 py-0.5 bg-slate-200 rounded">
+                      .json
+                    </code>{" "}
+                    chứa đầy đủ thông tin đề (tên, năm, độ khó) và{" "}
+                    <strong>200 câu hỏi</strong> kèm đáp án, lời giải. File này
+                    được chuẩn bị sẵn theo mẫu cố định — bạn có thể dùng file
+                    mẫu đã có trong dự án làm gốc, hoặc tạo file mới theo cùng
+                    định dạng từ đề PDF của bạn.
                   </p>
                 </div>
 
                 <div>
-                  <p className="font-medium text-slate-700 mb-1">🔊 File âm thanh & hình ảnh thì sao?</p>
+                  <p className="font-medium text-slate-700 mb-1">
+                    🔊 File âm thanh & hình ảnh thì sao?
+                  </p>
                   <p>
-                    Hệ thống <strong>tự động khớp</strong> từng câu hỏi với file âm thanh/hình ảnh tương ứng
-                    dựa trên tên file (vd câu 1 ghép với <code className="px-1 bg-slate-200 rounded">E26-T02-01.mp3</code>).
-                    Bạn không phải gắn từng câu một. Các file media này được tải lên kho lưu trữ bằng công cụ riêng
-                    (hiện tại do team kỹ thuật thực hiện sau khi tải đề lên).
+                    Hệ thống <strong>tự động khớp</strong> từng câu hỏi với file
+                    âm thanh/hình ảnh tương ứng dựa trên tên file (vd câu 1 ghép
+                    với{" "}
+                    <code className="px-1 bg-slate-200 rounded">
+                      E26-T02-01.mp3
+                    </code>
+                    ). Bạn không phải gắn từng câu một. Sau khi tải đề lên, mở
+                    trang chi tiết đề thi và chọn tất cả file âm thanh + hình
+                    ảnh cùng lúc — hệ thống sẽ tự đẩy lên và gắn vào đúng câu
+                    hỏi.
                   </p>
                 </div>
 
                 <div>
                   <p className="font-medium text-slate-700 mb-1">⚠️ Lưu ý:</p>
-                  <p>Nếu đề thi cùng tên đã có trong hệ thống, hãy xóa đề cũ trước khi tải lại.</p>
+                  <p>
+                    Nếu đề thi cùng tên đã có trong hệ thống, hãy xóa đề cũ
+                    trước khi tải lại.
+                  </p>
                 </div>
               </div>
 
@@ -616,8 +695,13 @@ export default function ManageTests() {
           )}
 
           <DialogFooter>
-            <button type="button" onClick={closeImport} className="btn-ghost text-sm" disabled={importing}>
-              {importResult ? 'Đóng' : 'Hủy'}
+            <button
+              type="button"
+              onClick={closeImport}
+              className="btn-ghost text-sm"
+              disabled={importing}
+            >
+              {importResult ? "Đóng" : "Hủy"}
             </button>
             {!importResult && (
               <button
@@ -627,9 +711,13 @@ export default function ManageTests() {
                 className="btn-primary text-sm"
               >
                 {importing ? (
-                  <><Loader2 className="w-4 h-4 animate-spin" /> Đang tải lên...</>
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" /> Đang tải lên...
+                  </>
                 ) : (
-                  <><Upload className="w-4 h-4" /> Chọn file đề thi</>
+                  <>
+                    <Upload className="w-4 h-4" /> Chọn file đề thi
+                  </>
                 )}
               </button>
             )}
@@ -638,7 +726,10 @@ export default function ManageTests() {
       </Dialog>
 
       {/* TẢI LÊN ÂM THANH & HÌNH ẢNH CHO 1 ĐỀ */}
-      <Dialog open={!!mediaTest} onOpenChange={(o) => (o ? null : closeMediaDialog())}>
+      <Dialog
+        open={!!mediaTest}
+        onOpenChange={(o) => (o ? null : closeMediaDialog())}
+      >
         <DialogContent className="max-w-2xl">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
@@ -646,9 +737,9 @@ export default function ManageTests() {
               Tải lên âm thanh & hình ảnh
             </DialogTitle>
             <DialogDescription>
-              Đề: <strong>{mediaTest?.title}</strong>. Chọn cùng lúc các file âm thanh (Part 1-4)
-              và hình ảnh (Part 1, 3, 4, 6, 7) đã chuẩn bị sẵn — hệ thống sẽ tự gắn vào đúng câu hỏi
-              dựa trên tên file.
+              Đề: <strong>{mediaTest?.title}</strong>. Chọn cùng lúc các file âm
+              thanh (Part 1-4) và hình ảnh (Part 1, 3, 4, 6, 7) đã chuẩn bị sẵn
+              — hệ thống sẽ tự gắn vào đúng câu hỏi dựa trên tên file.
             </DialogDescription>
           </DialogHeader>
 
@@ -659,11 +750,20 @@ export default function ManageTests() {
                   <CheckCircle2 className="w-5 h-5 flex-shrink-0 mt-0.5" />
                   <div className="space-y-1">
                     <p className="font-medium">Tải lên hoàn tất</p>
-                    <p>Số file tải thành công: <strong>{mediaResult.uploaded.length}</strong></p>
+                    <p>
+                      Số file tải thành công:{" "}
+                      <strong>{mediaResult.uploaded.length}</strong>
+                    </p>
                     {mediaResult.failed.length > 0 && (
-                      <p className="text-tertiary-700">Số file thất bại: <strong>{mediaResult.failed.length}</strong></p>
+                      <p className="text-tertiary-700">
+                        Số file thất bại:{" "}
+                        <strong>{mediaResult.failed.length}</strong>
+                      </p>
                     )}
-                    <p>Số câu hỏi đã được gắn media: <strong>{mediaResult.linkedQuestions}</strong></p>
+                    <p>
+                      Số câu hỏi đã được gắn media:{" "}
+                      <strong>{mediaResult.linkedQuestions}</strong>
+                    </p>
                   </div>
                 </div>
               </div>
@@ -685,14 +785,28 @@ export default function ManageTests() {
             <>
               <div className="rounded-md bg-slate-50 border border-slate-200 px-3 py-3 text-xs text-slate-600 space-y-2">
                 <p>
-                  <strong>Quy tắc tên file</strong> — hệ thống dựa vào tên file để gắn đúng câu:
+                  <strong>Quy tắc tên file</strong> — hệ thống dựa vào tên file
+                  để gắn đúng câu:
                 </p>
                 <ul className="list-disc pl-5 space-y-0.5">
-                  <li>Âm thanh Part 1, 2: <code>E26-T02-01.mp3</code> đến <code>E26-T02-31.mp3</code></li>
-                  <li>Âm thanh Part 3, 4: <code>E26-T02-32-34.mp3</code>, <code>E26-T02-35-37.mp3</code>...</li>
-                  <li>Ảnh Part 1: <code>01.PNG</code> đến <code>06.PNG</code></li>
-                  <li>Ảnh Part 3, 4 (graphic): <code>graphic-q62-64.PNG</code>...</li>
-                  <li>Ảnh Part 6, 7 (đoạn văn): <code>passage-q131-134.PNG</code>...</li>
+                  <li>
+                    Âm thanh Part 1, 2: <code>E26-T02-01.mp3</code> đến{" "}
+                    <code>E26-T02-31.mp3</code>
+                  </li>
+                  <li>
+                    Âm thanh Part 3, 4: <code>E26-T02-32-34.mp3</code>,{" "}
+                    <code>E26-T02-35-37.mp3</code>...
+                  </li>
+                  <li>
+                    Ảnh Part 1: <code>01.PNG</code> đến <code>06.PNG</code>
+                  </li>
+                  <li>
+                    Ảnh Part 3, 4 (graphic): <code>graphic-q62-64.PNG</code>...
+                  </li>
+                  <li>
+                    Ảnh Part 6, 7 (đoạn văn): <code>passage-q131-134.PNG</code>
+                    ...
+                  </li>
                 </ul>
               </div>
 
@@ -712,11 +826,9 @@ export default function ManageTests() {
                   disabled={mediaUploading}
                   className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md border border-slate-300 hover:bg-slate-50"
                 >
-                  <Upload className="w-4 h-4" /> Chọn file (có thể chọn nhiều lần)
+                  <Upload className="w-4 h-4" /> Chọn file (có thể chọn nhiều
+                  file cùng lúc)
                 </button>
-                <p className="mt-2 text-xs text-slate-500">
-                  Có thể chọn cả 1 thư mục bằng Ctrl+A trong File Explorer rồi kéo vào hộp chọn file.
-                </p>
               </div>
 
               {/* File list */}
@@ -727,15 +839,20 @@ export default function ManageTests() {
                   </p>
                   <div className="max-h-48 overflow-y-auto border border-slate-200 rounded-md divide-y divide-slate-100">
                     {mediaFiles.map((f) => {
-                      const isAudio = f.type.startsWith('audio/');
+                      const isAudio = f.type.startsWith("audio/");
                       return (
-                        <div key={f.name} className="flex items-center gap-2 px-3 py-1.5 text-xs">
+                        <div
+                          key={f.name}
+                          className="flex items-center gap-2 px-3 py-1.5 text-xs"
+                        >
                           {isAudio ? (
                             <FileAudio className="w-3.5 h-3.5 text-primary-500 flex-shrink-0" />
                           ) : (
                             <FileImage className="w-3.5 h-3.5 text-secondary-500 flex-shrink-0" />
                           )}
-                          <span className="font-mono truncate flex-1">{f.name}</span>
+                          <span className="font-mono truncate flex-1">
+                            {f.name}
+                          </span>
                           <span className="text-slate-400 flex-shrink-0">
                             {(f.size / 1024).toFixed(0)} KB
                           </span>
@@ -775,7 +892,8 @@ export default function ManageTests() {
                     <div className="flex items-center gap-2 text-sm text-slate-600 py-2">
                       <Loader2 className="w-4 h-4 animate-spin text-primary-500" />
                       <span>
-                        Đang xử lý {mediaFiles.length} file và gắn vào câu hỏi. Mất khoảng 1-2 phút...
+                        Đang xử lý {mediaFiles.length} file và gắn vào câu hỏi.
+                        Mất khoảng 1-2 phút...
                       </span>
                     </div>
                   )}
@@ -798,7 +916,7 @@ export default function ManageTests() {
               className="btn-ghost text-sm"
               disabled={mediaUploading}
             >
-              {mediaResult ? 'Đóng' : 'Hủy'}
+              {mediaResult ? "Đóng" : "Hủy"}
             </button>
             {!mediaResult && (
               <button
@@ -808,9 +926,14 @@ export default function ManageTests() {
                 className="btn-primary text-sm"
               >
                 {mediaUploading ? (
-                  <><Loader2 className="w-4 h-4 animate-spin" /> Đang tải...</>
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" /> Đang tải...
+                  </>
                 ) : (
-                  <><UploadCloud className="w-4 h-4" /> Tải lên {mediaFiles.length || ''} file</>
+                  <>
+                    <UploadCloud className="w-4 h-4" /> Tải lên{" "}
+                    {mediaFiles.length || ""} file
+                  </>
                 )}
               </button>
             )}
@@ -831,7 +954,8 @@ function TestEditorDialog({ mode, test, busy, onCancel, onSave }) {
 
   // Preload selected question metadata when editing
   useEffect(() => {
-    if (mode !== 'edit' || !test.questionIds || test.questionIds.length === 0) return;
+    if (mode !== "edit" || !test.questionIds || test.questionIds.length === 0)
+      return;
     let cancelled = false;
     (async () => {
       try {
@@ -860,7 +984,7 @@ function TestEditorDialog({ mode, test, busy, onCancel, onSave }) {
       title: form.title.trim(),
       description: form.description,
       type: form.type,
-      part: form.type === 'part' ? Number(form.part) : null,
+      part: form.type === "part" ? Number(form.part) : null,
       questionIds: selectedQuestions.map((q) => q._id),
       durationMinutes: Number(form.durationMinutes),
       difficulty: form.difficulty,
@@ -869,7 +993,7 @@ function TestEditorDialog({ mode, test, busy, onCancel, onSave }) {
       isPublished: form.isPublished,
     };
     if (!payload.title || payload.questionIds.length === 0) {
-      toast.warning('Vui lòng nhập tiêu đề và chọn ít nhất 1 câu hỏi.');
+      toast.warning("Vui lòng nhập tiêu đề và chọn ít nhất 1 câu hỏi.");
       return;
     }
     onSave(payload);
@@ -881,7 +1005,7 @@ function TestEditorDialog({ mode, test, busy, onCancel, onSave }) {
         <DialogContent className="max-w-2xl max-h-[90vh] flex flex-col">
           <DialogHeader className="shrink-0">
             <DialogTitle className="truncate pr-8">
-              {mode === 'create' ? 'Tạo đề mới' : `Sửa đề: ${test.title}`}
+              {mode === "create" ? "Tạo đề mới" : `Sửa đề: ${test.title}`}
             </DialogTitle>
           </DialogHeader>
 
@@ -894,7 +1018,7 @@ function TestEditorDialog({ mode, test, busy, onCancel, onSave }) {
               <Input
                 required
                 value={form.title}
-                onChange={(e) => updateField('title', e.target.value)}
+                onChange={(e) => updateField("title", e.target.value)}
                 placeholder="VD: ETS 2026 — Full Test 01"
               />
             </div>
@@ -903,7 +1027,7 @@ function TestEditorDialog({ mode, test, busy, onCancel, onSave }) {
               <Label>Mô tả</Label>
               <textarea
                 value={form.description}
-                onChange={(e) => updateField('description', e.target.value)}
+                onChange={(e) => updateField("description", e.target.value)}
                 className="w-full rounded-md border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
                 rows={2}
               />
@@ -912,7 +1036,10 @@ function TestEditorDialog({ mode, test, busy, onCancel, onSave }) {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
                 <Label>Loại</Label>
-                <Select value={form.type} onValueChange={(v) => updateField('type', v)}>
+                <Select
+                  value={form.type}
+                  onValueChange={(v) => updateField("type", v)}
+                >
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
@@ -923,12 +1050,12 @@ function TestEditorDialog({ mode, test, busy, onCancel, onSave }) {
                 </Select>
               </div>
 
-              {form.type === 'part' && (
+              {form.type === "part" && (
                 <div>
                   <Label>Part</Label>
                   <Select
                     value={String(form.part)}
-                    onValueChange={(v) => updateField('part', Number(v))}
+                    onValueChange={(v) => updateField("part", Number(v))}
                   >
                     <SelectTrigger>
                       <SelectValue />
@@ -953,14 +1080,16 @@ function TestEditorDialog({ mode, test, busy, onCancel, onSave }) {
                   min={1}
                   max={300}
                   value={form.durationMinutes}
-                  onChange={(e) => updateField('durationMinutes', e.target.value)}
+                  onChange={(e) =>
+                    updateField("durationMinutes", e.target.value)
+                  }
                 />
               </div>
               <div>
                 <Label>Series</Label>
                 <Input
                   value={form.series}
-                  onChange={(e) => updateField('series', e.target.value)}
+                  onChange={(e) => updateField("series", e.target.value)}
                   placeholder="ETS 2026"
                 />
               </div>
@@ -969,7 +1098,7 @@ function TestEditorDialog({ mode, test, busy, onCancel, onSave }) {
                 <Input
                   type="number"
                   value={form.year}
-                  onChange={(e) => updateField('year', e.target.value)}
+                  onChange={(e) => updateField("year", e.target.value)}
                   placeholder="2026"
                 />
               </div>
@@ -978,7 +1107,10 @@ function TestEditorDialog({ mode, test, busy, onCancel, onSave }) {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
                 <Label>Độ khó</Label>
-                <Select value={form.difficulty} onValueChange={(v) => updateField('difficulty', v)}>
+                <Select
+                  value={form.difficulty}
+                  onValueChange={(v) => updateField("difficulty", v)}
+                >
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
@@ -994,7 +1126,9 @@ function TestEditorDialog({ mode, test, busy, onCancel, onSave }) {
                   <input
                     type="checkbox"
                     checked={form.isPublished}
-                    onChange={(e) => updateField('isPublished', e.target.checked)}
+                    onChange={(e) =>
+                      updateField("isPublished", e.target.checked)
+                    }
                     className="w-4 h-4"
                   />
                   Xuất bản
@@ -1014,20 +1148,31 @@ function TestEditorDialog({ mode, test, busy, onCancel, onSave }) {
                 </button>
               </div>
               {selectedQuestions.length === 0 ? (
-                <p className="text-xs text-slate-500 italic">Chưa có câu hỏi nào.</p>
+                <p className="text-xs text-slate-500 italic">
+                  Chưa có câu hỏi nào.
+                </p>
               ) : (
                 <div className="max-h-48 overflow-y-auto border border-slate-200 rounded-md divide-y divide-slate-100">
                   {selectedQuestions.map((q, idx) => (
-                    <div key={q._id} className="flex items-center gap-2 px-3 py-2 text-sm">
-                      <span className="text-xs font-mono text-slate-400 w-6">{idx + 1}</span>
-                      <Badge variant="muted" className="text-xs">P{q.part}</Badge>
+                    <div
+                      key={q._id}
+                      className="flex items-center gap-2 px-3 py-2 text-sm"
+                    >
+                      <span className="text-xs font-mono text-slate-400 w-6">
+                        {idx + 1}
+                      </span>
+                      <Badge variant="muted" className="text-xs">
+                        P{q.part}
+                      </Badge>
                       <span className="flex-1 truncate text-slate-700">
                         {q.content?.text || `(Câu Part ${q.part})`}
                       </span>
                       <button
                         type="button"
                         onClick={() =>
-                          setSelectedQuestions((prev) => prev.filter((x) => x._id !== q._id))
+                          setSelectedQuestions((prev) =>
+                            prev.filter((x) => x._id !== q._id),
+                          )
                         }
                         className="text-slate-400 hover:text-tertiary-600"
                       >
@@ -1040,12 +1185,21 @@ function TestEditorDialog({ mode, test, busy, onCancel, onSave }) {
             </div>
 
             <DialogFooter>
-              <button type="button" onClick={onCancel} className="btn-ghost text-sm" disabled={busy}>
+              <button
+                type="button"
+                onClick={onCancel}
+                className="btn-ghost text-sm"
+                disabled={busy}
+              >
                 Hủy
               </button>
-              <button type="submit" disabled={busy} className="btn-primary text-sm">
+              <button
+                type="submit"
+                disabled={busy}
+                className="btn-primary text-sm"
+              >
                 {busy && <Loader2 className="w-4 h-4 animate-spin mr-1" />}
-                {mode === 'create' ? 'Tạo đề' : 'Lưu'}
+                {mode === "create" ? "Tạo đề" : "Lưu"}
               </button>
             </DialogFooter>
           </form>
@@ -1071,11 +1225,15 @@ function TestEditorDialog({ mode, test, busy, onCancel, onSave }) {
 // ────────────────────────────────────────────────────────────────────────
 function QuestionPickerDialog({ alreadySelected, onClose, onConfirm }) {
   const [items, setItems] = useState([]);
-  const [pagination, setPagination] = useState({ page: 1, totalPages: 1, total: 0 });
+  const [pagination, setPagination] = useState({
+    page: 1,
+    totalPages: 1,
+    total: 0,
+  });
   const [loading, setLoading] = useState(false);
-  const [partFilter, setPartFilter] = useState('all');
-  const [search, setSearch] = useState('');
-  const [searchInput, setSearchInput] = useState('');
+  const [partFilter, setPartFilter] = useState("all");
+  const [search, setSearch] = useState("");
+  const [searchInput, setSearchInput] = useState("");
   const [selectedMap, setSelectedMap] = useState(() =>
     Object.fromEntries(alreadySelected.map((q) => [q._id, q])),
   );
@@ -1085,7 +1243,7 @@ function QuestionPickerDialog({ alreadySelected, onClose, onConfirm }) {
       setLoading(true);
       try {
         const params = { page, limit: 10 };
-        if (partFilter !== 'all') params.part = Number(partFilter);
+        if (partFilter !== "all") params.part = Number(partFilter);
         if (search) params.search = search;
         const res = await adminService.listQuestions(params);
         setItems(res.data.items);
@@ -1116,7 +1274,9 @@ function QuestionPickerDialog({ alreadySelected, onClose, onConfirm }) {
     <Dialog open onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="max-w-3xl">
         <DialogHeader>
-          <DialogTitle>Chọn câu hỏi từ ngân hàng ({selectedArray.length} đã chọn)</DialogTitle>
+          <DialogTitle>
+            Chọn câu hỏi từ ngân hàng ({selectedArray.length} đã chọn)
+          </DialogTitle>
           <DialogDescription>
             Tick các câu để thêm vào đề. Lựa chọn giữ nguyên khi đổi trang/lọc.
           </DialogDescription>
@@ -1159,7 +1319,9 @@ function QuestionPickerDialog({ alreadySelected, onClose, onConfirm }) {
               <Loader2 className="w-5 h-5 text-primary-500 animate-spin" />
             </div>
           ) : items.length === 0 ? (
-            <p className="py-12 text-center text-sm text-slate-500">Không có câu hỏi.</p>
+            <p className="py-12 text-center text-sm text-slate-500">
+              Không có câu hỏi.
+            </p>
           ) : (
             items.map((q) => {
               const isSelected = !!selectedMap[q._id];
@@ -1167,7 +1329,7 @@ function QuestionPickerDialog({ alreadySelected, onClose, onConfirm }) {
                 <label
                   key={q._id}
                   className={`flex items-start gap-3 px-3 py-2.5 cursor-pointer text-sm ${
-                    isSelected ? 'bg-primary-50' : 'hover:bg-slate-50'
+                    isSelected ? "bg-primary-50" : "hover:bg-slate-50"
                   }`}
                 >
                   <input
@@ -1176,9 +1338,12 @@ function QuestionPickerDialog({ alreadySelected, onClose, onConfirm }) {
                     onChange={() => toggle(q)}
                     className="mt-1"
                   />
-                  <Badge variant="muted" className="text-xs">P{q.part}</Badge>
+                  <Badge variant="muted" className="text-xs">
+                    P{q.part}
+                  </Badge>
                   <span className="flex-1 truncate text-slate-700">
-                    {q.content?.text || `(Câu Part ${q.part}, đáp án ${q.correctAnswer})`}
+                    {q.content?.text ||
+                      `(Câu Part ${q.part}, đáp án ${q.correctAnswer})`}
                   </span>
                 </label>
               );
@@ -1198,7 +1363,7 @@ function QuestionPickerDialog({ alreadySelected, onClose, onConfirm }) {
               {getPageRange(pagination.page, pagination.totalPages).map(
                 (p, idx) => (
                   <PaginationItem key={`${p}-${idx}`}>
-                    {p === '...' ? (
+                    {p === "..." ? (
                       <PaginationEllipsis />
                     ) : (
                       <PaginationLink
@@ -1209,7 +1374,7 @@ function QuestionPickerDialog({ alreadySelected, onClose, onConfirm }) {
                       </PaginationLink>
                     )}
                   </PaginationItem>
-                )
+                ),
               )}
               <PaginationItem>
                 <PaginationNext

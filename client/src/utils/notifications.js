@@ -7,9 +7,9 @@ import {
   Trophy,
   Crown,
   Brain,
-} from 'lucide-react';
-import { ROUTES } from '@/constants/routes';
-import { computeCurrentStreak } from '@/utils/statsHelpers';
+} from "lucide-react";
+import { ROUTES } from "@/constants/routes";
+import { computeCurrentStreak } from "@/utils/statsHelpers";
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 const INACTIVE_DAYS_THRESHOLD = 3; // ≥ 3 ngày không làm → nhắc
@@ -17,7 +17,7 @@ const STREAK_CELEBRATE_THRESHOLD = 3; // ≥ 3 ngày liên tiếp → khen
 const NEAR_GOAL_POINTS = 50; // < 50 điểm là gần mục tiêu
 const NEW_TESTS_WINDOW_DAYS = 7; // đề thêm trong 7 ngày qua
 
-const READ_KEY = (userId) => `notif-read:${userId || 'anon'}`;
+const READ_KEY = (userId) => `notif-read:${userId || "anon"}`;
 
 /**
  * Đọc/ghi danh sách ID đã đọc trong localStorage (per-user).
@@ -26,7 +26,7 @@ const READ_KEY = (userId) => `notif-read:${userId || 'anon'}`;
  */
 export function getReadIds(userId) {
   try {
-    return new Set(JSON.parse(localStorage.getItem(READ_KEY(userId)) || '[]'));
+    return new Set(JSON.parse(localStorage.getItem(READ_KEY(userId)) || "[]"));
   } catch {
     return new Set();
   }
@@ -44,10 +44,10 @@ export function persistReadIds(userId, set) {
  * Mô tả thời gian tương đối tiếng Việt — "vừa xong", "2 giờ trước", "3 ngày trước".
  */
 export function timeAgo(date) {
-  if (!date) return '';
+  if (!date) return "";
   const diff = Date.now() - new Date(date).getTime();
   const mins = Math.floor(diff / 60000);
-  if (mins < 1) return 'Vừa xong';
+  if (mins < 1) return "Vừa xong";
   if (mins < 60) return `${mins} phút trước`;
   const hours = Math.floor(mins / 60);
   if (hours < 24) return `${hours} giờ trước`;
@@ -65,15 +65,21 @@ export function timeAgo(date) {
  *   - Khác → "DD/MM/YYYY, HH:mm"
  */
 const WEEKDAYS_VI = [
-  'Chủ nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy',
+  "Chủ nhật",
+  "Thứ Hai",
+  "Thứ Ba",
+  "Thứ Tư",
+  "Thứ Năm",
+  "Thứ Sáu",
+  "Thứ Bảy",
 ];
 
 export function formatDateTimeVi(date) {
-  if (!date) return '';
+  if (!date) return "";
   const d = new Date(date);
   const now = new Date();
-  const hh = String(d.getHours()).padStart(2, '0');
-  const mm = String(d.getMinutes()).padStart(2, '0');
+  const hh = String(d.getHours()).padStart(2, "0");
+  const mm = String(d.getMinutes()).padStart(2, "0");
   const time = `${hh}:${mm}`;
 
   const startOfDay = (x) => {
@@ -85,10 +91,11 @@ export function formatDateTimeVi(date) {
 
   if (diffDays === 0) return `Hôm nay, ${time}`;
   if (diffDays === 1) return `Hôm qua, ${time}`;
-  if (diffDays > 1 && diffDays < 7) return `${WEEKDAYS_VI[d.getDay()]}, ${time}`;
+  if (diffDays > 1 && diffDays < 7)
+    return `${WEEKDAYS_VI[d.getDay()]}, ${time}`;
 
-  const dd = String(d.getDate()).padStart(2, '0');
-  const mo = String(d.getMonth() + 1).padStart(2, '0');
+  const dd = String(d.getDate()).padStart(2, "0");
+  const mo = String(d.getMonth() + 1).padStart(2, "0");
   return `${dd}/${mo}/${d.getFullYear()}, ${time}`;
 }
 
@@ -118,14 +125,14 @@ export function buildNotifications({ results = [], tests = [], user = {} }) {
       );
     })
     .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
-    .slice(0, 5);
+    .slice(0, 10);
 
   recentTests.forEach((t) => {
     notifications.push({
       id: `new-test:${t._id}`,
       icon: Sparkles,
-      iconColor: 'text-primary-600 bg-primary-100',
-      title: 'Có đề thi mới',
+      iconColor: "text-primary-600 bg-primary-100",
+      title: "Có đề thi mới",
       description: `${t.title} đã được thêm vào hệ thống.`,
       time: formatDateTimeVi(t.createdAt),
       to: `/tests/${t._id}`,
@@ -142,9 +149,9 @@ export function buildNotifications({ results = [], tests = [], user = {} }) {
       notifications.push({
         id: `inactive:${daysInactive}`,
         icon: AlertCircle,
-        iconColor: 'text-orange-600 bg-orange-100',
+        iconColor: "text-orange-600 bg-orange-100",
         title: `Đã ${daysInactive} ngày bạn chưa luyện tập`,
-        description: 'Quay lại học vài câu để giữ phong độ nhé.',
+        description: "Quay lại học vài câu để giữ phong độ nhé.",
         time: `Bài gần nhất ${timeAgo(latestResult.submittedAt).toLowerCase()}`,
         to: ROUTES.PRACTICE,
       });
@@ -152,11 +159,11 @@ export function buildNotifications({ results = [], tests = [], user = {} }) {
   } else {
     // Chưa từng làm bài
     notifications.push({
-      id: 'no-results',
+      id: "no-results",
       icon: ClipboardCheck,
-      iconColor: 'text-primary-600 bg-primary-100',
-      title: 'Hãy thử bài luyện tập đầu tiên',
-      description: 'Chọn một Part bất kỳ để bắt đầu hành trình TOEIC của bạn.',
+      iconColor: "text-primary-600 bg-primary-100",
+      title: "Hãy thử bài luyện tập đầu tiên",
+      description: "Chọn một Part bất kỳ để bắt đầu hành trình TOEIC của bạn.",
       to: ROUTES.PRACTICE,
     });
   }
@@ -167,31 +174,31 @@ export function buildNotifications({ results = [], tests = [], user = {} }) {
     notifications.push({
       id: `streak:${streak}`,
       icon: Flame,
-      iconColor: 'text-orange-600 bg-orange-100',
+      iconColor: "text-orange-600 bg-orange-100",
       title: `Chuỗi ${streak} ngày liên tiếp 🔥`,
-      description: 'Bạn đang giữ phong độ rất tốt — đừng phá chuỗi nhé!',
+      description: "Bạn đang giữ phong độ rất tốt — đừng phá chuỗi nhé!",
       to: ROUTES.STATISTICS,
     });
   }
 
   // 4) Gợi ý Full Test khi chưa có
   const hasFullTest = results.some(
-    (r) => r.testType === 'full' && r.scoreTotal > 0,
+    (r) => r.testType === "full" && r.scoreTotal > 0,
   );
   if (!hasFullTest && results.length > 0) {
     notifications.push({
-      id: 'no-full-test',
+      id: "no-full-test",
       icon: ClipboardCheck,
-      iconColor: 'text-secondary-600 bg-secondary-100',
-      title: 'Thử Full Test để biết điểm hiện tại',
-      description: 'Mô phỏng 200 câu, 120 phút — chuẩn như đề thi thật.',
+      iconColor: "text-secondary-600 bg-secondary-100",
+      title: "Thử Full Test để biết điểm hiện tại",
+      description: "Mô phỏng 200 câu, 120 phút — chuẩn như đề thi thật.",
       to: ROUTES.FULL_TEST,
     });
   }
 
   // 5a) Đã đạt mục tiêu (mutex với 5b)
   const fullResult = results.find(
-    (r) => r.testType === 'full' && r.scoreTotal > 0,
+    (r) => r.testType === "full" && r.scoreTotal > 0,
   );
   const latestFullScore = fullResult?.scoreTotal;
   const target = user?.targetScore || 0;
@@ -199,7 +206,7 @@ export function buildNotifications({ results = [], tests = [], user = {} }) {
     notifications.push({
       id: `goal-reached:${latestFullScore}:${target}`,
       icon: Trophy,
-      iconColor: 'text-amber-600 bg-amber-100',
+      iconColor: "text-amber-600 bg-amber-100",
       title: `Chúc mừng! Bạn đã đạt mục tiêu ${target}`,
       description: `Điểm gần nhất ${latestFullScore} — hãy đặt mục tiêu cao hơn để tiếp tục thử thách.`,
       to: ROUTES.PROFILE,
@@ -214,7 +221,7 @@ export function buildNotifications({ results = [], tests = [], user = {} }) {
     notifications.push({
       id: `near-goal:${latestFullScore}:${target}`,
       icon: Target,
-      iconColor: 'text-secondary-600 bg-secondary-100',
+      iconColor: "text-secondary-600 bg-secondary-100",
       title: `Chỉ còn ${target - latestFullScore} điểm nữa là đạt mục tiêu!`,
       description: `Điểm gần nhất: ${latestFullScore} / mục tiêu ${target}.`,
       to: ROUTES.STATISTICS,
@@ -223,7 +230,7 @@ export function buildNotifications({ results = [], tests = [], user = {} }) {
 
   // 6) Kỷ lục cá nhân mới — Full Test mới nhất cao hơn mọi lần trước
   const fullTests = results.filter(
-    (r) => r.testType === 'full' && r.scoreTotal > 0,
+    (r) => r.testType === "full" && r.scoreTotal > 0,
   );
   if (fullTests.length >= 2) {
     const latest = fullTests[0];
@@ -234,7 +241,7 @@ export function buildNotifications({ results = [], tests = [], user = {} }) {
       notifications.push({
         id: `personal-best:${latest._id}`,
         icon: Crown,
-        iconColor: 'text-amber-600 bg-amber-100',
+        iconColor: "text-amber-600 bg-amber-100",
         title: `Kỷ lục cá nhân mới: ${latest.scoreTotal} điểm 👑`,
         description: `Vượt qua kỷ lục cũ ${previousMax} điểm. Tuyệt vời!`,
         time: timeAgo(latest.submittedAt),
@@ -247,7 +254,7 @@ export function buildNotifications({ results = [], tests = [], user = {} }) {
   //    BE auto-trigger AI analysis sau khi submit Full Test (memory).
   const recentFullTest = results.find(
     (r) =>
-      r.testType === 'full' &&
+      r.testType === "full" &&
       r.scoreTotal > 0 &&
       now - new Date(r.submittedAt).getTime() < 7 * DAY_MS,
   );
@@ -255,10 +262,10 @@ export function buildNotifications({ results = [], tests = [], user = {} }) {
     notifications.push({
       id: `ai-ready:${recentFullTest._id}`,
       icon: Brain,
-      iconColor: 'text-violet-600 bg-violet-100',
-      title: 'Phân tích AI mới đã sẵn sàng',
+      iconColor: "text-violet-600 bg-violet-100",
+      title: "Phân tích AI mới đã sẵn sàng",
       description: `Xem điểm mạnh/yếu cho "${
-        recentFullTest.testId?.title || 'bài Full Test gần nhất'
+        recentFullTest.testId?.title || "bài Full Test gần nhất"
       }".`,
       time: timeAgo(recentFullTest.submittedAt),
       to: `/results/${recentFullTest._id}`,
