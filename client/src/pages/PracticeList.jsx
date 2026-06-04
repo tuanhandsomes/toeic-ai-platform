@@ -1,10 +1,17 @@
-import { useEffect, useState, useMemo } from 'react';
-import { Link } from 'react-router-dom';
-import { Headphones, BookOpen, FileQuestion, Loader2 } from 'lucide-react';
-import AppLayout from '@/components/layout/AppLayout';
-import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { getDisplayDuration } from '@/constants/toeic';
+import { useEffect, useState, useMemo } from "react";
+import { Link } from "react-router-dom";
+import {
+  Headphones,
+  BookOpen,
+  FileQuestion,
+  Loader2,
+  Search,
+  X,
+} from "lucide-react";
+import AppLayout from "@/components/layout/AppLayout";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { getDisplayDuration } from "@/constants/toeic";
 import {
   Pagination,
   PaginationContent,
@@ -14,49 +21,50 @@ import {
   PaginationNext,
   PaginationEllipsis,
   getPageRange,
-} from '@/components/ui/pagination';
-import { EmptyState } from '@/components/common/EmptyState';
-import { testService } from '@/services/testService';
-import { resultService } from '@/services/resultService';
-import { buildDoneTestIdSet, isNewTest } from '@/utils/newTestBadge';
-import { cn } from '@/lib/utils';
+} from "@/components/ui/pagination";
+import { EmptyState } from "@/components/common/EmptyState";
+import { testService } from "@/services/testService";
+import { resultService } from "@/services/resultService";
+import { buildDoneTestIdSet, isNewTest } from "@/utils/newTestBadge";
+import { cn } from "@/lib/utils";
 
 const PAGE_SIZE = 9;
 
 const PART_INFO = {
-  1: { label: 'Part 1', desc: 'Mô tả tranh' },
-  2: { label: 'Part 2', desc: 'Hỏi đáp' },
-  3: { label: 'Part 3', desc: 'Đoạn hội thoại' },
-  4: { label: 'Part 4', desc: 'Bài nói ngắn' },
-  5: { label: 'Part 5', desc: 'Hoàn thành câu' },
-  6: { label: 'Part 6', desc: 'Hoàn thành đoạn' },
-  7: { label: 'Part 7', desc: 'Đọc hiểu' },
+  1: { label: "Part 1", desc: "Mô tả tranh" },
+  2: { label: "Part 2", desc: "Hỏi đáp" },
+  3: { label: "Part 3", desc: "Đoạn hội thoại" },
+  4: { label: "Part 4", desc: "Bài nói ngắn" },
+  5: { label: "Part 5", desc: "Hoàn thành câu" },
+  6: { label: "Part 6", desc: "Hoàn thành đoạn" },
+  7: { label: "Part 7", desc: "Đọc hiểu" },
 };
 
 const FILTERS = [
-  { value: 'all', label: 'Tất cả' },
-  { value: '1', label: 'Part 1' },
-  { value: '2', label: 'Part 2' },
-  { value: '3', label: 'Part 3' },
-  { value: '4', label: 'Part 4' },
-  { value: '5', label: 'Part 5' },
-  { value: '6', label: 'Part 6' },
-  { value: '7', label: 'Part 7' },
+  { value: "all", label: "Tất cả" },
+  { value: "1", label: "Part 1" },
+  { value: "2", label: "Part 2" },
+  { value: "3", label: "Part 3" },
+  { value: "4", label: "Part 4" },
+  { value: "5", label: "Part 5" },
+  { value: "6", label: "Part 6" },
+  { value: "7", label: "Part 7" },
 ];
 
 export default function PracticeList() {
   const [tests, setTests] = useState([]);
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-  const [filter, setFilter] = useState('all');
+  const [error, setError] = useState("");
+  const [filter, setFilter] = useState("all");
+  const [keyword, setKeyword] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
     let cancelled = false;
     setLoading(true);
     Promise.all([
-      testService.list({ type: 'part', limit: 50 }),
+      testService.list({ type: "part", limit: 50 }),
       resultService.list({ limit: 100 }).catch(() => ({ data: { items: [] } })),
     ])
       .then(([testsRes, resultsRes]) => {
@@ -65,7 +73,8 @@ export default function PracticeList() {
         setResults(resultsRes.data.items || []);
       })
       .catch((err) => {
-        if (!cancelled) setError(err?.message || 'Không tải được danh sách bài luyện');
+        if (!cancelled)
+          setError(err?.message || "Không tải được danh sách bài luyện");
       })
       .finally(() => {
         if (!cancelled) setLoading(false);
@@ -78,13 +87,17 @@ export default function PracticeList() {
   const doneIds = useMemo(() => buildDoneTestIdSet(results), [results]);
 
   const filtered = useMemo(() => {
-    if (filter === 'all') return tests;
-    return tests.filter((t) => String(t.part) === filter);
-  }, [tests, filter]);
+    const kw = keyword.trim().toLowerCase();
+    return tests.filter((t) => {
+      if (filter !== "all" && String(t.part) !== filter) return false;
+      if (kw && !t.title.toLowerCase().includes(kw)) return false;
+      return true;
+    });
+  }, [tests, filter, keyword]);
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [filter]);
+  }, [filter, keyword]);
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const safePage = Math.min(currentPage, totalPages);
@@ -101,34 +114,56 @@ export default function PracticeList() {
 
   const goToPage = (p) => {
     setCurrentPage(p);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   return (
     <AppLayout>
       <div className="px-6 lg:px-8 py-6">
         <div className="mb-6">
-          <h1 className="text-3xl font-heading font-bold mb-2">Luyện tập theo Part</h1>
-          <p className="text-slate-600">
-            Chọn phần thi bạn muốn luyện tập. Mỗi Part có nhiều bộ đề từ dễ đến khó.
-          </p>
+          <h1 className="text-3xl font-heading font-bold mb-2">
+            Luyện tập theo Part
+          </h1>
+          <p className="text-slate-600">Chọn phần thi bạn muốn luyện tập.</p>
         </div>
 
-        <div className="flex gap-2 mb-8 overflow-x-auto pb-2">
-          {FILTERS.map((f) => (
-            <button
-              key={f.value}
-              onClick={() => setFilter(f.value)}
-              className={cn(
-                'px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors',
-                filter === f.value
-                  ? 'bg-primary-500 text-white'
-                  : 'bg-white text-slate-700 hover:bg-slate-100 border border-slate-200',
-              )}
-            >
-              {f.label}
-            </button>
-          ))}
+        <div className="flex flex-col lg:flex-row lg:items-center gap-3 mb-8">
+          <div className="relative lg:max-w-xs lg:flex-shrink-0 w-full lg:w-auto">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+            <input
+              type="text"
+              value={keyword}
+              onChange={(e) => setKeyword(e.target.value)}
+              placeholder="Tìm theo tên đề..."
+              className="w-full pl-9 pr-9 py-2 rounded-full border border-slate-200 text-sm bg-white focus:outline-none focus:border-primary-400 focus:ring-2 focus:ring-primary-100"
+            />
+            {keyword && (
+              <button
+                type="button"
+                onClick={() => setKeyword("")}
+                aria-label="Xoá tìm kiếm"
+                className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded-full text-slate-400 hover:text-slate-700 hover:bg-slate-100"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            )}
+          </div>
+          <div className="flex gap-2 overflow-x-auto pb-2 lg:pb-0 lg:flex-1">
+            {FILTERS.map((f) => (
+              <button
+                key={f.value}
+                onClick={() => setFilter(f.value)}
+                className={cn(
+                  "px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors",
+                  filter === f.value
+                    ? "bg-primary-500 text-white"
+                    : "bg-white text-slate-700 hover:bg-slate-100 border border-slate-200",
+                )}
+              >
+                {f.label}
+              </button>
+            ))}
+          </div>
         </div>
 
         {loading && (
@@ -156,7 +191,9 @@ export default function PracticeList() {
           <section className="mb-10">
             <div className="flex items-center gap-2 mb-4">
               <Headphones className="w-5 h-5 text-secondary-600" />
-              <h2 className="text-xl font-heading font-bold">LISTENING (Part 1-4)</h2>
+              <h2 className="text-xl font-heading font-bold">
+                LISTENING (Part 1-4)
+              </h2>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {listening.map((t) => (
@@ -170,7 +207,9 @@ export default function PracticeList() {
           <section>
             <div className="flex items-center gap-2 mb-4">
               <BookOpen className="w-5 h-5 text-tertiary-600" />
-              <h2 className="text-xl font-heading font-bold">READING (Part 5-7)</h2>
+              <h2 className="text-xl font-heading font-bold">
+                READING (Part 5-7)
+              </h2>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {reading.map((t) => (
@@ -191,7 +230,7 @@ export default function PracticeList() {
               </PaginationItem>
               {getPageRange(safePage, totalPages).map((p, idx) => (
                 <PaginationItem key={`${p}-${idx}`}>
-                  {p === '...' ? (
+                  {p === "..." ? (
                     <PaginationEllipsis />
                   ) : (
                     <PaginationLink
@@ -240,26 +279,26 @@ function TestCard({ test, isNew = false }) {
 
           <div className="grid grid-cols-2 gap-x-6 gap-y-1.5 text-sm text-slate-600 mb-4">
             <div>
-              Thời gian:{' '}
+              Thời gian:{" "}
               <strong className="text-slate-900">
                 {getDisplayDuration(test)} phút
               </strong>
             </div>
             <div>
-              Câu hỏi:{' '}
+              Câu hỏi:{" "}
               <strong className="text-slate-900">
                 {test.totalQuestions} câu
               </strong>
             </div>
             <div>
-              Phần thi:{' '}
+              Phần thi:{" "}
               <strong className="text-slate-900">
                 {partInfo.label || `Part ${test.part}`}
               </strong>
             </div>
             <div>
-              Loại:{' '}
-              <strong className="text-slate-900">{partInfo.desc || '—'}</strong>
+              Loại:{" "}
+              <strong className="text-slate-900">{partInfo.desc || "—"}</strong>
             </div>
           </div>
 

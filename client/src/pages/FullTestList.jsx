@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { Loader2, ClipboardCheck } from "lucide-react";
+import { Loader2, ClipboardCheck, Search, X } from "lucide-react";
 import AppLayout from "@/components/layout/AppLayout";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -14,6 +14,7 @@ export default function FullTestList() {
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [keyword, setKeyword] = useState("");
 
   useEffect(() => {
     let cancelled = false;
@@ -40,6 +41,12 @@ export default function FullTestList() {
 
   const doneIds = useMemo(() => buildDoneTestIdSet(results), [results]);
 
+  const filtered = useMemo(() => {
+    const kw = keyword.trim().toLowerCase();
+    if (!kw) return tests;
+    return tests.filter((t) => t.title.toLowerCase().includes(kw));
+  }, [tests, keyword]);
+
   return (
     <AppLayout>
       <div className="px-6 lg:px-8 py-6">
@@ -52,6 +59,29 @@ export default function FullTestList() {
             120 phút. Hãy chuẩn bị tai nghe và không gian yên tĩnh để bắt đầu
             thi.
           </p>
+        </div>
+
+        <div className="mb-6 max-w-md">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+            <input
+              type="text"
+              value={keyword}
+              onChange={(e) => setKeyword(e.target.value)}
+              placeholder="Tìm theo tên đề thi thử..."
+              className="w-full pl-9 pr-9 py-2 rounded-full border border-slate-200 text-sm bg-white focus:outline-none focus:border-primary-400 focus:ring-2 focus:ring-primary-100"
+            />
+            {keyword && (
+              <button
+                type="button"
+                onClick={() => setKeyword("")}
+                aria-label="Xoá tìm kiếm"
+                className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded-full text-slate-400 hover:text-slate-700 hover:bg-slate-100"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            )}
+          </div>
         </div>
 
         {loading && (
@@ -75,8 +105,16 @@ export default function FullTestList() {
           />
         )}
 
+        {!loading && !error && tests.length > 0 && filtered.length === 0 && (
+          <EmptyState
+            icon={ClipboardCheck}
+            title="Không tìm thấy đề nào"
+            description="Thử từ khoá khác hoặc xoá tìm kiếm."
+          />
+        )}
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {tests.map((t) => (
+          {filtered.map((t) => (
             <Link key={t._id} to={`/tests/${t._id}`} className="block group">
               <Card className="hover:shadow-elevated transition-shadow h-full relative overflow-hidden">
                 {/* Badges góc trên phải — New (nếu là đề mới chưa làm) + Free */}
