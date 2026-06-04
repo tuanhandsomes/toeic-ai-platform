@@ -153,15 +153,20 @@ export const uploadService = {
       ...imageResources.map((r) => mapResource(r, 'image')),
     ];
 
-    // Tính usage: 1 query Question, lọc media URL trùng với từng URL
-    // (matching theo secure_url chính xác — Question.content.audioUrl/imageUrl).
+    // Tính usage: fetch tất cả Question có audioUrl/imageUrl non-empty rồi
+    // đếm theo URL trong code.
+    // KHÔNG dùng $in cho imageUrl vì Part 7 multi-passage lưu nhiều URL trong
+    // 1 chuỗi nối bởi `;` (vd `cloudUrlA;cloudUrlB`) — $in cần exact equal.
+    // KHÔNG dùng $regex với hàng trăm URL ghép `|` vì MongoDB từ chối query
+    // body quá lớn ("bufio: buffer full").
+    // Approach: load nhỏ gọn (chỉ 2 field URL) rồi filter trong JS — DB size
+    // ~vài nghìn Question là chấp nhận được.
     if (items.length > 0) {
-      const allUrls = items.map((it) => it.url);
-      // Tìm question có audioUrl hoặc imageUrl thuộc list này.
+      const urlSet = new Set(items.map((it) => it.url));
       const matches = await Question.find({
         $or: [
-          { 'content.audioUrl': { $in: allUrls } },
-          { 'content.imageUrl': { $in: allUrls } },
+          { 'content.audioUrl': { $regex: /^https?:\/\// } },
+          { 'content.imageUrl': { $regex: /^https?:\/\// } },
         ],
       })
         .select('content.audioUrl content.imageUrl')
@@ -170,16 +175,19 @@ export const uploadService = {
       // Build count map theo URL.
       const counts = new Map();
       matches.forEach((q) => {
-        if (q.content?.audioUrl) {
-          counts.set(q.content.audioUrl, (counts.get(q.content.audioUrl) || 0) + 1);
+        const audio = q.content?.audioUrl;
+        if (audio && urlSet.has(audio)) {
+          counts.set(audio, (counts.get(audio) || 0) + 1);
         }
         // imageUrl có thể là chuỗi nhiều URL phân cách `;` (Part 7 multi-passage)
-        // → tách ra để đếm đúng.
+        // → tách ra để đếm đúng từng URL.
         const imgRaw = q.content?.imageUrl;
         if (imgRaw) {
           imgRaw.split(';').forEach((u) => {
             const trimmed = u.trim();
-            if (trimmed) counts.set(trimmed, (counts.get(trimmed) || 0) + 1);
+            if (trimmed && urlSet.has(trimmed)) {
+              counts.set(trimmed, (counts.get(trimmed) || 0) + 1);
+            }
           });
         }
       });
