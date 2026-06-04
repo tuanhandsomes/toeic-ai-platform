@@ -1,15 +1,26 @@
-import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import {
-  Users, ClipboardList, FileQuestion, Activity, TrendingUp, Loader2, AlertCircle,
-} from 'lucide-react';
-import AdminLayout from '@/components/layout/AdminLayout';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { KpiCard } from '@/components/common/KpiCard';
+  Users,
+  ClipboardList,
+  FileQuestion,
+  Activity,
+  TrendingUp,
+  Loader2,
+  AlertCircle,
+} from "lucide-react";
+import AdminLayout from "@/components/layout/AdminLayout";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { KpiCard } from "@/components/common/KpiCard";
 import {
-  Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
-} from '@/components/ui/table';
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import {
   Pagination,
   PaginationContent,
@@ -19,13 +30,19 @@ import {
   PaginationNext,
   PaginationEllipsis,
   getPageRange,
-} from '@/components/ui/pagination';
-import { adminService } from '@/services/adminService';
-import { ROUTES } from '@/constants/routes';
-import { formatDuration } from '@/utils/formatTime';
+} from "@/components/ui/pagination";
+import { adminService } from "@/services/adminService";
+import { ROUTES } from "@/constants/routes";
+import { formatDuration } from "@/utils/formatTime";
 
 const PART_LABELS = {
-  1: 'Part 1', 2: 'Part 2', 3: 'Part 3', 4: 'Part 4', 5: 'Part 5', 6: 'Part 6', 7: 'Part 7',
+  1: "Part 1",
+  2: "Part 2",
+  3: "Part 3",
+  4: "Part 4",
+  5: "Part 5",
+  6: "Part 6",
+  7: "Part 7",
 };
 
 const RECENT_PAGE_SIZE = 5;
@@ -33,7 +50,7 @@ const RECENT_PAGE_SIZE = 5;
 export default function AdminDashboard() {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [recentPage, setRecentPage] = useState(1);
 
   useEffect(() => {
@@ -45,7 +62,7 @@ export default function AdminDashboard() {
         if (!cancelled) setStats(res.data);
       })
       .catch((err) => {
-        if (!cancelled) setError(err?.message || 'Không tải được thống kê');
+        if (!cancelled) setError(err?.message || "Không tải được thống kê");
       })
       .finally(() => {
         if (!cancelled) setLoading(false);
@@ -73,8 +90,12 @@ export default function AdminDashboard() {
             <CardContent className="p-6 flex items-start gap-3">
               <AlertCircle className="w-5 h-5 text-tertiary-500 flex-shrink-0 mt-0.5" />
               <div>
-                <h2 className="font-heading font-bold mb-1">Lỗi tải thống kê</h2>
-                <p className="text-slate-600 text-sm">{error || 'Không có dữ liệu'}</p>
+                <h2 className="font-heading font-bold mb-1">
+                  Lỗi tải thống kê
+                </h2>
+                <p className="text-slate-600 text-sm">
+                  {error || "Không có dữ liệu"}
+                </p>
               </div>
             </CardContent>
           </Card>
@@ -85,47 +106,54 @@ export default function AdminDashboard() {
 
   const kpis = [
     {
-      label: 'Người dùng',
+      label: "Người dùng",
       value: stats.users.total,
       sub: `${stats.users.active} đang hoạt động • ${stats.users.admins} quản trị`,
       icon: Users,
-      color: 'primary',
+      color: "primary",
       to: ROUTES.ADMIN_USERS,
     },
     {
-      label: 'Đề thi',
+      label: "Đề thi",
       value: stats.tests.total,
       sub: `${stats.tests.published} đã xuất bản`,
       icon: ClipboardList,
-      color: 'secondary',
+      color: "secondary",
       to: ROUTES.ADMIN_TESTS,
     },
     {
-      label: 'Câu hỏi',
+      label: "Câu hỏi",
       value: stats.questions.total,
-      sub: 'Trong ngân hàng',
+      sub: "Trong ngân hàng",
       icon: FileQuestion,
-      color: 'violet',
+      color: "violet",
       to: ROUTES.ADMIN_QUESTIONS,
     },
     {
-      label: 'Lượt làm bài',
+      label: "Lượt làm bài",
       value: stats.activity.totalResults,
       sub: `${stats.activity.totalAIAnalyses} lần phân tích AI`,
       icon: Activity,
-      color: 'tertiary',
+      color: "tertiary",
       to: null,
     },
   ];
 
-  const maxPartCount = Math.max(...stats.questions.byPart.map((p) => p.count), 1);
+  const maxPartCount = Math.max(
+    ...stats.questions.byPart.map((p) => p.count),
+    1,
+  );
 
   return (
     <AdminLayout>
       <div className="px-6 lg:px-8 py-6">
         <div className="mb-8">
-          <h1 className="text-2xl font-heading font-bold text-slate-900">Tổng quan hệ thống</h1>
-          <p className="text-sm text-slate-600 mt-1">Thống kê thời gian thực toàn bộ nền tảng.</p>
+          <h1 className="text-2xl font-heading font-bold text-slate-900">
+            Tổng quan hệ thống
+          </h1>
+          <p className="text-sm text-slate-600 mt-1">
+            Thống kê thời gian thực toàn bộ nền tảng.
+          </p>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
@@ -137,7 +165,7 @@ export default function AdminDashboard() {
                 label={kpi.label}
                 value={kpi.value}
                 sub={kpi.sub}
-                className={kpi.to ? 'hover:shadow-md transition-shadow' : ''}
+                className={kpi.to ? "hover:shadow-md transition-shadow" : ""}
               />
             );
             return kpi.to ? (
@@ -160,19 +188,27 @@ export default function AdminDashboard() {
             </CardHeader>
             <CardContent>
               {stats.questions.byPart.length === 0 ? (
-                <p className="text-sm text-slate-500 italic">Chưa có câu hỏi trong ngân hàng.</p>
+                <p className="text-sm text-slate-500 italic">
+                  Chưa có câu hỏi trong ngân hàng.
+                </p>
               ) : (
                 <div className="space-y-3">
                   {stats.questions.byPart.map((p) => (
                     <div key={p.part}>
                       <div className="flex justify-between text-sm mb-1">
-                        <span className="text-slate-700">{PART_LABELS[p.part] || `Part ${p.part}`}</span>
-                        <span className="font-mono font-semibold">{p.count}</span>
+                        <span className="text-slate-700">
+                          {PART_LABELS[p.part] || `Part ${p.part}`}
+                        </span>
+                        <span className="font-mono font-semibold">
+                          {p.count}
+                        </span>
                       </div>
                       <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
                         <div
                           className="h-full bg-primary-500 rounded-full"
-                          style={{ width: `${(p.count / maxPartCount) * 100}%` }}
+                          style={{
+                            width: `${(p.count / maxPartCount) * 100}%`,
+                          }}
                         />
                       </div>
                     </div>
@@ -188,85 +224,110 @@ export default function AdminDashboard() {
             </CardHeader>
             <CardContent>
               {stats.activity.recentResults.length === 0 ? (
-                <p className="text-sm text-slate-500 italic">Chưa có bài làm nào.</p>
-              ) : (() => {
-                const total = stats.activity.recentResults.length;
-                const totalPages = Math.max(1, Math.ceil(total / RECENT_PAGE_SIZE));
-                const safePage = Math.min(recentPage, totalPages);
-                const pageItems = stats.activity.recentResults.slice(
-                  (safePage - 1) * RECENT_PAGE_SIZE,
-                  safePage * RECENT_PAGE_SIZE,
-                );
-                return (
-                  <>
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>Người dùng</TableHead>
-                          <TableHead>Đề</TableHead>
-                          <TableHead className="text-right whitespace-nowrap">Điểm/Độ chính xác</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {pageItems.map((r) => (
-                          <TableRow key={r._id}>
-                            <TableCell>
-                              <p className="text-sm font-medium">{r.userId?.fullName || '(deleted)'}</p>
-                              <p className="text-xs text-slate-500">{r.userId?.email}</p>
-                            </TableCell>
-                            <TableCell>
-                              <p className="text-sm">{r.testId?.title || '(deleted)'}</p>
-                              <Badge variant="muted" className="mt-0.5">
-                                {r.testType === 'full' ? 'Full Test' : 'Practice'}
-                              </Badge>
-                            </TableCell>
-                            <TableCell className="text-right">
-                              {r.testType === 'full' ? (
-                                <span className="font-mono font-bold">{r.scoreTotal}</span>
-                              ) : (
-                                <span className="font-mono font-bold">{r.accuracy}%</span>
-                              )}
-                              <p className="text-xs text-slate-500">{formatDuration(r.durationSec)}</p>
-                            </TableCell>
+                <p className="text-sm text-slate-500 italic">
+                  Chưa có bài làm nào.
+                </p>
+              ) : (
+                (() => {
+                  const total = stats.activity.recentResults.length;
+                  const totalPages = Math.max(
+                    1,
+                    Math.ceil(total / RECENT_PAGE_SIZE),
+                  );
+                  const safePage = Math.min(recentPage, totalPages);
+                  const pageItems = stats.activity.recentResults.slice(
+                    (safePage - 1) * RECENT_PAGE_SIZE,
+                    safePage * RECENT_PAGE_SIZE,
+                  );
+                  return (
+                    <>
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead>Người dùng</TableHead>
+                            <TableHead>Đề</TableHead>
+                            <TableHead className="text-right whitespace-nowrap">
+                              Điểm/Độ chính xác
+                            </TableHead>
                           </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                    {totalPages > 1 && (
-                      <Pagination className="mt-4">
-                        <PaginationContent>
-                          <PaginationItem>
-                            <PaginationPrevious
-                              disabled={safePage <= 1}
-                              onClick={() => setRecentPage(safePage - 1)}
-                            />
-                          </PaginationItem>
-                          {getPageRange(safePage, totalPages).map((p, idx) => (
-                            <PaginationItem key={`${p}-${idx}`}>
-                              {p === '...' ? (
-                                <PaginationEllipsis />
-                              ) : (
-                                <PaginationLink
-                                  isActive={p === safePage}
-                                  onClick={() => setRecentPage(p)}
-                                >
-                                  {p}
-                                </PaginationLink>
-                              )}
-                            </PaginationItem>
+                        </TableHeader>
+                        <TableBody>
+                          {pageItems.map((r) => (
+                            <TableRow key={r._id}>
+                              <TableCell>
+                                <p className="text-sm font-medium">
+                                  {r.userId?.fullName || "(deleted)"}
+                                </p>
+                                <p className="text-xs text-slate-500">
+                                  {r.userId?.email}
+                                </p>
+                              </TableCell>
+                              <TableCell>
+                                <p className="text-sm">
+                                  {r.testId?.title || "(deleted)"}
+                                </p>
+                                <Badge variant="muted" className="mt-0.5">
+                                  {r.testType === "full"
+                                    ? "Full Test"
+                                    : "Practice"}
+                                </Badge>
+                              </TableCell>
+                              <TableCell className="text-right">
+                                {r.testType === "full" ? (
+                                  <span className="font-mono font-bold">
+                                    {r.scoreTotal}
+                                  </span>
+                                ) : (
+                                  <span className="font-mono font-bold">
+                                    {r.accuracy}%
+                                  </span>
+                                )}
+                                <p className="text-xs text-slate-500">
+                                  {formatDuration(r.durationSec)}
+                                </p>
+                              </TableCell>
+                            </TableRow>
                           ))}
-                          <PaginationItem>
-                            <PaginationNext
-                              disabled={safePage >= totalPages}
-                              onClick={() => setRecentPage(safePage + 1)}
-                            />
-                          </PaginationItem>
-                        </PaginationContent>
-                      </Pagination>
-                    )}
-                  </>
-                );
-              })()}
+                        </TableBody>
+                      </Table>
+                      {totalPages > 1 && (
+                        <Pagination className="mt-4">
+                          <PaginationContent>
+                            <PaginationItem>
+                              <PaginationPrevious
+                                disabled={safePage <= 1}
+                                onClick={() => setRecentPage(safePage - 1)}
+                              />
+                            </PaginationItem>
+                            {getPageRange(safePage, totalPages).map(
+                              (p, idx) => (
+                                <PaginationItem key={`${p}-${idx}`}>
+                                  {p === "..." ? (
+                                    <PaginationEllipsis />
+                                  ) : (
+                                    <PaginationLink
+                                      isActive={p === safePage}
+                                      onClick={() => setRecentPage(p)}
+                                    >
+                                      {p}
+                                    </PaginationLink>
+                                  )}
+                                </PaginationItem>
+                              ),
+                            )}
+                            <PaginationItem>
+                              <PaginationNext
+                                disabled={safePage >= totalPages}
+                                onClick={() => setRecentPage(safePage + 1)}
+                              />
+                            </PaginationItem>
+                          </PaginationContent>
+                        </Pagination>
+                      )}
+                    </>
+                  );
+                })()
+              )}
             </CardContent>
           </Card>
         </div>

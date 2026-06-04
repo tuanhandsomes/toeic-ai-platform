@@ -2,17 +2,15 @@
  * One-time migration: update mọi Practice test (type='part') trong DB
  * → durationMinutes match với calibration 120 phút Full Test.
  *
- * Trước migration: Part 1=5, 2=9, 3=17, 4=12, 5=12, 6=8, 7=25 (tổng 88 phút)
- * Sau migration:   Part 1=4, 2=15, 3=24, 4=18, 5=18, 6=10, 7=33 (tổng 122 phút)
  *
  * Run: `node server/scripts/migratePracticeDuration.js`
  *
  * Idempotent — chạy nhiều lần OK, chỉ update khi value khác.
  */
-import 'dotenv/config';
-import { connectDB } from '../src/config/db.js';
-import { Test } from '../src/models/Test.js';
-import mongoose from 'mongoose';
+import "dotenv/config";
+import { connectDB } from "../src/config/db.js";
+import { Test } from "../src/models/Test.js";
+import mongoose from "mongoose";
 
 const NEW_DURATION = {
   1: 4,
@@ -26,10 +24,10 @@ const NEW_DURATION = {
 
 async function run() {
   await connectDB();
-  console.log('\n🔄 Migrating Practice test durations...\n');
+  console.log("\n🔄 Migrating Practice test durations...\n");
 
-  const practiceTests = await Test.find({ type: 'part' }).select(
-    '_id title part durationMinutes',
+  const practiceTests = await Test.find({ type: "part" }).select(
+    "_id title part durationMinutes",
   );
 
   let updated = 0;
@@ -47,10 +45,7 @@ async function run() {
       skipped++;
       continue;
     }
-    await Test.updateOne(
-      { _id: t._id },
-      { $set: { durationMinutes: target } },
-    );
+    await Test.updateOne({ _id: t._id }, { $set: { durationMinutes: target } });
     console.log(
       `  ✅  Updated ${t.title}: ${t.durationMinutes} → ${target} phút`,
     );
@@ -62,6 +57,6 @@ async function run() {
 }
 
 run().catch((err) => {
-  console.error('❌ Migration failed:', err);
+  console.error("❌ Migration failed:", err);
   process.exit(1);
 });

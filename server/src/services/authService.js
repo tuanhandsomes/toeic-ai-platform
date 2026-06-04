@@ -1,19 +1,23 @@
-import crypto from 'node:crypto';
-import jwt from 'jsonwebtoken';
-import { env } from '../config/env.js';
-import { User } from '../models/User.js';
-import { RefreshToken } from '../models/RefreshToken.js';
-import { PasswordResetToken } from '../models/PasswordResetToken.js';
-import { ApiError } from '../utils/ApiError.js';
-import { logger } from '../utils/logger.js';
-import { emailService } from './emailService.js';
+import crypto from "node:crypto";
+import jwt from "jsonwebtoken";
+import { env } from "../config/env.js";
+import { User } from "../models/User.js";
+import { RefreshToken } from "../models/RefreshToken.js";
+import { PasswordResetToken } from "../models/PasswordResetToken.js";
+import { ApiError } from "../utils/ApiError.js";
+import { logger } from "../utils/logger.js";
+import { emailService } from "./emailService.js";
 
-const PASSWORD_RESET_TTL_MS = 30 * 60 * 1000; // 30 min — spec §8 best practice
+const PASSWORD_RESET_TTL_MS = 30 * 60 * 1000; // 30 min
 
 const signAccessToken = (user) =>
-  jwt.sign({ sub: user._id.toString(), role: user.role }, env.JWT_ACCESS_SECRET, {
-    expiresIn: env.JWT_ACCESS_EXPIRES,
-  });
+  jwt.sign(
+    { sub: user._id.toString(), role: user.role },
+    env.JWT_ACCESS_SECRET,
+    {
+      expiresIn: env.JWT_ACCESS_EXPIRES,
+    },
+  );
 
 const signRefreshToken = (user, remember = false) =>
   jwt.sign({ sub: user._id.toString() }, env.JWT_REFRESH_SECRET, {
@@ -22,7 +26,8 @@ const signRefreshToken = (user, remember = false) =>
       : env.JWT_REFRESH_EXPIRES, //      7d mặc định
   });
 
-const hashToken = (token) => crypto.createHash('sha256').update(token).digest('hex');
+const hashToken = (token) =>
+  crypto.createHash("sha256").update(token).digest("hex");
 
 /**
  * Persist the SHA-256 hash of a fresh refresh JWT to the RefreshToken collection
@@ -34,7 +39,7 @@ const hashToken = (token) => crypto.createHash('sha256').update(token).digest('h
 async function persistRefreshToken(userId, refreshJwt) {
   const decoded = jwt.decode(refreshJwt);
   if (!decoded?.exp) {
-    throw new Error('Refresh JWT missing exp claim');
+    throw new Error("Refresh JWT missing exp claim");
   }
   await RefreshToken.create({
     userId,
@@ -46,10 +51,15 @@ async function persistRefreshToken(userId, refreshJwt) {
 export const authService = {
   async register({ fullName, email, password, targetScore }) {
     const existing = await User.findOne({ email });
-    if (existing) throw ApiError.conflict('Email này đã được đăng ký');
+    if (existing) throw ApiError.conflict("Email này đã được đăng ký");
 
     const passwordHash = await User.hashPassword(password);
-    const user = await User.create({ fullName, email, passwordHash, targetScore });
+    const user = await User.create({
+      fullName,
+      email,
+      passwordHash,
+      targetScore,
+    });
 
     const accessToken = signAccessToken(user);
     const refreshToken = signRefreshToken(user);
@@ -59,13 +69,13 @@ export const authService = {
   },
 
   async login({ email, password, remember = false }) {
-    const user = await User.findOne({ email }).select('+passwordHash');
-    if (!user) throw ApiError.unauthorized('Email hoặc mật khẩu không đúng');
+    const user = await User.findOne({ email }).select("+passwordHash");
+    if (!user) throw ApiError.unauthorized("Email hoặc mật khẩu không đúng");
 
     const ok = await user.comparePassword(password);
-    if (!ok) throw ApiError.unauthorized('Email hoặc mật khẩu không đúng');
+    if (!ok) throw ApiError.unauthorized("Email hoặc mật khẩu không đúng");
 
-    if (!user.isActive) throw ApiError.forbidden('Tài khoản đã bị khóa');
+    if (!user.isActive) throw ApiError.forbidden("Tài khoản đã bị khóa");
 
     const accessToken = signAccessToken(user);
     const refreshToken = signRefreshToken(user, remember);
@@ -83,15 +93,18 @@ export const authService = {
     try {
       payload = jwt.verify(refreshToken, env.JWT_REFRESH_SECRET);
     } catch {
-      throw ApiError.unauthorized('Refresh token không hợp lệ');
+      throw ApiError.unauthorized("Refresh token không hợp lệ");
     }
 
     // Check DB — token must exist and not have been revoked.
-    const stored = await RefreshToken.findOne({ tokenHash: hashToken(refreshToken) }).lean();
-    if (!stored) throw ApiError.unauthorized('Refresh token đã bị thu hồi');
+    const stored = await RefreshToken.findOne({
+      tokenHash: hashToken(refreshToken),
+    }).lean();
+    if (!stored) throw ApiError.unauthorized("Refresh token đã bị thu hồi");
 
     const user = await User.findById(payload.sub);
-    if (!user || !user.isActive) throw ApiError.unauthorized('Tài khoản không tồn tại');
+    if (!user || !user.isActive)
+      throw ApiError.unauthorized("Tài khoản không tồn tại");
 
     return { accessToken: signAccessToken(user) };
   },
@@ -125,13 +138,16 @@ export const authService = {
     const user = await User.findOne({ email });
     if (!user || !user.isActive) {
       // Silently no-op — don't leak which emails are registered
-      logger.info('Forgot password: unknown or inactive email', { email });
+      logger.info("Forgot password: unknown or inactive email", { email });
       return;
     }
 
     // Generate 32-byte random token (rendered as 64 hex chars in URL)
-    const rawToken = crypto.randomBytes(32).toString('hex');
-    const tokenHash = crypto.createHash('sha256').update(rawToken).digest('hex');
+    const rawToken = crypto.randomBytes(32).toString("hex");
+    const tokenHash = crypto
+      .createHash("sha256")
+      .update(rawToken)
+      .digest("hex");
 
     await PasswordResetToken.create({
       userId: user._id,
@@ -154,11 +170,16 @@ export const authService = {
    * Idempotent. Returns true/throws.
    */
   async verifyResetToken(rawToken) {
-    const tokenHash = crypto.createHash('sha256').update(rawToken).digest('hex');
+    const tokenHash = crypto
+      .createHash("sha256")
+      .update(rawToken)
+      .digest("hex");
     const record = await PasswordResetToken.findOne({ tokenHash }).lean();
 
     if (!record || record.expiresAt < new Date()) {
-      throw ApiError.badRequest('Liên kết đặt lại mật khẩu không hợp lệ hoặc đã hết hạn');
+      throw ApiError.badRequest(
+        "Liên kết đặt lại mật khẩu không hợp lệ hoặc đã hết hạn",
+      );
     }
     return true;
   },
@@ -167,23 +188,28 @@ export const authService = {
    * Reset password — verify token, set new password, revoke all sessions.
    */
   async resetPassword(rawToken, newPassword) {
-    const tokenHash = crypto.createHash('sha256').update(rawToken).digest('hex');
+    const tokenHash = crypto
+      .createHash("sha256")
+      .update(rawToken)
+      .digest("hex");
     const record = await PasswordResetToken.findOne({ tokenHash });
 
     if (!record) {
-      throw ApiError.badRequest('Liên kết đặt lại mật khẩu không hợp lệ hoặc đã hết hạn');
+      throw ApiError.badRequest(
+        "Liên kết đặt lại mật khẩu không hợp lệ hoặc đã hết hạn",
+      );
     }
     if (record.expiresAt < new Date()) {
       // Defensive — TTL index should have cleaned this up, but cleanup runs
       // every ~60s so there's a small window
       await record.deleteOne();
-      throw ApiError.badRequest('Liên kết đặt lại mật khẩu đã hết hạn');
+      throw ApiError.badRequest("Liên kết đặt lại mật khẩu đã hết hạn");
     }
 
-    const user = await User.findById(record.userId).select('+passwordHash');
+    const user = await User.findById(record.userId).select("+passwordHash");
     if (!user || !user.isActive) {
       await record.deleteOne();
-      throw ApiError.badRequest('Tài khoản không tồn tại hoặc đã bị khóa');
+      throw ApiError.badRequest("Tài khoản không tồn tại hoặc đã bị khóa");
     }
 
     user.passwordHash = await User.hashPassword(newPassword);

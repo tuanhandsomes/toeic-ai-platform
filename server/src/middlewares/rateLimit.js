@@ -43,7 +43,6 @@ export const authLimiter = rateLimit({
 /**
  * /ai/* — bảo vệ chi phí OpenAI khỏi user spam.
  * 5 request / 1 giờ / user (key theo userId nếu đã auth, fallback IP).
- * Khớp đúng spec §8.3 "tối đa 5 lần phân tích/giờ/user".
  */
 export const aiLimiter = rateLimit({
   windowMs: 60 * 60 * 1000,
@@ -67,7 +66,7 @@ export const contactLimiter = rateLimit({
     res.status(429).json({
       success: false,
       message:
-        'Bạn đã gửi quá nhiều tin nhắn liên hệ trong thời gian ngắn. Vui lòng thử lại sau khoảng 10 phút.',
+        "Bạn đã gửi quá nhiều tin nhắn liên hệ trong thời gian ngắn. Vui lòng thử lại sau khoảng 10 phút.",
     });
   },
 });
