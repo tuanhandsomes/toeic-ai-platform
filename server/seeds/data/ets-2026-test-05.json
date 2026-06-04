@@ -1,0 +1,5180 @@
+{
+  "testInfo": {
+    "title": "ETS 2026 — Full Test 05",
+    "series": "ETS 2026",
+    "year": 2026,
+    "difficulty": "medium",
+    "description": "Đề thi TOEIC L&R chính thức ETS 2026 — Test 5 (200 câu, 120 phút). Đề minh hoạ phục vụ học tập."
+  },
+  "questions": [
+    {
+      "questionNumber": 1,
+      "part": 1,
+      "options": [
+        {
+          "key": "A",
+          "text": "She's pushing a large container down a hallway."
+        },
+        {
+          "key": "B",
+          "text": "She's looking at information on a laptop screen."
+        },
+        {
+          "key": "C",
+          "text": "She's sorting through paper files."
+        },
+        {
+          "key": "D",
+          "text": "She's placing a hat on top of a file cabinet."
+        }
+      ],
+      "correctAnswer": "C",
+      "explanation": "(A) Cô ấy đang đẩy một container lớn xuống hành lang.\n(B) Cô ấy đang xem thông tin trên màn hình laptop.\n(C) Cô ấy đang sắp xếp các tập hồ sơ giấy.\n(D) Cô ấy đang đặt một chiếc mũ lên trên tủ hồ sơ.",
+      "difficulty": "easy"
+    },
+    {
+      "questionNumber": 2,
+      "part": 1,
+      "options": [
+        {
+          "key": "A",
+          "text": "A worker is painting lines on the floor."
+        },
+        {
+          "key": "B",
+          "text": "A worker is using a machine to move some boxes."
+        },
+        {
+          "key": "C",
+          "text": "A worker is sealing some packages."
+        },
+        {
+          "key": "D",
+          "text": "A worker is repairing a motor."
+        }
+      ],
+      "correctAnswer": "B",
+      "explanation": "(A) Một công nhân đang vẽ các đường kẻ trên sàn.\n(B) Một công nhân đang dùng máy để di chuyển một số thùng hộp.\n(C) Một công nhân đang niêm phong một số gói hàng.\n(D) Một công nhân đang sửa chữa một động cơ.",
+      "difficulty": "easy"
+    },
+    {
+      "questionNumber": 3,
+      "part": 1,
+      "options": [
+        {
+          "key": "A",
+          "text": "There are beverages available inside a tent."
+        },
+        {
+          "key": "B",
+          "text": "There are some people riding in an automobile."
+        },
+        {
+          "key": "C",
+          "text": "The man is reaching for a water bottle."
+        },
+        {
+          "key": "D",
+          "text": "The woman is moving some furniture."
+        }
+      ],
+      "correctAnswer": "A",
+      "explanation": "(A) Có đồ uống có sẵn bên trong một cái lều.\n(B) Có một số người đang ngồi trong xe hơi.\n(C) Người đàn ông đang với tay lấy một chai nước.\n(D) Người phụ nữ đang di chuyển một số đồ nội thất.",
+      "difficulty": "medium"
+    },
+    {
+      "questionNumber": 4,
+      "part": 1,
+      "options": [
+        {
+          "key": "A",
+          "text": "The door of a clothing store has been propped open."
+        },
+        {
+          "key": "B",
+          "text": "Customers are waiting to enter a clothing store."
+        },
+        {
+          "key": "C",
+          "text": "One of the customers is trying on a jacket."
+        },
+        {
+          "key": "D",
+          "text": "Clothing is displayed outside on racks."
+        }
+      ],
+      "correctAnswer": "D",
+      "explanation": "(A) Cửa cửa hàng quần áo đã được chống mở.\n(B) Khách hàng đang chờ vào cửa hàng.\n(C) Một khách hàng đang thử áo khoác.\n(D) Quần áo được trưng bày bên ngoài trên các giá treo.",
+      "difficulty": "medium"
+    },
+    {
+      "questionNumber": 5,
+      "part": 1,
+      "options": [
+        {
+          "key": "A",
+          "text": "One of the men is lowering some window shades."
+        },
+        {
+          "key": "B",
+          "text": "One of the men is writing on a poster board."
+        },
+        {
+          "key": "C",
+          "text": "One of the women is putting on a sweater."
+        },
+        {
+          "key": "D",
+          "text": "One of the women is reading from a notebook."
+        }
+      ],
+      "correctAnswer": "B",
+      "explanation": "(A) Một người đàn ông đang hạ rèm cửa sổ.\n(B) Một người đàn ông đang viết lên bảng áp phích.\n(C) Một người phụ nữ đang mặc áo len.\n(D) Một người phụ nữ đang đọc từ cuốn sổ tay.",
+      "difficulty": "medium"
+    },
+    {
+      "questionNumber": 6,
+      "part": 1,
+      "options": [
+        {
+          "key": "A",
+          "text": "One of the cars is stopped at a stop sign."
+        },
+        {
+          "key": "B",
+          "text": "Some tires are stacked against a building."
+        },
+        {
+          "key": "C",
+          "text": "Some vehicles are being washed."
+        },
+        {
+          "key": "D",
+          "text": "A motorcycle is going through a gate."
+        }
+      ],
+      "correctAnswer": "B",
+      "explanation": "(A) Một xe hơi đang dừng ở biển báo dừng.\n(B) Một số lốp xe được xếp chồng vào tường của một tòa nhà.\n(C) Một số phương tiện đang được rửa.\n(D) Một xe máy đang đi qua cổng.",
+      "difficulty": "medium"
+    },
+    {
+      "questionNumber": 7,
+      "part": 2,
+      "text": "Where did you put the invoice from Stanson Incorporated?",
+      "options": [
+        {
+          "key": "A",
+          "text": "No, not yet."
+        },
+        {
+          "key": "B",
+          "text": "On your desk."
+        },
+        {
+          "key": "C",
+          "text": "The post office is crowded today."
+        }
+      ],
+      "correctAnswer": "B",
+      "explanation": "Câu hỏi Where → trả lời nơi chốn: trên bàn làm việc.",
+      "difficulty": "easy"
+    },
+    {
+      "questionNumber": 8,
+      "part": 2,
+      "text": "Is the inspector coming this afternoon or tomorrow morning?",
+      "options": [
+        {
+          "key": "A",
+          "text": "The exterior light isn't working."
+        },
+        {
+          "key": "B",
+          "text": "He'll be here tomorrow."
+        },
+        {
+          "key": "C",
+          "text": "I'll take the next right turn."
+        }
+      ],
+      "correctAnswer": "B",
+      "explanation": "Câu hỏi lựa chọn → chọn ngày mai.",
+      "difficulty": "easy"
+    },
+    {
+      "questionNumber": 9,
+      "part": 2,
+      "text": "What's the total cost to remodel the office lobby?",
+      "options": [
+        {
+          "key": "A",
+          "text": "The view from this window is great."
+        },
+        {
+          "key": "B",
+          "text": "Over 50,000 dollars."
+        },
+        {
+          "key": "C",
+          "text": "No, a sofa and table."
+        }
+      ],
+      "correctAnswer": "B",
+      "explanation": "Câu hỏi What's the total cost → trả lời số tiền.",
+      "difficulty": "easy"
+    },
+    {
+      "questionNumber": 10,
+      "part": 2,
+      "text": "Are you getting the same type of desk or a different one?",
+      "options": [
+        {
+          "key": "A",
+          "text": "It's conveniently located."
+        },
+        {
+          "key": "B",
+          "text": "I can pick it up for you."
+        },
+        {
+          "key": "C",
+          "text": "The same type."
+        }
+      ],
+      "correctAnswer": "C",
+      "explanation": "Câu hỏi lựa chọn → trả lời cùng loại.",
+      "difficulty": "easy"
+    },
+    {
+      "questionNumber": 11,
+      "part": 2,
+      "text": "We're taking the clients to the theater this evening.",
+      "options": [
+        {
+          "key": "A",
+          "text": "He already ate."
+        },
+        {
+          "key": "B",
+          "text": "I'll reserve a taxi."
+        },
+        {
+          "key": "C",
+          "text": "From Australia."
+        }
+      ],
+      "correctAnswer": "B",
+      "explanation": "Tuyên bố → đáp lại đặt xe taxi để đi.",
+      "difficulty": "medium"
+    },
+    {
+      "questionNumber": 12,
+      "part": 2,
+      "text": "When is your budget report due?",
+      "options": [
+        {
+          "key": "A",
+          "text": "It was too expensive."
+        },
+        {
+          "key": "B",
+          "text": "I don't need one."
+        },
+        {
+          "key": "C",
+          "text": "By Tuesday at the latest."
+        }
+      ],
+      "correctAnswer": "C",
+      "explanation": "Câu hỏi When → muộn nhất là thứ Ba.",
+      "difficulty": "easy"
+    },
+    {
+      "questionNumber": 13,
+      "part": 2,
+      "text": "Who can I talk to about getting a membership at this fitness center?",
+      "options": [
+        {
+          "key": "A",
+          "text": "A monthly bill."
+        },
+        {
+          "key": "B",
+          "text": "Some new workout equipment."
+        },
+        {
+          "key": "C",
+          "text": "I can help you with that."
+        }
+      ],
+      "correctAnswer": "C",
+      "explanation": "Câu hỏi Who → người nói có thể giúp.",
+      "difficulty": "easy"
+    },
+    {
+      "questionNumber": 14,
+      "part": 2,
+      "text": "Are you planning to buy a house in the city?",
+      "options": [
+        {
+          "key": "A",
+          "text": "A housecleaning company."
+        },
+        {
+          "key": "B",
+          "text": "I don't want to move."
+        },
+        {
+          "key": "C",
+          "text": "I'll be waiting at the post office."
+        }
+      ],
+      "correctAnswer": "B",
+      "explanation": "Câu hỏi Yes/No → trả lời không muốn chuyển đi.",
+      "difficulty": "medium"
+    },
+    {
+      "questionNumber": 15,
+      "part": 2,
+      "text": "How did you decide on a venue for the fund-raising event?",
+      "options": [
+        {
+          "key": "A",
+          "text": "A small contribution."
+        },
+        {
+          "key": "B",
+          "text": "I got a recommendation from a friend."
+        },
+        {
+          "key": "C",
+          "text": "To buy books for the library."
+        }
+      ],
+      "correctAnswer": "B",
+      "explanation": "Câu hỏi How → nhận lời giới thiệu từ bạn.",
+      "difficulty": "medium"
+    },
+    {
+      "questionNumber": 16,
+      "part": 2,
+      "text": "Could you help Ms. Ishida update the expense reports?",
+      "options": [
+        {
+          "key": "A",
+          "text": "It's an electric vehicle."
+        },
+        {
+          "key": "B",
+          "text": "This restaurant is expensive."
+        },
+        {
+          "key": "C",
+          "text": "I'll have time after my meeting."
+        }
+      ],
+      "correctAnswer": "C",
+      "explanation": "Yêu cầu giúp → sẽ có thời gian sau cuộc họp.",
+      "difficulty": "medium"
+    },
+    {
+      "questionNumber": 17,
+      "part": 2,
+      "text": "The sales representatives really appreciated the training we led.",
+      "options": [
+        {
+          "key": "A",
+          "text": "The new transportation center nearby."
+        },
+        {
+          "key": "B",
+          "text": "No, but there is a manual online."
+        },
+        {
+          "key": "C",
+          "text": "Yes, they seemed to find it helpful."
+        }
+      ],
+      "correctAnswer": "C",
+      "explanation": "Tuyên bố → xác nhận họ thấy hữu ích.",
+      "difficulty": "medium"
+    },
+    {
+      "questionNumber": 18,
+      "part": 2,
+      "text": "Do you know who was promoted to senior director?",
+      "options": [
+        {
+          "key": "A",
+          "text": "It hasn't been announced yet."
+        },
+        {
+          "key": "B",
+          "text": "I received my promotional gift yesterday."
+        },
+        {
+          "key": "C",
+          "text": "I've seen that film."
+        }
+      ],
+      "correctAnswer": "A",
+      "explanation": "Câu hỏi Yes/No → chưa được công bố.",
+      "difficulty": "medium"
+    },
+    {
+      "questionNumber": 19,
+      "part": 2,
+      "text": "Isn't the registration deadline tomorrow?",
+      "options": [
+        {
+          "key": "A",
+          "text": "Here's a map that you can use."
+        },
+        {
+          "key": "B",
+          "text": "No, it's next week."
+        },
+        {
+          "key": "C",
+          "text": "My office is on the ninth floor."
+        }
+      ],
+      "correctAnswer": "B",
+      "explanation": "Câu hỏi phủ định → đính chính: tuần sau.",
+      "difficulty": "medium"
+    },
+    {
+      "questionNumber": 20,
+      "part": 2,
+      "text": "Would you like some help installing that new software?",
+      "options": [
+        {
+          "key": "A",
+          "text": "No, I'm sure we sent it out yesterday."
+        },
+        {
+          "key": "B",
+          "text": "Thanks, but I know how to do it."
+        },
+        {
+          "key": "C",
+          "text": "He can type very fast."
+        }
+      ],
+      "correctAnswer": "B",
+      "explanation": "Đề nghị giúp → cảm ơn nhưng tự biết làm.",
+      "difficulty": "medium"
+    },
+    {
+      "questionNumber": 21,
+      "part": 2,
+      "text": "Our factory makes the best cookies in the city.",
+      "options": [
+        {
+          "key": "A",
+          "text": "A cup of sugar."
+        },
+        {
+          "key": "B",
+          "text": "He worked an afternoon shift."
+        },
+        {
+          "key": "C",
+          "text": "Aren't they delicious?"
+        }
+      ],
+      "correctAnswer": "C",
+      "explanation": "Tuyên bố → đồng tình hỏi lại.",
+      "difficulty": "medium"
+    },
+    {
+      "questionNumber": 22,
+      "part": 2,
+      "text": "The fruit market is still selling mangoes, isn't it?",
+      "options": [
+        {
+          "key": "A",
+          "text": "No thanks—I don't need anything."
+        },
+        {
+          "key": "B",
+          "text": "There's a waiting area in the lobby."
+        },
+        {
+          "key": "C",
+          "text": "Yes, I bought some there yesterday."
+        }
+      ],
+      "correctAnswer": "C",
+      "explanation": "Câu hỏi đuôi → xác nhận đã mua hôm qua.",
+      "difficulty": "medium"
+    },
+    {
+      "questionNumber": 23,
+      "part": 2,
+      "text": "Why are you staying in the office for lunch?",
+      "options": [
+        {
+          "key": "A",
+          "text": "No, they weren't."
+        },
+        {
+          "key": "B",
+          "text": "Just a salad and soup, please."
+        },
+        {
+          "key": "C",
+          "text": "Because it is raining."
+        }
+      ],
+      "correctAnswer": "C",
+      "explanation": "Câu hỏi Why → vì trời mưa.",
+      "difficulty": "medium"
+    },
+    {
+      "questionNumber": 24,
+      "part": 2,
+      "text": "How did the company basketball team play last night?",
+      "options": [
+        {
+          "key": "A",
+          "text": "Sure, I'll have a few."
+        },
+        {
+          "key": "B",
+          "text": "How can I sign up?"
+        },
+        {
+          "key": "C",
+          "text": "The game was canceled."
+        }
+      ],
+      "correctAnswer": "C",
+      "explanation": "Câu hỏi How → trận đấu bị hủy nên không có thông tin.",
+      "difficulty": "hard"
+    },
+    {
+      "questionNumber": 25,
+      "part": 2,
+      "text": "Isn't our department's quarterly report supposed to be sent out today?",
+      "options": [
+        {
+          "key": "A",
+          "text": "No, he drinks coffee."
+        },
+        {
+          "key": "B",
+          "text": "There's a lot of information to include."
+        },
+        {
+          "key": "C",
+          "text": "Some office supplies."
+        }
+      ],
+      "correctAnswer": "B",
+      "explanation": "Câu hỏi → có nhiều thông tin cần đưa vào nên cần thêm thời gian.",
+      "difficulty": "hard"
+    },
+    {
+      "questionNumber": 26,
+      "part": 2,
+      "text": "Would you like a copy of the article I mentioned?",
+      "options": [
+        {
+          "key": "A",
+          "text": "No, I'm not."
+        },
+        {
+          "key": "B",
+          "text": "Yes, I'd appreciate that."
+        },
+        {
+          "key": "C",
+          "text": "A Thursday morning appointment."
+        }
+      ],
+      "correctAnswer": "B",
+      "explanation": "Đề nghị → cảm ơn chấp nhận.",
+      "difficulty": "medium"
+    },
+    {
+      "questionNumber": 27,
+      "part": 2,
+      "text": "Did you decide on the design for the new logo?",
+      "options": [
+        {
+          "key": "A",
+          "text": "There are so many good options."
+        },
+        {
+          "key": "B",
+          "text": "Please adjust that sign by the door."
+        },
+        {
+          "key": "C",
+          "text": "Maybe he'll arrive today."
+        }
+      ],
+      "correctAnswer": "A",
+      "explanation": "Câu hỏi Yes/No → trả lời gián tiếp: chưa quyết được vì nhiều lựa chọn tốt.",
+      "difficulty": "hard"
+    },
+    {
+      "questionNumber": 28,
+      "part": 2,
+      "text": "Our bookstore is having a sale today, isn't it?",
+      "options": [
+        {
+          "key": "A",
+          "text": "Sure, you can use my printer."
+        },
+        {
+          "key": "B",
+          "text": "I really enjoyed that book."
+        },
+        {
+          "key": "C",
+          "text": "It's only a small discount."
+        }
+      ],
+      "correctAnswer": "C",
+      "explanation": "Câu hỏi đuôi → xác nhận nhưng chỉ giảm nhỏ.",
+      "difficulty": "medium"
+    },
+    {
+      "questionNumber": 29,
+      "part": 2,
+      "text": "Why haven't the painters arrived yet?",
+      "options": [
+        {
+          "key": "A",
+          "text": "The keys are in the desk drawer."
+        },
+        {
+          "key": "B",
+          "text": "No, that's all right."
+        },
+        {
+          "key": "C",
+          "text": "I heard that traffic is heavy this morning."
+        }
+      ],
+      "correctAnswer": "C",
+      "explanation": "Câu hỏi Why → vì giao thông đông đúc.",
+      "difficulty": "medium"
+    },
+    {
+      "questionNumber": 30,
+      "part": 2,
+      "text": "Should I bring some flowers or some food to the party?",
+      "options": [
+        {
+          "key": "A",
+          "text": "He's right down the hall."
+        },
+        {
+          "key": "B",
+          "text": "Don't you live next to a florist's shop?"
+        },
+        {
+          "key": "C",
+          "text": "A few more hours."
+        }
+      ],
+      "correctAnswer": "B",
+      "explanation": "Câu hỏi lựa chọn → trả lời gián tiếp gợi ý chọn hoa (sống gần tiệm hoa).",
+      "difficulty": "hard"
+    },
+    {
+      "questionNumber": 31,
+      "part": 2,
+      "text": "The meeting can wait until tomorrow.",
+      "options": [
+        {
+          "key": "A",
+          "text": "I'll make sure the room is set up."
+        },
+        {
+          "key": "B",
+          "text": "Did you bring an umbrella?"
+        },
+        {
+          "key": "C",
+          "text": "No, he wasn't."
+        }
+      ],
+      "correctAnswer": "A",
+      "explanation": "Tuyên bố → đáp lại sẽ chuẩn bị phòng họp.",
+      "difficulty": "medium"
+    },
+    {
+      "questionNumber": 32,
+      "part": 3,
+      "text": "What does the woman ask the man to do for her?",
+      "options": [
+        {
+          "key": "A",
+          "text": "Greet a client in the lobby"
+        },
+        {
+          "key": "B",
+          "text": "Present a product pitch"
+        },
+        {
+          "key": "C",
+          "text": "Organize some binders"
+        },
+        {
+          "key": "D",
+          "text": "Make some photocopies"
+        }
+      ],
+      "correctAnswer": "D",
+      "explanation": "Cô ấy nhờ sao chép báo cáo phân tích thị trường vì máy photocopy hỏng.",
+      "difficulty": "easy"
+    },
+    {
+      "questionNumber": 33,
+      "part": 3,
+      "text": "What does the man say about some equipment?",
+      "options": [
+        {
+          "key": "A",
+          "text": "It is operating smoothly."
+        },
+        {
+          "key": "B",
+          "text": "It was purchased recently."
+        },
+        {
+          "key": "C",
+          "text": "It needs to be plugged in."
+        },
+        {
+          "key": "D",
+          "text": "It has not yet been updated."
+        }
+      ],
+      "correctAnswer": "B",
+      "explanation": "Anh ấy nói máy mới mua tháng trước mà đã hỏng.",
+      "difficulty": "medium"
+    },
+    {
+      "questionNumber": 34,
+      "part": 3,
+      "text": "Where is the man?",
+      "options": [
+        {
+          "key": "A",
+          "text": "At the office"
+        },
+        {
+          "key": "B",
+          "text": "At a train station"
+        },
+        {
+          "key": "C",
+          "text": "At a store"
+        },
+        {
+          "key": "D",
+          "text": "At a client's headquarters"
+        }
+      ],
+      "correctAnswer": "B",
+      "explanation": "Anh ấy vừa xuống tàu nên đang ở trạm tàu.",
+      "difficulty": "medium"
+    },
+    {
+      "questionNumber": 35,
+      "part": 3,
+      "text": "Where does the woman most likely work?",
+      "options": [
+        {
+          "key": "A",
+          "text": "At a furniture store"
+        },
+        {
+          "key": "B",
+          "text": "At a moving company"
+        },
+        {
+          "key": "C",
+          "text": "At a post office"
+        },
+        {
+          "key": "D",
+          "text": "At an office supply store"
+        }
+      ],
+      "correctAnswer": "B",
+      "explanation": "Delton Van Lines → công ty chuyển nhà.",
+      "difficulty": "easy"
+    },
+    {
+      "questionNumber": 36,
+      "part": 3,
+      "text": "Why will a representative visit the man's company tomorrow?",
+      "options": [
+        {
+          "key": "A",
+          "text": "To provide an estimate"
+        },
+        {
+          "key": "B",
+          "text": "To sign a contract"
+        },
+        {
+          "key": "C",
+          "text": "To give a presentation"
+        },
+        {
+          "key": "D",
+          "text": "To place an order"
+        }
+      ],
+      "correctAnswer": "A",
+      "explanation": "Đại diện đến để ước tính chi phí chuyển đồ.",
+      "difficulty": "medium"
+    },
+    {
+      "questionNumber": 37,
+      "part": 3,
+      "text": "What information will the man most likely provide next?",
+      "options": [
+        {
+          "key": "A",
+          "text": "A company's operating hours"
+        },
+        {
+          "key": "B",
+          "text": "An account number"
+        },
+        {
+          "key": "C",
+          "text": "A street address"
+        },
+        {
+          "key": "D",
+          "text": "A telephone number"
+        }
+      ],
+      "correctAnswer": "C",
+      "explanation": "Cô ấy hỏi vị trí công ty → anh ấy sẽ cung cấp địa chỉ.",
+      "difficulty": "medium"
+    },
+    {
+      "questionNumber": 38,
+      "part": 3,
+      "text": "What department does the man work in?",
+      "options": [
+        {
+          "key": "A",
+          "text": "Legal"
+        },
+        {
+          "key": "B",
+          "text": "Accounting"
+        },
+        {
+          "key": "C",
+          "text": "Human resources"
+        },
+        {
+          "key": "D",
+          "text": "Public relations"
+        }
+      ],
+      "correctAnswer": "C",
+      "explanation": "Anh ấy gọi từ bộ phận nhân sự để xác nhận onboarding.",
+      "difficulty": "easy"
+    },
+    {
+      "questionNumber": 39,
+      "part": 3,
+      "text": "What kind of work has the woman been hired to do?",
+      "options": [
+        {
+          "key": "A",
+          "text": "Scientific research"
+        },
+        {
+          "key": "B",
+          "text": "Book editing"
+        },
+        {
+          "key": "C",
+          "text": "Office management"
+        },
+        {
+          "key": "D",
+          "text": "Legal advising"
+        }
+      ],
+      "correctAnswer": "A",
+      "explanation": "Cô ấy sẽ tham gia đội nghiên cứu khoa học.",
+      "difficulty": "medium"
+    },
+    {
+      "questionNumber": 40,
+      "part": 3,
+      "text": "What will the man send the woman this afternoon?",
+      "options": [
+        {
+          "key": "A",
+          "text": "A password"
+        },
+        {
+          "key": "B",
+          "text": "A travel reimbursement"
+        },
+        {
+          "key": "C",
+          "text": "A security badge"
+        },
+        {
+          "key": "D",
+          "text": "A contract"
+        }
+      ],
+      "correctAnswer": "D",
+      "explanation": "Anh ấy sẽ gửi hợp đồng chiều nay.",
+      "difficulty": "medium"
+    },
+    {
+      "questionNumber": 41,
+      "part": 3,
+      "text": "What recently happened at the business?",
+      "options": [
+        {
+          "key": "A",
+          "text": "Its monthly rent increased."
+        },
+        {
+          "key": "B",
+          "text": "It received many orders."
+        },
+        {
+          "key": "C",
+          "text": "It was featured in a magazine."
+        },
+        {
+          "key": "D",
+          "text": "It passed an inspection."
+        }
+      ],
+      "correctAnswer": "B",
+      "explanation": "Gần đây nhận nhiều đơn hàng online cho kẹo sô cô la.",
+      "difficulty": "easy"
+    },
+    {
+      "questionNumber": 42,
+      "part": 3,
+      "text": "According to the man, what will help the business?",
+      "options": [
+        {
+          "key": "A",
+          "text": "Purchasing updated equipment"
+        },
+        {
+          "key": "B",
+          "text": "Offering different products"
+        },
+        {
+          "key": "C",
+          "text": "Extending store hours"
+        },
+        {
+          "key": "D",
+          "text": "Hiring more employees"
+        }
+      ],
+      "correctAnswer": "D",
+      "explanation": "Anh ấy nghĩ nên thuê thêm vài người làm buổi sáng.",
+      "difficulty": "medium"
+    },
+    {
+      "questionNumber": 43,
+      "part": 3,
+      "text": "Who does Rebecca say she will call today?",
+      "options": [
+        {
+          "key": "A",
+          "text": "A packaging designer"
+        },
+        {
+          "key": "B",
+          "text": "An Internet service provider"
+        },
+        {
+          "key": "C",
+          "text": "A delivery service"
+        },
+        {
+          "key": "D",
+          "text": "A bank"
+        }
+      ],
+      "correctAnswer": "C",
+      "explanation": "Cô ấy sẽ gọi dịch vụ giao hàng để xin lấy hai lần/ngày.",
+      "difficulty": "medium"
+    },
+    {
+      "questionNumber": 44,
+      "part": 3,
+      "text": "What do the speakers manufacture?",
+      "options": [
+        {
+          "key": "A",
+          "text": "Shoes"
+        },
+        {
+          "key": "B",
+          "text": "Luggage"
+        },
+        {
+          "key": "C",
+          "text": "Furniture"
+        },
+        {
+          "key": "D",
+          "text": "Sports equipment"
+        }
+      ],
+      "correctAnswer": "C",
+      "explanation": "Đang nói về mười đơn hàng sofa → đồ nội thất.",
+      "difficulty": "easy"
+    },
+    {
+      "questionNumber": 45,
+      "part": 3,
+      "text": "Who does the man suggest contacting?",
+      "options": [
+        {
+          "key": "A",
+          "text": "A leather supplier"
+        },
+        {
+          "key": "B",
+          "text": "A delivery driver"
+        },
+        {
+          "key": "C",
+          "text": "An interior designer"
+        },
+        {
+          "key": "D",
+          "text": "A machine technician"
+        }
+      ],
+      "correctAnswer": "A",
+      "explanation": "Anh ấy gợi ý liên hệ nhà cung cấp da địa phương.",
+      "difficulty": "medium"
+    },
+    {
+      "questionNumber": 46,
+      "part": 3,
+      "text": "Why is the woman opposed to making a change?",
+      "options": [
+        {
+          "key": "A",
+          "text": "She has contracts with clients."
+        },
+        {
+          "key": "B",
+          "text": "She is concerned about quality."
+        },
+        {
+          "key": "C",
+          "text": "Overhead expenses will increase."
+        },
+        {
+          "key": "D",
+          "text": "A license will expire soon."
+        }
+      ],
+      "correctAnswer": "B",
+      "explanation": "Cô ấy lo về chất lượng da của nhà cung cấp địa phương.",
+      "difficulty": "medium"
+    },
+    {
+      "questionNumber": 47,
+      "part": 3,
+      "text": "What are the speakers meeting to discuss?",
+      "options": [
+        {
+          "key": "A",
+          "text": "Safety regulations"
+        },
+        {
+          "key": "B",
+          "text": "Equipment upgrades"
+        },
+        {
+          "key": "C",
+          "text": "Budget cuts"
+        },
+        {
+          "key": "D",
+          "text": "Consultant recommendations"
+        }
+      ],
+      "correctAnswer": "D",
+      "explanation": "Kết quả từ công ty tư vấn về tăng doanh số jeans.",
+      "difficulty": "easy"
+    },
+    {
+      "questionNumber": 48,
+      "part": 3,
+      "text": "What does the man mean when he says, \"it takes a lot of effort to develop and launch new styles\"?",
+      "options": [
+        {
+          "key": "A",
+          "text": "He is excited about a challenge."
+        },
+        {
+          "key": "B",
+          "text": "He is surprised at a competitor's choices."
+        },
+        {
+          "key": "C",
+          "text": "He is doubtful about a suggestion."
+        },
+        {
+          "key": "D",
+          "text": "He thinks more employees should be hired."
+        }
+      ],
+      "correctAnswer": "C",
+      "explanation": "Anh ấy nghi ngờ đề xuất cập nhật kiểu dáng mới.",
+      "difficulty": "hard"
+    },
+    {
+      "questionNumber": 49,
+      "part": 3,
+      "text": "Who most likely is Junko?",
+      "options": [
+        {
+          "key": "A",
+          "text": "A focus group leader"
+        },
+        {
+          "key": "B",
+          "text": "A clothing designer"
+        },
+        {
+          "key": "C",
+          "text": "A sales associate"
+        },
+        {
+          "key": "D",
+          "text": "An accountant"
+        }
+      ],
+      "correctAnswer": "B",
+      "explanation": "Junko sẽ đưa ra thiết kế mới → nhà thiết kế quần áo.",
+      "difficulty": "medium"
+    },
+    {
+      "questionNumber": 50,
+      "part": 3,
+      "text": "Why did the man miss a meeting?",
+      "options": [
+        {
+          "key": "A",
+          "text": "He was stuck in traffic."
+        },
+        {
+          "key": "B",
+          "text": "He had a medical appointment."
+        },
+        {
+          "key": "C",
+          "text": "He was speaking with a client."
+        },
+        {
+          "key": "D",
+          "text": "He was away on vacation."
+        }
+      ],
+      "correctAnswer": "D",
+      "explanation": "Anh ấy vừa về từ kỳ nghỉ.",
+      "difficulty": "easy"
+    },
+    {
+      "questionNumber": 51,
+      "part": 3,
+      "text": "Which sport does the speakers' organization promote?",
+      "options": [
+        {
+          "key": "A",
+          "text": "Tennis"
+        },
+        {
+          "key": "B",
+          "text": "Volleyball"
+        },
+        {
+          "key": "C",
+          "text": "Swimming"
+        },
+        {
+          "key": "D",
+          "text": "Gymnastics"
+        }
+      ],
+      "correctAnswer": "A",
+      "explanation": "Tennis United → quần vợt.",
+      "difficulty": "easy"
+    },
+    {
+      "questionNumber": 52,
+      "part": 3,
+      "text": "Why were T-shirts ordered early?",
+      "options": [
+        {
+          "key": "A",
+          "text": "To avoid potential delays"
+        },
+        {
+          "key": "B",
+          "text": "To get free delivery"
+        },
+        {
+          "key": "C",
+          "text": "To receive a discount"
+        },
+        {
+          "key": "D",
+          "text": "To meet heavy demand"
+        }
+      ],
+      "correctAnswer": "C",
+      "explanation": "Đặt sớm để được giảm nửa giá vì nhà cung cấp thanh lý hàng mùa hè.",
+      "difficulty": "medium"
+    },
+    {
+      "questionNumber": 53,
+      "part": 3,
+      "text": "What industry do the speakers most likely work in?",
+      "options": [
+        {
+          "key": "A",
+          "text": "Energy"
+        },
+        {
+          "key": "B",
+          "text": "Finance"
+        },
+        {
+          "key": "C",
+          "text": "Construction"
+        },
+        {
+          "key": "D",
+          "text": "Manufacturing"
+        }
+      ],
+      "correctAnswer": "C",
+      "explanation": "Đề xuất cải tạo cầu Morrisville → ngành xây dựng.",
+      "difficulty": "easy"
+    },
+    {
+      "questionNumber": 54,
+      "part": 3,
+      "text": "What is the reason a company did not get a contract?",
+      "options": [
+        {
+          "key": "A",
+          "text": "Some costs were too high."
+        },
+        {
+          "key": "B",
+          "text": "A facility failed an inspection."
+        },
+        {
+          "key": "C",
+          "text": "Some paperwork was submitted late."
+        },
+        {
+          "key": "D",
+          "text": "A competitor can complete a project faster."
+        }
+      ],
+      "correctAnswer": "D",
+      "explanation": "Đối thủ nộp đề xuất với thời gian ngắn hơn.",
+      "difficulty": "medium"
+    },
+    {
+      "questionNumber": 55,
+      "part": 3,
+      "text": "What does the woman ask the man to do?",
+      "options": [
+        {
+          "key": "A",
+          "text": "Visit a facility"
+        },
+        {
+          "key": "B",
+          "text": "Conduct some research"
+        },
+        {
+          "key": "C",
+          "text": "Review a proposal"
+        },
+        {
+          "key": "D",
+          "text": "Contact some vendors"
+        }
+      ],
+      "correctAnswer": "B",
+      "explanation": "Yêu cầu nghiên cứu thêm về công ty CDQ Construction.",
+      "difficulty": "medium"
+    },
+    {
+      "questionNumber": 56,
+      "part": 3,
+      "text": "What did the company do last month?",
+      "options": [
+        {
+          "key": "A",
+          "text": "It opened a second location."
+        },
+        {
+          "key": "B",
+          "text": "It merged with another business."
+        },
+        {
+          "key": "C",
+          "text": "It launched a new product."
+        },
+        {
+          "key": "D",
+          "text": "It conducted an employee survey."
+        }
+      ],
+      "correctAnswer": "D",
+      "explanation": "Khảo sát nhân viên đã được tổng hợp.",
+      "difficulty": "easy"
+    },
+    {
+      "questionNumber": 57,
+      "part": 3,
+      "text": "Why does the man say, \"we do have money available in the budget\"?",
+      "options": [
+        {
+          "key": "A",
+          "text": "To request another budget analysis"
+        },
+        {
+          "key": "B",
+          "text": "To suggest hiring additional employees"
+        },
+        {
+          "key": "C",
+          "text": "To agree with a proposed renovation"
+        },
+        {
+          "key": "D",
+          "text": "To recommend an increase in advertising"
+        }
+      ],
+      "correctAnswer": "C",
+      "explanation": "Đồng ý đề xuất mở rộng phòng nghỉ vì còn ngân sách.",
+      "difficulty": "hard"
+    },
+    {
+      "questionNumber": 58,
+      "part": 3,
+      "text": "What does the man say he has to do this afternoon?",
+      "options": [
+        {
+          "key": "A",
+          "text": "Have his car repaired"
+        },
+        {
+          "key": "B",
+          "text": "Give a presentation"
+        },
+        {
+          "key": "C",
+          "text": "Go to a dentist appointment"
+        },
+        {
+          "key": "D",
+          "text": "Attend a reception"
+        }
+      ],
+      "correctAnswer": "C",
+      "explanation": "Chiều nay anh ấy phải gặp nha sĩ.",
+      "difficulty": "medium"
+    },
+    {
+      "questionNumber": 59,
+      "part": 3,
+      "text": "Where does the woman work?",
+      "options": [
+        {
+          "key": "A",
+          "text": "At a recycling company"
+        },
+        {
+          "key": "B",
+          "text": "At an appliance store"
+        },
+        {
+          "key": "C",
+          "text": "At a manufacturing company"
+        },
+        {
+          "key": "D",
+          "text": "At an architectural firm"
+        }
+      ],
+      "correctAnswer": "A",
+      "explanation": "Hang's Metal Recycling Company → trung tâm tái chế.",
+      "difficulty": "easy"
+    },
+    {
+      "questionNumber": 60,
+      "part": 3,
+      "text": "What does the man ask the woman to do?",
+      "options": [
+        {
+          "key": "A",
+          "text": "Revise a contract"
+        },
+        {
+          "key": "B",
+          "text": "Match a competitor's offer"
+        },
+        {
+          "key": "C",
+          "text": "Refund a delivery fee"
+        },
+        {
+          "key": "D",
+          "text": "Sign in at a security desk"
+        }
+      ],
+      "correctAnswer": "B",
+      "explanation": "Yêu cầu khớp giá $2.25/pound như đối thủ.",
+      "difficulty": "medium"
+    },
+    {
+      "questionNumber": 61,
+      "part": 3,
+      "text": "What does the man say he will do this afternoon?",
+      "options": [
+        {
+          "key": "A",
+          "text": "Conduct an inspection"
+        },
+        {
+          "key": "B",
+          "text": "Sign a document"
+        },
+        {
+          "key": "C",
+          "text": "Deliver some materials"
+        },
+        {
+          "key": "D",
+          "text": "Update a Web site"
+        }
+      ],
+      "correctAnswer": "C",
+      "explanation": "Anh ấy sẽ mang kim loại đến chiều nay.",
+      "difficulty": "medium"
+    },
+    {
+      "questionNumber": 62,
+      "part": 3,
+      "text": "Look at the graphic. Which project phase was just completed?",
+      "options": [
+        {
+          "key": "A",
+          "text": "Phase 1"
+        },
+        {
+          "key": "B",
+          "text": "Phase 2"
+        },
+        {
+          "key": "C",
+          "text": "Phase 3"
+        },
+        {
+          "key": "D",
+          "text": "Phase 4"
+        }
+      ],
+      "correctAnswer": "B",
+      "explanation": "Drilling vừa xong → đối chiếu biểu đồ là Phase 2.",
+      "difficulty": "hard",
+      "imageUrl": "/images/ets-2026/test-05/graphic-q62-64.PNG"
+    },
+    {
+      "questionNumber": 63,
+      "part": 3,
+      "text": "What does the woman ask the man to do?",
+      "options": [
+        {
+          "key": "A",
+          "text": "Request an earlier delivery date"
+        },
+        {
+          "key": "B",
+          "text": "Consult with a safety inspector"
+        },
+        {
+          "key": "C",
+          "text": "Post some construction plans"
+        },
+        {
+          "key": "D",
+          "text": "Forward an invoice"
+        }
+      ],
+      "correctAnswer": "A",
+      "explanation": "Yêu cầu xem có thể đẩy nhanh lô hàng vật liệu không.",
+      "difficulty": "medium"
+    },
+    {
+      "questionNumber": 64,
+      "part": 3,
+      "text": "What does the woman intend to do next?",
+      "options": [
+        {
+          "key": "A",
+          "text": "Review some data"
+        },
+        {
+          "key": "B",
+          "text": "Move a vehicle"
+        },
+        {
+          "key": "C",
+          "text": "Increase the size of a crew"
+        },
+        {
+          "key": "D",
+          "text": "Contact the management team"
+        }
+      ],
+      "correctAnswer": "D",
+      "explanation": "Cô ấy sẽ viết email cho ban quản lý.",
+      "difficulty": "medium"
+    },
+    {
+      "questionNumber": 65,
+      "part": 3,
+      "text": "What type of business do the speakers work for?",
+      "options": [
+        {
+          "key": "A",
+          "text": "A restaurant"
+        },
+        {
+          "key": "B",
+          "text": "A law firm"
+        },
+        {
+          "key": "C",
+          "text": "An office-supply store"
+        },
+        {
+          "key": "D",
+          "text": "A flower shop"
+        }
+      ],
+      "correctAnswer": "A",
+      "explanation": "Dịch vụ giao đồ ăn của nhà hàng.",
+      "difficulty": "easy"
+    },
+    {
+      "questionNumber": 66,
+      "part": 3,
+      "text": "Look at the graphic. In which area of the city does the business make most of its deliveries?",
+      "options": [
+        {
+          "key": "A",
+          "text": "The waterfront district"
+        },
+        {
+          "key": "B",
+          "text": "The historic district"
+        },
+        {
+          "key": "C",
+          "text": "The residential district"
+        },
+        {
+          "key": "D",
+          "text": "The downtown district"
+        }
+      ],
+      "correctAnswer": "D",
+      "explanation": "Phí $15/giờ ở khu giao chính → đối chiếu khu trung tâm.",
+      "difficulty": "hard",
+      "imageUrl": "/images/ets-2026/test-05/graphic-q65-67.PNG"
+    },
+    {
+      "questionNumber": 67,
+      "part": 3,
+      "text": "How does the man propose lowering business expenses?",
+      "options": [
+        {
+          "key": "A",
+          "text": "By reducing packaging waste"
+        },
+        {
+          "key": "B",
+          "text": "By introducing bicycle delivery"
+        },
+        {
+          "key": "C",
+          "text": "By switching to a new supplier"
+        },
+        {
+          "key": "D",
+          "text": "By moving to a smaller building"
+        }
+      ],
+      "correctAnswer": "B",
+      "explanation": "Đề xuất dùng giao bằng xe đạp khi có thể.",
+      "difficulty": "medium"
+    },
+    {
+      "questionNumber": 68,
+      "part": 3,
+      "text": "Who most likely is the woman?",
+      "options": [
+        {
+          "key": "A",
+          "text": "A hotel manager"
+        },
+        {
+          "key": "B",
+          "text": "An interior designer"
+        },
+        {
+          "key": "C",
+          "text": "A construction worker"
+        },
+        {
+          "key": "D",
+          "text": "A real estate agent"
+        }
+      ],
+      "correctAnswer": "B",
+      "explanation": "Công ty thiết kế nội thất cho ngân hàng.",
+      "difficulty": "easy"
+    },
+    {
+      "questionNumber": 69,
+      "part": 3,
+      "text": "Look at the graphic. Which step does the man ask about?",
+      "options": [
+        {
+          "key": "A",
+          "text": "Step 1"
+        },
+        {
+          "key": "B",
+          "text": "Step 2"
+        },
+        {
+          "key": "C",
+          "text": "Step 3"
+        },
+        {
+          "key": "D",
+          "text": "Step 4"
+        }
+      ],
+      "correctAnswer": "A",
+      "explanation": "Anh ấy hỏi về giếng trời → step trang bìa (Step 1).",
+      "difficulty": "hard",
+      "imageUrl": "/images/ets-2026/test-05/graphic-q68-70.PNG"
+    },
+    {
+      "questionNumber": 70,
+      "part": 3,
+      "text": "What will the man most likely do next?",
+      "options": [
+        {
+          "key": "A",
+          "text": "Send a contract"
+        },
+        {
+          "key": "B",
+          "text": "Go to the lobby"
+        },
+        {
+          "key": "C",
+          "text": "Look at some photographs"
+        },
+        {
+          "key": "D",
+          "text": "Review a cost estimate"
+        }
+      ],
+      "correctAnswer": "D",
+      "explanation": "Cô ấy chỉ trang 4 cho cost breakdown → anh ấy sẽ xem.",
+      "difficulty": "medium"
+    },
+    {
+      "questionNumber": 71,
+      "part": 4,
+      "text": "Who most likely is the speaker?",
+      "options": [
+        {
+          "key": "A",
+          "text": "A department manager"
+        },
+        {
+          "key": "B",
+          "text": "A news reporter"
+        },
+        {
+          "key": "C",
+          "text": "A marketing consultant"
+        },
+        {
+          "key": "D",
+          "text": "A computer programmer"
+        }
+      ],
+      "correctAnswer": "A",
+      "explanation": "Người nói báo cáo doanh số tháng và mở cuộc họp → quản lý bộ phận.",
+      "difficulty": "easy"
+    },
+    {
+      "questionNumber": 72,
+      "part": 4,
+      "text": "Why does the speaker congratulate a team?",
+      "options": [
+        {
+          "key": "A",
+          "text": "For keeping expenses low"
+        },
+        {
+          "key": "B",
+          "text": "For creating a useful tool"
+        },
+        {
+          "key": "C",
+          "text": "For meeting a tight deadline"
+        },
+        {
+          "key": "D",
+          "text": "For achieving the most sales"
+        }
+      ],
+      "correctAnswer": "B",
+      "explanation": "Đội IT xây dựng hệ thống theo dõi bán hàng hữu ích.",
+      "difficulty": "medium"
+    },
+    {
+      "questionNumber": 73,
+      "part": 4,
+      "text": "What are the listeners required to do?",
+      "options": [
+        {
+          "key": "A",
+          "text": "Register for some training"
+        },
+        {
+          "key": "B",
+          "text": "Review a floor plan"
+        },
+        {
+          "key": "C",
+          "text": "Participate in a mentoring program"
+        },
+        {
+          "key": "D",
+          "text": "Provide copies of certifications"
+        }
+      ],
+      "correctAnswer": "A",
+      "explanation": "Tất cả nhân viên phải đăng ký buổi đào tạo sử dụng hệ thống.",
+      "difficulty": "medium"
+    },
+    {
+      "questionNumber": 74,
+      "part": 4,
+      "text": "What are the listeners invited to do?",
+      "options": [
+        {
+          "key": "A",
+          "text": "Download a calendar"
+        },
+        {
+          "key": "B",
+          "text": "Reserve tickets"
+        },
+        {
+          "key": "C",
+          "text": "Submit a picture"
+        },
+        {
+          "key": "D",
+          "text": "Share a story"
+        }
+      ],
+      "correctAnswer": "D",
+      "explanation": "Chương trình mời người gọi ghi âm chia sẻ câu chuyện.",
+      "difficulty": "medium"
+    },
+    {
+      "questionNumber": 75,
+      "part": 4,
+      "text": "What guideline does the speaker emphasize?",
+      "options": [
+        {
+          "key": "A",
+          "text": "Recordings must be kept short."
+        },
+        {
+          "key": "B",
+          "text": "Electronic devices must be turned off."
+        },
+        {
+          "key": "C",
+          "text": "Professional references must be provided."
+        },
+        {
+          "key": "D",
+          "text": "Vehicles must be parked in a designated area."
+        }
+      ],
+      "correctAnswer": "A",
+      "explanation": "Thông điệp dưới 60 giây.",
+      "difficulty": "medium"
+    },
+    {
+      "questionNumber": 76,
+      "part": 4,
+      "text": "According to the speaker, what may cause a delay?",
+      "options": [
+        {
+          "key": "A",
+          "text": "Bad weather"
+        },
+        {
+          "key": "B",
+          "text": "Holiday traffic"
+        },
+        {
+          "key": "C",
+          "text": "A construction project"
+        },
+        {
+          "key": "D",
+          "text": "Staff changes"
+        }
+      ],
+      "correctAnswer": "B",
+      "explanation": "Thời gian chờ lâu hơn quanh các kỳ nghỉ lễ.",
+      "difficulty": "medium"
+    },
+    {
+      "questionNumber": 77,
+      "part": 4,
+      "text": "What is the focus of a tour?",
+      "options": [
+        {
+          "key": "A",
+          "text": "Food"
+        },
+        {
+          "key": "B",
+          "text": "Architecture"
+        },
+        {
+          "key": "C",
+          "text": "Sports"
+        },
+        {
+          "key": "D",
+          "text": "Art"
+        }
+      ],
+      "correctAnswer": "A",
+      "explanation": "Tour ẩm thực với các món ăn địa phương.",
+      "difficulty": "easy"
+    },
+    {
+      "questionNumber": 78,
+      "part": 4,
+      "text": "What does the speaker imply when she says, \"we have such a large group today\"?",
+      "options": [
+        {
+          "key": "A",
+          "text": "She is happy about the popularity of a tour."
+        },
+        {
+          "key": "B",
+          "text": "She will need to use a microphone."
+        },
+        {
+          "key": "C",
+          "text": "An additional tour guide is needed."
+        },
+        {
+          "key": "D",
+          "text": "A shop is not big enough for everyone."
+        }
+      ],
+      "correctAnswer": "D",
+      "explanation": "Nhóm quá đông nên không vào tiệm bánh Zelda được.",
+      "difficulty": "hard"
+    },
+    {
+      "questionNumber": 79,
+      "part": 4,
+      "text": "What will a ticket allow the listeners to do?",
+      "options": [
+        {
+          "key": "A",
+          "text": "Attend a performance"
+        },
+        {
+          "key": "B",
+          "text": "Visit a museum"
+        },
+        {
+          "key": "C",
+          "text": "Participate in a class"
+        },
+        {
+          "key": "D",
+          "text": "Enter a contest"
+        }
+      ],
+      "correctAnswer": "B",
+      "explanation": "Vé cho một lần vào cửa miễn phí tại bảo tàng địa phương.",
+      "difficulty": "medium"
+    },
+    {
+      "questionNumber": 80,
+      "part": 4,
+      "text": "What industry was the Novikov Award created for?",
+      "options": [
+        {
+          "key": "A",
+          "text": "Aviation"
+        },
+        {
+          "key": "B",
+          "text": "Chemical engineering"
+        },
+        {
+          "key": "C",
+          "text": "Medical research"
+        },
+        {
+          "key": "D",
+          "text": "Television production"
+        }
+      ],
+      "correctAnswer": "A",
+      "explanation": "Giải thưởng Novikov dành cho ngành hàng không.",
+      "difficulty": "easy"
+    },
+    {
+      "questionNumber": 81,
+      "part": 4,
+      "text": "Why was this year's award recipient selected?",
+      "options": [
+        {
+          "key": "A",
+          "text": "For launching a unique advertising campaign"
+        },
+        {
+          "key": "B",
+          "text": "For developing a successful training program"
+        },
+        {
+          "key": "C",
+          "text": "For maintaining a perfect safety record"
+        },
+        {
+          "key": "D",
+          "text": "For making a scientific discovery"
+        }
+      ],
+      "correctAnswer": "B",
+      "explanation": "Zenith Aviation phát triển chương trình học việc thành công.",
+      "difficulty": "medium"
+    },
+    {
+      "questionNumber": 82,
+      "part": 4,
+      "text": "What does the speaker ask the listeners to do?",
+      "options": [
+        {
+          "key": "A",
+          "text": "Get ready to watch a video"
+        },
+        {
+          "key": "B",
+          "text": "Applaud the winner"
+        },
+        {
+          "key": "C",
+          "text": "Share copies of a handout"
+        },
+        {
+          "key": "D",
+          "text": "Read a set of directions"
+        }
+      ],
+      "correctAnswer": "A",
+      "explanation": "Trước khi trao giải, mời xem video về chương trình.",
+      "difficulty": "medium"
+    },
+    {
+      "questionNumber": 83,
+      "part": 4,
+      "text": "Who is the speaker presenting to?",
+      "options": [
+        {
+          "key": "A",
+          "text": "Loan officers"
+        },
+        {
+          "key": "B",
+          "text": "Construction workers"
+        },
+        {
+          "key": "C",
+          "text": "City council members"
+        },
+        {
+          "key": "D",
+          "text": "Bus drivers"
+        }
+      ],
+      "correctAnswer": "C",
+      "explanation": "Phát biểu tại cuộc họp hội đồng thành phố.",
+      "difficulty": "easy"
+    },
+    {
+      "questionNumber": 84,
+      "part": 4,
+      "text": "What does the speaker say about some existing structures?",
+      "options": [
+        {
+          "key": "A",
+          "text": "They are in disrepair."
+        },
+        {
+          "key": "B",
+          "text": "They are very small."
+        },
+        {
+          "key": "C",
+          "text": "They were not assembled correctly."
+        },
+        {
+          "key": "D",
+          "text": "They were installed last year."
+        }
+      ],
+      "correctAnswer": "A",
+      "explanation": "Các mái che hiện tại có kính nứt và ghế hỏng.",
+      "difficulty": "medium"
+    },
+    {
+      "questionNumber": 85,
+      "part": 4,
+      "text": "Why does the speaker say, \"its models include a display for advertisements\"?",
+      "options": [
+        {
+          "key": "A",
+          "text": "To respond to a request for information"
+        },
+        {
+          "key": "B",
+          "text": "To justify a cost"
+        },
+        {
+          "key": "C",
+          "text": "To express surprise"
+        },
+        {
+          "key": "D",
+          "text": "To suggest adding to a product line"
+        }
+      ],
+      "correctAnswer": "B",
+      "explanation": "Biện minh cho chi phí cao hơn vì có thể tạo nguồn thu mới.",
+      "difficulty": "hard"
+    },
+    {
+      "questionNumber": 86,
+      "part": 4,
+      "text": "What does the speaker's company sell?",
+      "options": [
+        {
+          "key": "A",
+          "text": "Clothing"
+        },
+        {
+          "key": "B",
+          "text": "Flowers"
+        },
+        {
+          "key": "C",
+          "text": "Toys"
+        },
+        {
+          "key": "D",
+          "text": "Wallpaper"
+        }
+      ],
+      "correctAnswer": "D",
+      "explanation": "Nói về các mẫu giấy dán tường.",
+      "difficulty": "easy"
+    },
+    {
+      "questionNumber": 87,
+      "part": 4,
+      "text": "Why does the speaker praise the listener's team?",
+      "options": [
+        {
+          "key": "A",
+          "text": "They stayed under budget."
+        },
+        {
+          "key": "B",
+          "text": "They won an award."
+        },
+        {
+          "key": "C",
+          "text": "They showed creativity."
+        },
+        {
+          "key": "D",
+          "text": "They completed some work on schedule."
+        }
+      ],
+      "correctAnswer": "C",
+      "explanation": "Đội ngũ thiết kế có những người thực sự sáng tạo.",
+      "difficulty": "medium"
+    },
+    {
+      "questionNumber": 88,
+      "part": 4,
+      "text": "Why does the speaker say, \"we have a full supply of those in stock\"?",
+      "options": [
+        {
+          "key": "A",
+          "text": "To report that inventory has been completed"
+        },
+        {
+          "key": "B",
+          "text": "To offer to share some supplies with another store"
+        },
+        {
+          "key": "C",
+          "text": "To explain that some designs are not needed"
+        },
+        {
+          "key": "D",
+          "text": "To confirm that a customer's order can be filled"
+        }
+      ],
+      "correctAnswer": "C",
+      "explanation": "Giải thích không cần các họa tiết động vật vì đã đầy kho.",
+      "difficulty": "hard"
+    },
+    {
+      "questionNumber": 89,
+      "part": 4,
+      "text": "According to the speaker, what will be opening soon?",
+      "options": [
+        {
+          "key": "A",
+          "text": "A restaurant"
+        },
+        {
+          "key": "B",
+          "text": "A sports arena"
+        },
+        {
+          "key": "C",
+          "text": "A performing arts center"
+        },
+        {
+          "key": "D",
+          "text": "A train station"
+        }
+      ],
+      "correctAnswer": "C",
+      "explanation": "Stewart Performing Arts Center.",
+      "difficulty": "easy"
+    },
+    {
+      "questionNumber": 90,
+      "part": 4,
+      "text": "Why did the building's designer win an award?",
+      "options": [
+        {
+          "key": "A",
+          "text": "For using solar power"
+        },
+        {
+          "key": "B",
+          "text": "For creating a rooftop garden"
+        },
+        {
+          "key": "C",
+          "text": "For installing a moving light display"
+        },
+        {
+          "key": "D",
+          "text": "For employing sound-absorbing walls"
+        }
+      ],
+      "correctAnswer": "D",
+      "explanation": "Tường cách âm bằng vật liệu cao su.",
+      "difficulty": "medium"
+    },
+    {
+      "questionNumber": 91,
+      "part": 4,
+      "text": "What does the speaker emphasize about upcoming events?",
+      "options": [
+        {
+          "key": "A",
+          "text": "Many of them are sold out."
+        },
+        {
+          "key": "B",
+          "text": "Some of them will be affected by the weather."
+        },
+        {
+          "key": "C",
+          "text": "Public transportation will be free."
+        },
+        {
+          "key": "D",
+          "text": "Discounts are available for large groups."
+        }
+      ],
+      "correctAnswer": "A",
+      "explanation": "Cảnh báo nhiều buổi biểu diễn đã bán hết vé.",
+      "difficulty": "medium"
+    },
+    {
+      "questionNumber": 92,
+      "part": 4,
+      "text": "Who is Mona Alamri?",
+      "options": [
+        {
+          "key": "A",
+          "text": "A local official"
+        },
+        {
+          "key": "B",
+          "text": "A ship captain"
+        },
+        {
+          "key": "C",
+          "text": "A marine scientist"
+        },
+        {
+          "key": "D",
+          "text": "An engineer"
+        }
+      ],
+      "correctAnswer": "D",
+      "explanation": "Tiến sĩ Mona Alamri là kỹ sư giao thông hàng đầu.",
+      "difficulty": "easy"
+    },
+    {
+      "questionNumber": 93,
+      "part": 4,
+      "text": "What is the focus of today's podcast episode?",
+      "options": [
+        {
+          "key": "A",
+          "text": "Coastal mapping"
+        },
+        {
+          "key": "B",
+          "text": "Offshore wind farms"
+        },
+        {
+          "key": "C",
+          "text": "Electric ships"
+        },
+        {
+          "key": "D",
+          "text": "Bridge construction"
+        }
+      ],
+      "correctAnswer": "C",
+      "explanation": "Tàu điện không phát thải.",
+      "difficulty": "medium"
+    },
+    {
+      "questionNumber": 94,
+      "part": 4,
+      "text": "What does the speaker alert the listeners to?",
+      "options": [
+        {
+          "key": "A",
+          "text": "A schedule change"
+        },
+        {
+          "key": "B",
+          "text": "A volunteer opportunity"
+        },
+        {
+          "key": "C",
+          "text": "An updated Web site"
+        },
+        {
+          "key": "D",
+          "text": "A project start date"
+        }
+      ],
+      "correctAnswer": "A",
+      "explanation": "Có thay đổi trong lịch tháng tới (nghỉ phép 3 tuần).",
+      "difficulty": "medium"
+    },
+    {
+      "questionNumber": 95,
+      "part": 4,
+      "text": "Where are the listeners?",
+      "options": [
+        {
+          "key": "A",
+          "text": "At a bicycle race"
+        },
+        {
+          "key": "B",
+          "text": "At a marathon"
+        },
+        {
+          "key": "C",
+          "text": "At a parade"
+        },
+        {
+          "key": "D",
+          "text": "At a festival"
+        }
+      ],
+      "correctAnswer": "A",
+      "explanation": "Cuộc đua xe đạp Summerhaven lần thứ 15.",
+      "difficulty": "easy"
+    },
+    {
+      "questionNumber": 96,
+      "part": 4,
+      "text": "What will proceed from the event support?",
+      "options": [
+        {
+          "key": "A",
+          "text": "Creating an athletic field"
+        },
+        {
+          "key": "B",
+          "text": "Renovating a city library"
+        },
+        {
+          "key": "C",
+          "text": "Repairing a bridge"
+        },
+        {
+          "key": "D",
+          "text": "Building a new playground"
+        }
+      ],
+      "correctAnswer": "C",
+      "explanation": "Lợi nhuận giúp sửa cầu đi bộ Grant Park.",
+      "difficulty": "medium"
+    },
+    {
+      "questionNumber": 97,
+      "part": 4,
+      "text": "Look at the graphic. On which street does the speaker say the listeners can find a beverage stand?",
+      "options": [
+        {
+          "key": "A",
+          "text": "Fifth Street"
+        },
+        {
+          "key": "B",
+          "text": "Rose Street"
+        },
+        {
+          "key": "C",
+          "text": "Spring Street"
+        },
+        {
+          "key": "D",
+          "text": "Dill Street"
+        }
+      ],
+      "correctAnswer": "B",
+      "explanation": "Quầy đồ uống nằm giữa tòa thị chính và bảo tàng → Rose Street.",
+      "difficulty": "hard",
+      "imageUrl": "/images/ets-2026/test-05/graphic-q95-97.PNG"
+    },
+    {
+      "questionNumber": 98,
+      "part": 4,
+      "text": "What industry is the mobile app intended for?",
+      "options": [
+        {
+          "key": "A",
+          "text": "Entertainment"
+        },
+        {
+          "key": "B",
+          "text": "Travel"
+        },
+        {
+          "key": "C",
+          "text": "Education"
+        },
+        {
+          "key": "D",
+          "text": "Finance"
+        }
+      ],
+      "correctAnswer": "D",
+      "explanation": "Universal Banking → ngành tài chính.",
+      "difficulty": "easy"
+    },
+    {
+      "questionNumber": 99,
+      "part": 4,
+      "text": "Look at the graphic. Which stage of market research will Sarai talk about?",
+      "options": [
+        {
+          "key": "A",
+          "text": "Stage 1"
+        },
+        {
+          "key": "B",
+          "text": "Stage 2"
+        },
+        {
+          "key": "C",
+          "text": "Stage 3"
+        },
+        {
+          "key": "D",
+          "text": "Stage 4"
+        }
+      ],
+      "correctAnswer": "A",
+      "explanation": "Sarai nói về khách hàng mục tiêu → Stage 1 (Identify target customers).",
+      "difficulty": "hard",
+      "imageUrl": "/images/ets-2026/test-05/graphic-q98-100.PNG"
+    },
+    {
+      "questionNumber": 100,
+      "part": 4,
+      "text": "What will begin next Friday?",
+      "options": [
+        {
+          "key": "A",
+          "text": "A seasonal work schedule"
+        },
+        {
+          "key": "B",
+          "text": "A business conference"
+        },
+        {
+          "key": "C",
+          "text": "A construction project"
+        },
+        {
+          "key": "D",
+          "text": "A contract negotiation"
+        }
+      ],
+      "correctAnswer": "A",
+      "explanation": "Giờ hè bắt đầu (kết thúc 2h chiều thứ Sáu).",
+      "difficulty": "medium"
+    },
+    {
+      "questionNumber": 101,
+      "part": 5,
+      "text": "Mr. Choi, who recently joined the advisory board, is an experienced accountant ------- investor.",
+      "options": [
+        {
+          "key": "A",
+          "text": "but"
+        },
+        {
+          "key": "B",
+          "text": "that"
+        },
+        {
+          "key": "C",
+          "text": "and"
+        },
+        {
+          "key": "D",
+          "text": "yet"
+        }
+      ],
+      "correctAnswer": "C",
+      "explanation": "Cần liên từ nối hai danh từ song hành → and.",
+      "difficulty": "easy"
+    },
+    {
+      "questionNumber": 102,
+      "part": 5,
+      "text": "The first 150 visitors to the new fitness park will each receive a complimentary water -------.",
+      "options": [
+        {
+          "key": "A",
+          "text": "bottle"
+        },
+        {
+          "key": "B",
+          "text": "bottled"
+        },
+        {
+          "key": "C",
+          "text": "bottling"
+        },
+        {
+          "key": "D",
+          "text": "to bottle"
+        }
+      ],
+      "correctAnswer": "A",
+      "explanation": "water bottle = chai nước (danh từ ghép).",
+      "difficulty": "easy"
+    },
+    {
+      "questionNumber": 103,
+      "part": 5,
+      "text": "Operating instructions for the printer will be e-mailed to employees -------.",
+      "options": [
+        {
+          "key": "A",
+          "text": "short"
+        },
+        {
+          "key": "B",
+          "text": "shortly"
+        },
+        {
+          "key": "C",
+          "text": "shorter"
+        },
+        {
+          "key": "D",
+          "text": "shortening"
+        }
+      ],
+      "correctAnswer": "B",
+      "explanation": "Trạng từ shortly = sớm thôi.",
+      "difficulty": "medium"
+    },
+    {
+      "questionNumber": 104,
+      "part": 5,
+      "text": "Dozens of ------- customers have posted positive reviews of Stellenbosch Cycle Works.",
+      "options": [
+        {
+          "key": "A",
+          "text": "satisfy"
+        },
+        {
+          "key": "B",
+          "text": "satisfied"
+        },
+        {
+          "key": "C",
+          "text": "satisfaction"
+        },
+        {
+          "key": "D",
+          "text": "satisfies"
+        }
+      ],
+      "correctAnswer": "B",
+      "explanation": "satisfied customers = khách hàng hài lòng (phân từ làm tính từ).",
+      "difficulty": "medium"
+    },
+    {
+      "questionNumber": 105,
+      "part": 5,
+      "text": "Ms. Lim's best-selling novel has been ------- praised.",
+      "options": [
+        {
+          "key": "A",
+          "text": "respectively"
+        },
+        {
+          "key": "B",
+          "text": "tightly"
+        },
+        {
+          "key": "C",
+          "text": "unhappily"
+        },
+        {
+          "key": "D",
+          "text": "widely"
+        }
+      ],
+      "correctAnswer": "D",
+      "explanation": "widely praised = được ca ngợi rộng rãi.",
+      "difficulty": "medium"
+    },
+    {
+      "questionNumber": 106,
+      "part": 5,
+      "text": "The marketing manager, Ms. Abyola, plans to meet with the press following ------- meeting with the vice president.",
+      "options": [
+        {
+          "key": "A",
+          "text": "her"
+        },
+        {
+          "key": "B",
+          "text": "she"
+        },
+        {
+          "key": "C",
+          "text": "hers"
+        },
+        {
+          "key": "D",
+          "text": "herself"
+        }
+      ],
+      "correctAnswer": "A",
+      "explanation": "Đại từ sở hữu trước danh từ meeting → her.",
+      "difficulty": "easy"
+    },
+    {
+      "questionNumber": 107,
+      "part": 5,
+      "text": "Last weekend, Terriville Community Center held a ------- game night for neighborhood children.",
+      "options": [
+        {
+          "key": "A",
+          "text": "removable"
+        },
+        {
+          "key": "B",
+          "text": "plentiful"
+        },
+        {
+          "key": "C",
+          "text": "lively"
+        },
+        {
+          "key": "D",
+          "text": "current"
+        }
+      ],
+      "correctAnswer": "C",
+      "explanation": "lively game night = đêm trò chơi sôi động.",
+      "difficulty": "medium"
+    },
+    {
+      "questionNumber": 108,
+      "part": 5,
+      "text": "Mr. Lenthe will distribute ------- of the workshop agenda to all managers by Tuesday morning.",
+      "options": [
+        {
+          "key": "A",
+          "text": "copies"
+        },
+        {
+          "key": "B",
+          "text": "copier"
+        },
+        {
+          "key": "C",
+          "text": "copy"
+        },
+        {
+          "key": "D",
+          "text": "copying"
+        }
+      ],
+      "correctAnswer": "A",
+      "explanation": "copies of = các bản sao (số nhiều).",
+      "difficulty": "medium"
+    },
+    {
+      "questionNumber": 109,
+      "part": 5,
+      "text": "Employees are eligible for more vacation time ------- they have been employed for five years.",
+      "options": [
+        {
+          "key": "A",
+          "text": "after"
+        },
+        {
+          "key": "B",
+          "text": "neither"
+        },
+        {
+          "key": "C",
+          "text": "so"
+        },
+        {
+          "key": "D",
+          "text": "thus"
+        }
+      ],
+      "correctAnswer": "A",
+      "explanation": "after they have been employed = sau khi đã làm việc.",
+      "difficulty": "medium"
+    },
+    {
+      "questionNumber": 110,
+      "part": 5,
+      "text": "Managers at Afton Accounting are urged to provide ------- feedback to employees on a regular basis.",
+      "options": [
+        {
+          "key": "A",
+          "text": "construct"
+        },
+        {
+          "key": "B",
+          "text": "constructor"
+        },
+        {
+          "key": "C",
+          "text": "constructive"
+        },
+        {
+          "key": "D",
+          "text": "construction"
+        }
+      ],
+      "correctAnswer": "C",
+      "explanation": "constructive feedback = phản hồi xây dựng.",
+      "difficulty": "medium"
+    },
+    {
+      "questionNumber": 111,
+      "part": 5,
+      "text": "Many farmers markets operate on a seasonal -------, opening in spring and closing in late autumn.",
+      "options": [
+        {
+          "key": "A",
+          "text": "topic"
+        },
+        {
+          "key": "B",
+          "text": "basis"
+        },
+        {
+          "key": "C",
+          "text": "root"
+        },
+        {
+          "key": "D",
+          "text": "sum"
+        }
+      ],
+      "correctAnswer": "B",
+      "explanation": "on a seasonal basis = theo mùa.",
+      "difficulty": "medium"
+    },
+    {
+      "questionNumber": 112,
+      "part": 5,
+      "text": "------- in the housing market has continued to drag down real estate profits.",
+      "options": [
+        {
+          "key": "A",
+          "text": "Weak"
+        },
+        {
+          "key": "B",
+          "text": "Weakly"
+        },
+        {
+          "key": "C",
+          "text": "Weakness"
+        },
+        {
+          "key": "D",
+          "text": "Weakened"
+        }
+      ],
+      "correctAnswer": "C",
+      "explanation": "Weakness = sự suy yếu (danh từ làm chủ ngữ).",
+      "difficulty": "medium"
+    },
+    {
+      "questionNumber": 113,
+      "part": 5,
+      "text": "The sudden merger of Alvy Brothers and Craford Enterprises ------- most financial analysts.",
+      "options": [
+        {
+          "key": "A",
+          "text": "enabled"
+        },
+        {
+          "key": "B",
+          "text": "arranged"
+        },
+        {
+          "key": "C",
+          "text": "surprised"
+        },
+        {
+          "key": "D",
+          "text": "suspected"
+        }
+      ],
+      "correctAnswer": "C",
+      "explanation": "surprised = làm ngạc nhiên.",
+      "difficulty": "medium"
+    },
+    {
+      "questionNumber": 114,
+      "part": 5,
+      "text": "Of all the mistakes people make in the office, not proofreading their e-mails is one of the -------.",
+      "options": [
+        {
+          "key": "A",
+          "text": "commoners"
+        },
+        {
+          "key": "B",
+          "text": "most common"
+        },
+        {
+          "key": "C",
+          "text": "in common"
+        },
+        {
+          "key": "D",
+          "text": "more commonly"
+        }
+      ],
+      "correctAnswer": "B",
+      "explanation": "one of the most common = một trong những phổ biến nhất.",
+      "difficulty": "medium"
+    },
+    {
+      "questionNumber": 115,
+      "part": 5,
+      "text": "Cayfair Global's ------- mission is to transport and deliver client goods in a timely manner.",
+      "options": [
+        {
+          "key": "A",
+          "text": "prompt"
+        },
+        {
+          "key": "B",
+          "text": "primary"
+        },
+        {
+          "key": "C",
+          "text": "bright"
+        },
+        {
+          "key": "D",
+          "text": "nearest"
+        }
+      ],
+      "correctAnswer": "B",
+      "explanation": "primary mission = nhiệm vụ chính.",
+      "difficulty": "medium"
+    },
+    {
+      "questionNumber": 116,
+      "part": 5,
+      "text": "The department supervisor is ------- for ensuring that all safety gear is stowed properly at the end of the shift.",
+      "options": [
+        {
+          "key": "A",
+          "text": "responsibilities"
+        },
+        {
+          "key": "B",
+          "text": "responsibility"
+        },
+        {
+          "key": "C",
+          "text": "responsibly"
+        },
+        {
+          "key": "D",
+          "text": "responsible"
+        }
+      ],
+      "correctAnswer": "D",
+      "explanation": "be responsible for = chịu trách nhiệm về.",
+      "difficulty": "easy"
+    },
+    {
+      "questionNumber": 117,
+      "part": 5,
+      "text": "A three-year project deepened the -------, allowing it to accommodate the largest cargo ships.",
+      "options": [
+        {
+          "key": "A",
+          "text": "tide"
+        },
+        {
+          "key": "B",
+          "text": "boat"
+        },
+        {
+          "key": "C",
+          "text": "harbor"
+        },
+        {
+          "key": "D",
+          "text": "island"
+        }
+      ],
+      "correctAnswer": "C",
+      "explanation": "deepened the harbor = nạo sâu cảng.",
+      "difficulty": "medium"
+    },
+    {
+      "questionNumber": 118,
+      "part": 5,
+      "text": "The experiment's initial results were ------- different from what was expected.",
+      "options": [
+        {
+          "key": "A",
+          "text": "wild"
+        },
+        {
+          "key": "B",
+          "text": "wildest"
+        },
+        {
+          "key": "C",
+          "text": "wildly"
+        },
+        {
+          "key": "D",
+          "text": "wildness"
+        }
+      ],
+      "correctAnswer": "C",
+      "explanation": "wildly different = khác biệt hoàn toàn (trạng từ).",
+      "difficulty": "hard"
+    },
+    {
+      "questionNumber": 119,
+      "part": 5,
+      "text": "------- critical reviews, the movie was a great success at the box office.",
+      "options": [
+        {
+          "key": "A",
+          "text": "During"
+        },
+        {
+          "key": "B",
+          "text": "About"
+        },
+        {
+          "key": "C",
+          "text": "Despite"
+        },
+        {
+          "key": "D",
+          "text": "Over"
+        }
+      ],
+      "correctAnswer": "C",
+      "explanation": "Despite critical reviews = mặc dù bị đánh giá tiêu cực.",
+      "difficulty": "medium"
+    },
+    {
+      "questionNumber": 120,
+      "part": 5,
+      "text": "The spray-on sealant ------- as a protective layer that keeps your tiles from getting scratched.",
+      "options": [
+        {
+          "key": "A",
+          "text": "acts"
+        },
+        {
+          "key": "B",
+          "text": "acting"
+        },
+        {
+          "key": "C",
+          "text": "action"
+        },
+        {
+          "key": "D",
+          "text": "actively"
+        }
+      ],
+      "correctAnswer": "A",
+      "explanation": "acts as = hoạt động như.",
+      "difficulty": "medium"
+    },
+    {
+      "questionNumber": 121,
+      "part": 5,
+      "text": "The contract for the renovation of the park will not be awarded ------- all bids have been submitted.",
+      "options": [
+        {
+          "key": "A",
+          "text": "nor"
+        },
+        {
+          "key": "B",
+          "text": "next"
+        },
+        {
+          "key": "C",
+          "text": "until"
+        },
+        {
+          "key": "D",
+          "text": "because"
+        }
+      ],
+      "correctAnswer": "C",
+      "explanation": "not be awarded until = cho đến khi nộp xong.",
+      "difficulty": "medium"
+    },
+    {
+      "questionNumber": 122,
+      "part": 5,
+      "text": "A recent study showed that substituting refined sugars with maple syrup may have some important ------- benefits.",
+      "options": [
+        {
+          "key": "A",
+          "text": "only"
+        },
+        {
+          "key": "B",
+          "text": "full"
+        },
+        {
+          "key": "C",
+          "text": "legal"
+        },
+        {
+          "key": "D",
+          "text": "health"
+        }
+      ],
+      "correctAnswer": "D",
+      "explanation": "health benefits = lợi ích sức khỏe.",
+      "difficulty": "medium"
+    },
+    {
+      "questionNumber": 123,
+      "part": 5,
+      "text": "Margie Fung was ------- the winners at Sternetz Institute's art competition.",
+      "options": [
+        {
+          "key": "A",
+          "text": "from"
+        },
+        {
+          "key": "B",
+          "text": "upon"
+        },
+        {
+          "key": "C",
+          "text": "among"
+        },
+        {
+          "key": "D",
+          "text": "beyond"
+        }
+      ],
+      "correctAnswer": "C",
+      "explanation": "among the winners = trong số người thắng.",
+      "difficulty": "medium"
+    },
+    {
+      "questionNumber": 124,
+      "part": 5,
+      "text": "Posting updates too infrequently on social media can cause small businesses ------- by their customers.",
+      "options": [
+        {
+          "key": "A",
+          "text": "forgets"
+        },
+        {
+          "key": "B",
+          "text": "to forget"
+        },
+        {
+          "key": "C",
+          "text": "been forgotten"
+        },
+        {
+          "key": "D",
+          "text": "to be forgotten"
+        }
+      ],
+      "correctAnswer": "D",
+      "explanation": "cause sb to be forgotten = bị quên (bị động nguyên mẫu).",
+      "difficulty": "hard"
+    },
+    {
+      "questionNumber": 125,
+      "part": 5,
+      "text": "Ideal for conference rooms, our soundproof panels have been specially designed to ------- unwanted background noise.",
+      "options": [
+        {
+          "key": "A",
+          "text": "compete"
+        },
+        {
+          "key": "B",
+          "text": "absorb"
+        },
+        {
+          "key": "C",
+          "text": "surpass"
+        },
+        {
+          "key": "D",
+          "text": "remain"
+        }
+      ],
+      "correctAnswer": "B",
+      "explanation": "absorb noise = hấp thụ tiếng ồn.",
+      "difficulty": "medium"
+    },
+    {
+      "questionNumber": 126,
+      "part": 5,
+      "text": "Mr. Sato will call into the meeting ------- the hotel's wireless network.",
+      "options": [
+        {
+          "key": "A",
+          "text": "used"
+        },
+        {
+          "key": "B",
+          "text": "using"
+        },
+        {
+          "key": "C",
+          "text": "use"
+        },
+        {
+          "key": "D",
+          "text": "had used"
+        }
+      ],
+      "correctAnswer": "B",
+      "explanation": "Cụm phân từ V-ing chỉ phương tiện → using.",
+      "difficulty": "medium"
+    },
+    {
+      "questionNumber": 127,
+      "part": 5,
+      "text": "Not only has Mr. Ogbu ------- worked on the project, but he has also trained Ms. Jeong to continue the work.",
+      "options": [
+        {
+          "key": "A",
+          "text": "accessibly"
+        },
+        {
+          "key": "B",
+          "text": "diligently"
+        },
+        {
+          "key": "C",
+          "text": "eventually"
+        },
+        {
+          "key": "D",
+          "text": "completely"
+        }
+      ],
+      "correctAnswer": "B",
+      "explanation": "diligently worked = làm việc chăm chỉ.",
+      "difficulty": "medium"
+    },
+    {
+      "questionNumber": 128,
+      "part": 5,
+      "text": "Belker Auto offers a ten-year warranty for ------- who want greater peace of mind.",
+      "options": [
+        {
+          "key": "A",
+          "text": "this"
+        },
+        {
+          "key": "B",
+          "text": "those"
+        },
+        {
+          "key": "C",
+          "text": "somebody"
+        },
+        {
+          "key": "D",
+          "text": "everyone"
+        }
+      ],
+      "correctAnswer": "B",
+      "explanation": "those who = những người mà.",
+      "difficulty": "medium"
+    },
+    {
+      "questionNumber": 129,
+      "part": 5,
+      "text": "After months of planning, the Lanton Bookstore school reading program will finally ------- in October.",
+      "options": [
+        {
+          "key": "A",
+          "text": "observe"
+        },
+        {
+          "key": "B",
+          "text": "represent"
+        },
+        {
+          "key": "C",
+          "text": "commence"
+        },
+        {
+          "key": "D",
+          "text": "access"
+        }
+      ],
+      "correctAnswer": "C",
+      "explanation": "commence = bắt đầu (trang trọng).",
+      "difficulty": "hard"
+    },
+    {
+      "questionNumber": 130,
+      "part": 5,
+      "text": "Independent consultants can be a valuable source of ------- advice to new entrepreneurs.",
+      "options": [
+        {
+          "key": "A",
+          "text": "unfulfilled"
+        },
+        {
+          "key": "B",
+          "text": "indefinite"
+        },
+        {
+          "key": "C",
+          "text": "obedient"
+        },
+        {
+          "key": "D",
+          "text": "impartial"
+        }
+      ],
+      "correctAnswer": "D",
+      "explanation": "impartial advice = lời khuyên khách quan.",
+      "difficulty": "hard"
+    },
+    {
+      "questionNumber": 131,
+      "part": 6,
+      "text": "After ten years in this -------, she will take on a new professional challenge in Paris.",
+      "imageUrl": "/images/ets-2026/test-05/passage-q131-134.PNG",
+      "options": [
+        {
+          "key": "A",
+          "text": "role"
+        },
+        {
+          "key": "B",
+          "text": "school"
+        },
+        {
+          "key": "C",
+          "text": "production"
+        },
+        {
+          "key": "D",
+          "text": "warehouse"
+        }
+      ],
+      "correctAnswer": "A",
+      "explanation": "ten years in this role = mười năm ở vai trò này.",
+      "difficulty": "medium"
+    },
+    {
+      "questionNumber": 132,
+      "part": 6,
+      "text": "------- she will join the leadership team at a top advertising agency.",
+      "imageUrl": "/images/ets-2026/test-05/passage-q131-134.PNG",
+      "options": [
+        {
+          "key": "A",
+          "text": "There"
+        },
+        {
+          "key": "B",
+          "text": "Instead"
+        },
+        {
+          "key": "C",
+          "text": "Otherwise"
+        },
+        {
+          "key": "D",
+          "text": "Afterward"
+        }
+      ],
+      "correctAnswer": "A",
+      "explanation": "There thay thế cho Paris đã nhắc trước đó.",
+      "difficulty": "medium"
+    },
+    {
+      "questionNumber": 133,
+      "part": 6,
+      "text": "Choose the sentence that best fits the passage.",
+      "imageUrl": "/images/ets-2026/test-05/passage-q131-134.PNG",
+      "options": [
+        {
+          "key": "A",
+          "text": "Let him know if you would like to apply."
+        },
+        {
+          "key": "B",
+          "text": "The salary levels are more competitive."
+        },
+        {
+          "key": "C",
+          "text": "He will be joining us on January 12."
+        },
+        {
+          "key": "D",
+          "text": "Spencer Design has lost revenue over the last two years."
+        }
+      ],
+      "correctAnswer": "C",
+      "explanation": "Sau khi giới thiệu Marcos Molina, câu tiếp về ngày bắt đầu làm việc.",
+      "difficulty": "hard"
+    },
+    {
+      "questionNumber": 134,
+      "part": 6,
+      "text": "She ------- a key factor in our company's success.",
+      "imageUrl": "/images/ets-2026/test-05/passage-q131-134.PNG",
+      "options": [
+        {
+          "key": "A",
+          "text": "will be"
+        },
+        {
+          "key": "B",
+          "text": "could be"
+        },
+        {
+          "key": "C",
+          "text": "has been"
+        },
+        {
+          "key": "D",
+          "text": "would have been"
+        }
+      ],
+      "correctAnswer": "C",
+      "explanation": "Hiện tại hoàn thành cho hành động kéo dài từ quá khứ đến hiện tại.",
+      "difficulty": "medium"
+    },
+    {
+      "questionNumber": 135,
+      "part": 6,
+      "text": "Your success ------- a team leader depends on your ability to continuously inspire team members.",
+      "imageUrl": "/images/ets-2026/test-05/passage-q135-138.PNG",
+      "options": [
+        {
+          "key": "A",
+          "text": "where"
+        },
+        {
+          "key": "B",
+          "text": "therefore"
+        },
+        {
+          "key": "C",
+          "text": "for"
+        },
+        {
+          "key": "D",
+          "text": "as"
+        }
+      ],
+      "correctAnswer": "D",
+      "explanation": "as a team leader = với tư cách là (giới từ).",
+      "difficulty": "medium"
+    },
+    {
+      "questionNumber": 136,
+      "part": 6,
+      "text": "Choose the sentence that best fits the passage.",
+      "imageUrl": "/images/ets-2026/test-05/passage-q135-138.PNG",
+      "options": [
+        {
+          "key": "A",
+          "text": "One common problem is employee tardiness."
+        },
+        {
+          "key": "B",
+          "text": "Our seminars cost £120 per session."
+        },
+        {
+          "key": "C",
+          "text": "They communicate with their team regularly to keep them informed."
+        },
+        {
+          "key": "D",
+          "text": "Sign up now and receive a ten percent discount on the registration fee."
+        }
+      ],
+      "correctAnswer": "C",
+      "explanation": "Câu nói về đặc điểm của lãnh đạo giỏi: giao tiếp thường xuyên.",
+      "difficulty": "hard"
+    },
+    {
+      "questionNumber": 137,
+      "part": 6,
+      "text": "In this seminar, you ------- how to better align team members' performance with organizational goals.",
+      "imageUrl": "/images/ets-2026/test-05/passage-q135-138.PNG",
+      "options": [
+        {
+          "key": "A",
+          "text": "learned"
+        },
+        {
+          "key": "B",
+          "text": "will learn"
+        },
+        {
+          "key": "C",
+          "text": "had learned"
+        },
+        {
+          "key": "D",
+          "text": "will have learned"
+        }
+      ],
+      "correctAnswer": "B",
+      "explanation": "In this seminar = sắp diễn ra → tương lai đơn will learn.",
+      "difficulty": "medium"
+    },
+    {
+      "questionNumber": 138,
+      "part": 6,
+      "text": "------- in the seminar acquire proven tools and techniques.",
+      "imageUrl": "/images/ets-2026/test-05/passage-q135-138.PNG",
+      "options": [
+        {
+          "key": "A",
+          "text": "Authorities"
+        },
+        {
+          "key": "B",
+          "text": "Candidates"
+        },
+        {
+          "key": "C",
+          "text": "Participants"
+        },
+        {
+          "key": "D",
+          "text": "Subscribers"
+        }
+      ],
+      "correctAnswer": "C",
+      "explanation": "Participants in the seminar = người tham gia hội thảo.",
+      "difficulty": "medium"
+    },
+    {
+      "questionNumber": 139,
+      "part": 6,
+      "text": "Our research indicates that you are planning to open a physical therapy clinic in Queen's Point ------- the next few months.",
+      "imageUrl": "/images/ets-2026/test-05/passage-q139-142.PNG",
+      "options": [
+        {
+          "key": "A",
+          "text": "either"
+        },
+        {
+          "key": "B",
+          "text": "perhaps"
+        },
+        {
+          "key": "C",
+          "text": "within"
+        },
+        {
+          "key": "D",
+          "text": "since"
+        }
+      ],
+      "correctAnswer": "C",
+      "explanation": "within the next few months = trong vòng vài tháng tới.",
+      "difficulty": "medium"
+    },
+    {
+      "questionNumber": 140,
+      "part": 6,
+      "text": "Choose the sentence that best fits the passage.",
+      "imageUrl": "/images/ets-2026/test-05/passage-q139-142.PNG",
+      "options": [
+        {
+          "key": "A",
+          "text": "Let us help you achieve these objectives."
+        },
+        {
+          "key": "B",
+          "text": "Ask us about potential tax advantages."
+        },
+        {
+          "key": "C",
+          "text": "Our software makes booking appointments easy."
+        },
+        {
+          "key": "D",
+          "text": "A well-trained staff is all you need to succeed."
+        }
+      ],
+      "correctAnswer": "A",
+      "explanation": "these objectives nhắc lại các mục tiêu (thoải mái, nhẹ nhàng, nâng cao hình ảnh).",
+      "difficulty": "hard"
+    },
+    {
+      "questionNumber": 141,
+      "part": 6,
+      "text": "We look forward to working with you to create an inviting ------- you can be proud of.",
+      "imageUrl": "/images/ets-2026/test-05/passage-q139-142.PNG",
+      "options": [
+        {
+          "key": "A",
+          "text": "space"
+        },
+        {
+          "key": "B",
+          "text": "event"
+        },
+        {
+          "key": "C",
+          "text": "signal"
+        },
+        {
+          "key": "D",
+          "text": "moment"
+        }
+      ],
+      "correctAnswer": "A",
+      "explanation": "Công ty thiết kế nội thất tạo không gian → space.",
+      "difficulty": "medium"
+    },
+    {
+      "questionNumber": 142,
+      "part": 6,
+      "text": "You can view photos of our ------- projects at our Web site.",
+      "imageUrl": "/images/ets-2026/test-05/passage-q139-142.PNG",
+      "options": [
+        {
+          "key": "A",
+          "text": "educational"
+        },
+        {
+          "key": "B",
+          "text": "residential"
+        },
+        {
+          "key": "C",
+          "text": "preventive"
+        },
+        {
+          "key": "D",
+          "text": "previous"
+        }
+      ],
+      "correctAnswer": "D",
+      "explanation": "previous projects = các dự án trước đây (portfolio).",
+      "difficulty": "medium"
+    },
+    {
+      "questionNumber": 143,
+      "part": 6,
+      "text": "Choose the sentence that best fits the passage.",
+      "imageUrl": "/images/ets-2026/test-05/passage-q143-146.PNG",
+      "options": [
+        {
+          "key": "A",
+          "text": "Lengthier articles are sometimes considered as well."
+        },
+        {
+          "key": "B",
+          "text": "The editorial staff has won numerous awards."
+        },
+        {
+          "key": "C",
+          "text": "Subscribe now and receive a free tote bag."
+        },
+        {
+          "key": "D",
+          "text": "Please allow four to six weeks for delivery."
+        }
+      ],
+      "correctAnswer": "A",
+      "explanation": "Bổ sung ngoại lệ cho giới hạn 800-1200 từ vừa nhắc.",
+      "difficulty": "hard"
+    },
+    {
+      "questionNumber": 144,
+      "part": 6,
+      "text": "------- so, make sure to take time to read our publication.",
+      "imageUrl": "/images/ets-2026/test-05/passage-q143-146.PNG",
+      "options": [
+        {
+          "key": "A",
+          "text": "In any event"
+        },
+        {
+          "key": "B",
+          "text": "If you cannot"
+        },
+        {
+          "key": "C",
+          "text": "Before you do"
+        },
+        {
+          "key": "D",
+          "text": "On the contrary"
+        }
+      ],
+      "correctAnswer": "C",
+      "explanation": "Before you do (pitch) = trước khi gửi ý tưởng.",
+      "difficulty": "hard"
+    },
+    {
+      "questionNumber": 145,
+      "part": 6,
+      "text": "------- respond promptly to article proposals.",
+      "imageUrl": "/images/ets-2026/test-05/passage-q143-146.PNG",
+      "options": [
+        {
+          "key": "A",
+          "text": "We"
+        },
+        {
+          "key": "B",
+          "text": "They"
+        },
+        {
+          "key": "C",
+          "text": "Some"
+        },
+        {
+          "key": "D",
+          "text": "These"
+        }
+      ],
+      "correctAnswer": "A",
+      "explanation": "Ban biên tập tạp chí (chủ ngữ thực hiện hành động phản hồi) → We.",
+      "difficulty": "medium"
+    },
+    {
+      "questionNumber": 146,
+      "part": 6,
+      "text": "Full-length ------- are generally discouraged at the proposal stage.",
+      "imageUrl": "/images/ets-2026/test-05/passage-q143-146.PNG",
+      "options": [
+        {
+          "key": "A",
+          "text": "forms"
+        },
+        {
+          "key": "B",
+          "text": "drafts"
+        },
+        {
+          "key": "C",
+          "text": "contracts"
+        },
+        {
+          "key": "D",
+          "text": "schedules"
+        }
+      ],
+      "correctAnswer": "B",
+      "explanation": "Full-length drafts = bản thảo đầy đủ (giai đoạn đề xuất nên gửi outline trước).",
+      "difficulty": "medium"
+    },
+    {
+      "questionNumber": 147,
+      "part": 7,
+      "text": "What is the main purpose of the information?",
+      "imageUrl": "/images/ets-2026/test-05/passage-q147-148.PNG",
+      "options": [
+        {
+          "key": "A",
+          "text": "To announce the opening of a new business"
+        },
+        {
+          "key": "B",
+          "text": "To publicize storage spaces available for rent"
+        },
+        {
+          "key": "C",
+          "text": "To attract people who want to promote their businesses"
+        },
+        {
+          "key": "D",
+          "text": "To encourage people to buy newspaper subscriptions"
+        }
+      ],
+      "correctAnswer": "C",
+      "explanation": "Quảng cáo bán vị trí quảng cáo trên báo cho doanh nghiệp.",
+      "difficulty": "medium"
+    },
+    {
+      "questionNumber": 148,
+      "part": 7,
+      "text": "What is suggested about the Clearpoint Times?",
+      "imageUrl": "/images/ets-2026/test-05/passage-q147-148.PNG",
+      "options": [
+        {
+          "key": "A",
+          "text": "It is currently for sale."
+        },
+        {
+          "key": "B",
+          "text": "It is a real estate magazine."
+        },
+        {
+          "key": "C",
+          "text": "It is a local weekly publication."
+        },
+        {
+          "key": "D",
+          "text": "It is a national daily newspaper."
+        }
+      ],
+      "correctAnswer": "C",
+      "explanation": "Tiếp cận hàng nghìn người trong khu vực mỗi tuần → ấn phẩm địa phương hàng tuần.",
+      "difficulty": "medium"
+    },
+    {
+      "questionNumber": 149,
+      "part": 7,
+      "text": "What is the purpose of the e-mail?",
+      "imageUrl": "/images/ets-2026/test-05/passage-q149-150.PNG",
+      "options": [
+        {
+          "key": "A",
+          "text": "To request a meeting"
+        },
+        {
+          "key": "B",
+          "text": "To confirm a recent price change"
+        },
+        {
+          "key": "C",
+          "text": "To apologize for a scheduling delay"
+        },
+        {
+          "key": "D",
+          "text": "To seek additional staff for some work"
+        }
+      ],
+      "correctAnswer": "A",
+      "explanation": "Anh ấy muốn sắp xếp buổi hẹn để thảo luận dự án cảnh quan.",
+      "difficulty": "medium"
+    },
+    {
+      "questionNumber": 150,
+      "part": 7,
+      "text": "What does Mr. Paltz ask Mr. and Ms. Witt to do?",
+      "imageUrl": "/images/ets-2026/test-05/passage-q149-150.PNG",
+      "options": [
+        {
+          "key": "A",
+          "text": "Submit a payment"
+        },
+        {
+          "key": "B",
+          "text": "Reschedule a work project"
+        },
+        {
+          "key": "C",
+          "text": "Avoid parking near a job site"
+        },
+        {
+          "key": "D",
+          "text": "Provide him with landscaping ideas"
+        }
+      ],
+      "correctAnswer": "D",
+      "explanation": "Anh ấy muốn họ thảo luận và đưa ra mong đợi thiết kế.",
+      "difficulty": "medium"
+    },
+    {
+      "questionNumber": 151,
+      "part": 7,
+      "text": "For whom is the advertisement most likely intended?",
+      "imageUrl": "/images/ets-2026/test-05/passage-q151-152.PNG",
+      "options": [
+        {
+          "key": "A",
+          "text": "People who want to tour Jeel City"
+        },
+        {
+          "key": "B",
+          "text": "People who enjoy outdoor activities"
+        },
+        {
+          "key": "C",
+          "text": "Business conference organizers"
+        },
+        {
+          "key": "D",
+          "text": "Hotel industry professionals"
+        }
+      ],
+      "correctAnswer": "B",
+      "explanation": "Khách sạn gần biển, hoạt động lướt ván, đi bộ, đạp xe → khách yêu hoạt động ngoài trời.",
+      "difficulty": "medium"
+    },
+    {
+      "questionNumber": 152,
+      "part": 7,
+      "text": "What is suggested about some of the rooms at Cavalina Hotel?",
+      "imageUrl": "/images/ets-2026/test-05/passage-q151-152.PNG",
+      "options": [
+        {
+          "key": "A",
+          "text": "They contain antique furniture."
+        },
+        {
+          "key": "B",
+          "text": "They have recently been updated."
+        },
+        {
+          "key": "C",
+          "text": "Guests can view them online."
+        },
+        {
+          "key": "D",
+          "text": "Guests can prepare food in them."
+        }
+      ],
+      "correctAnswer": "D",
+      "explanation": "Có phòng suite hai phòng có bếp → khách tự nấu ăn.",
+      "difficulty": "medium"
+    },
+    {
+      "questionNumber": 153,
+      "part": 7,
+      "text": "At 9:50 A.M., what does Mr. Cho most likely mean when he writes, \"I know you'd be a great fit\"?",
+      "imageUrl": "/images/ets-2026/test-05/passage-q153-154.PNG",
+      "options": [
+        {
+          "key": "A",
+          "text": "He would like to hire Ms. Rosetti."
+        },
+        {
+          "key": "B",
+          "text": "He has worked at Yadav Digital Marketing for a long time."
+        },
+        {
+          "key": "C",
+          "text": "He thinks Yadav Digital Marketing needs a new director."
+        },
+        {
+          "key": "D",
+          "text": "He thinks Ms. Rosetti is a good candidate for a job."
+        }
+      ],
+      "correctAnswer": "D",
+      "explanation": "Cô đáp ứng đủ yêu cầu nên ông tin cô phù hợp.",
+      "difficulty": "medium"
+    },
+    {
+      "questionNumber": 154,
+      "part": 7,
+      "text": "What is indicated about Mr. Cho?",
+      "imageUrl": "/images/ets-2026/test-05/passage-q153-154.PNG",
+      "options": [
+        {
+          "key": "A",
+          "text": "He has known Ms. Mayer for a long time."
+        },
+        {
+          "key": "B",
+          "text": "He works at the same company as Ms. Mayer."
+        },
+        {
+          "key": "C",
+          "text": "He will help Ms. Rosetti write a cover letter."
+        },
+        {
+          "key": "D",
+          "text": "He is a director at a marketing firm."
+        }
+      ],
+      "correctAnswer": "A",
+      "explanation": "Elise và tôi là bạn bè nhiều năm rồi.",
+      "difficulty": "medium"
+    },
+    {
+      "questionNumber": 155,
+      "part": 7,
+      "text": "What kind of company most likely is Covered Bridge Industries?",
+      "imageUrl": "/images/ets-2026/test-05/passage-q155-157.PNG",
+      "options": [
+        {
+          "key": "A",
+          "text": "An ice cream producer"
+        },
+        {
+          "key": "B",
+          "text": "An advertising agency"
+        },
+        {
+          "key": "C",
+          "text": "A beverage manufacturer"
+        },
+        {
+          "key": "D",
+          "text": "A maker of electric fans"
+        }
+      ],
+      "correctAnswer": "C",
+      "explanation": "Trì hoãn ra mắt nước giải khát mới Balmy Breeze → nhà sản xuất đồ uống.",
+      "difficulty": "easy"
+    },
+    {
+      "questionNumber": 156,
+      "part": 7,
+      "text": "Why did the leaders of Covered Bridge Industries not follow their original plan?",
+      "imageUrl": "/images/ets-2026/test-05/passage-q155-157.PNG",
+      "options": [
+        {
+          "key": "A",
+          "text": "They wanted to wait for more favorable market conditions."
+        },
+        {
+          "key": "B",
+          "text": "Quality tests revealed several problems."
+        },
+        {
+          "key": "C",
+          "text": "Their advertising campaign was not ready on time."
+        },
+        {
+          "key": "D",
+          "text": "An essential ingredient was unavailable."
+        }
+      ],
+      "correctAnswer": "D",
+      "explanation": "Thiếu chiết xuất xoài (nguyên liệu chính).",
+      "difficulty": "medium"
+    },
+    {
+      "questionNumber": 157,
+      "part": 7,
+      "text": "During what month will Covered Bridge Industries most likely launch a new product?",
+      "imageUrl": "/images/ets-2026/test-05/passage-q155-157.PNG",
+      "options": [
+        {
+          "key": "A",
+          "text": "In June"
+        },
+        {
+          "key": "B",
+          "text": "In August"
+        },
+        {
+          "key": "C",
+          "text": "In November"
+        },
+        {
+          "key": "D",
+          "text": "In December"
+        }
+      ],
+      "correctAnswer": "D",
+      "explanation": "Hoàn tất kiểm tra chất lượng tháng 11 để ra mắt tháng kế (12).",
+      "difficulty": "hard"
+    },
+    {
+      "questionNumber": 158,
+      "part": 7,
+      "text": "Why is the Zipvid app no longer being used?",
+      "imageUrl": "/images/ets-2026/test-05/passage-q158-160.PNG",
+      "options": [
+        {
+          "key": "A",
+          "text": "It is more expensive than similar programs."
+        },
+        {
+          "key": "B",
+          "text": "It was used by only a few employees."
+        },
+        {
+          "key": "C",
+          "text": "It malfunctioned too frequently."
+        },
+        {
+          "key": "D",
+          "text": "It is not compatible with new computers."
+        }
+      ],
+      "correctAnswer": "C",
+      "explanation": "Curtain Call tin cậy hơn và ít gặp sự cố hơn → Zipvid hay bị treo.",
+      "difficulty": "medium"
+    },
+    {
+      "questionNumber": 159,
+      "part": 7,
+      "text": "According to the memo, what can Mr. Costa help employees do?",
+      "imageUrl": "/images/ets-2026/test-05/passage-q158-160.PNG",
+      "options": [
+        {
+          "key": "A",
+          "text": "Convert videos"
+        },
+        {
+          "key": "B",
+          "text": "Recover lost data"
+        },
+        {
+          "key": "C",
+          "text": "Order software"
+        },
+        {
+          "key": "D",
+          "text": "Complete a form"
+        }
+      ],
+      "correctAnswer": "A",
+      "explanation": "Costa hỗ trợ chuyển đổi video sang định dạng tương thích Curtain Call.",
+      "difficulty": "medium"
+    },
+    {
+      "questionNumber": 160,
+      "part": 7,
+      "text": "In which of the positions marked [1], [2], [3], and [4] does the following sentence best belong? \"It has already been installed on all work computers, so you can begin using it immediately.\"",
+      "imageUrl": "/images/ets-2026/test-05/passage-q158-160.PNG",
+      "options": [
+        {
+          "key": "A",
+          "text": "[1]"
+        },
+        {
+          "key": "B",
+          "text": "[2]"
+        },
+        {
+          "key": "C",
+          "text": "[3]"
+        },
+        {
+          "key": "D",
+          "text": "[4]"
+        }
+      ],
+      "correctAnswer": "B",
+      "explanation": "Câu sau giới thiệu Curtain Call (vị trí [2]).",
+      "difficulty": "hard"
+    },
+    {
+      "questionNumber": 161,
+      "part": 7,
+      "text": "What type of business do Ms. Ohtani and Ms. Rivera most likely operate?",
+      "imageUrl": "/images/ets-2026/test-05/passage-q161-164.PNG",
+      "options": [
+        {
+          "key": "A",
+          "text": "A real estate office"
+        },
+        {
+          "key": "B",
+          "text": "An event planning service"
+        },
+        {
+          "key": "C",
+          "text": "A bookshop"
+        },
+        {
+          "key": "D",
+          "text": "A media company"
+        }
+      ],
+      "correctAnswer": "C",
+      "explanation": "Khu dân cư yêu sách và đọc + sự kiện với tác giả → hiệu sách.",
+      "difficulty": "medium"
+    },
+    {
+      "questionNumber": 162,
+      "part": 7,
+      "text": "What is one similarity between A Thousand Stories and Rosier's Garden Center?",
+      "imageUrl": "/images/ets-2026/test-05/passage-q161-164.PNG",
+      "options": [
+        {
+          "key": "A",
+          "text": "Both are operated by co-owners."
+        },
+        {
+          "key": "B",
+          "text": "Both serve customers worldwide."
+        },
+        {
+          "key": "C",
+          "text": "Both advertise primarily online."
+        },
+        {
+          "key": "D",
+          "text": "Both struggled when they first opened."
+        }
+      ],
+      "correctAnswer": "D",
+      "explanation": "Cả hai đều có khởi đầu khó khăn ban đầu.",
+      "difficulty": "hard"
+    },
+    {
+      "questionNumber": 163,
+      "part": 7,
+      "text": "The word \"turn\" in paragraph 5, line 4, is closest in meaning to",
+      "imageUrl": "/images/ets-2026/test-05/passage-q161-164.PNG",
+      "options": [
+        {
+          "key": "A",
+          "text": "join"
+        },
+        {
+          "key": "B",
+          "text": "gain"
+        },
+        {
+          "key": "C",
+          "text": "change"
+        },
+        {
+          "key": "D",
+          "text": "reverse"
+        }
+      ],
+      "correctAnswer": "B",
+      "explanation": "turn a profit = tạo ra lợi nhuận → gain.",
+      "difficulty": "hard"
+    },
+    {
+      "questionNumber": 164,
+      "part": 7,
+      "text": "According to the article, what will Mr. Rosier most likely do soon?",
+      "imageUrl": "/images/ets-2026/test-05/passage-q161-164.PNG",
+      "options": [
+        {
+          "key": "A",
+          "text": "He will write a book about his experience."
+        },
+        {
+          "key": "B",
+          "text": "He will move his home to Morganville."
+        },
+        {
+          "key": "C",
+          "text": "He will return to his previous career."
+        },
+        {
+          "key": "D",
+          "text": "He will open another garden center."
+        }
+      ],
+      "correctAnswer": "D",
+      "explanation": "Đang xem xét Morganville cho cửa hàng thứ hai.",
+      "difficulty": "medium"
+    },
+    {
+      "questionNumber": 165,
+      "part": 7,
+      "text": "What responsibility of a supervisor is mentioned in the notice?",
+      "imageUrl": "/images/ets-2026/test-05/passage-q165-167.PNG",
+      "options": [
+        {
+          "key": "A",
+          "text": "Distributing employee manuals"
+        },
+        {
+          "key": "B",
+          "text": "Overseeing the work of the safety coordinator"
+        },
+        {
+          "key": "C",
+          "text": "Regularly updating the posted safety rules"
+        },
+        {
+          "key": "D",
+          "text": "Providing safety guidelines for specific jobs"
+        }
+      ],
+      "correctAnswer": "D",
+      "explanation": "Một số vị trí cần hướng dẫn an toàn bổ sung từ quản lý trực tiếp.",
+      "difficulty": "medium"
+    },
+    {
+      "questionNumber": 166,
+      "part": 7,
+      "text": "The word \"measures\" in paragraph 1, line 6, is closest in meaning to",
+      "imageUrl": "/images/ets-2026/test-05/passage-q165-167.PNG",
+      "options": [
+        {
+          "key": "A",
+          "text": "amounts"
+        },
+        {
+          "key": "B",
+          "text": "procedures"
+        },
+        {
+          "key": "C",
+          "text": "dimensions"
+        },
+        {
+          "key": "D",
+          "text": "penalties"
+        }
+      ],
+      "correctAnswer": "B",
+      "explanation": "additional measures = các biện pháp bổ sung → procedures.",
+      "difficulty": "medium"
+    },
+    {
+      "questionNumber": 167,
+      "part": 7,
+      "text": "According to the notice, why should employees contact Ms. Schneider?",
+      "imageUrl": "/images/ets-2026/test-05/passage-q165-167.PNG",
+      "options": [
+        {
+          "key": "A",
+          "text": "To apply for a new position"
+        },
+        {
+          "key": "B",
+          "text": "To update their contact information"
+        },
+        {
+          "key": "C",
+          "text": "To suggest additional safety rules"
+        },
+        {
+          "key": "D",
+          "text": "To request a training schedule"
+        }
+      ],
+      "correctAnswer": "D",
+      "explanation": "Liên hệ Schneider để biết lịch các buổi đào tạo sơ cứu.",
+      "difficulty": "medium"
+    },
+    {
+      "questionNumber": 168,
+      "part": 7,
+      "text": "What is suggested about Dora County?",
+      "imageUrl": "/images/ets-2026/test-05/passage-q168-171.PNG",
+      "options": [
+        {
+          "key": "A",
+          "text": "It gets cold enough to snow there."
+        },
+        {
+          "key": "B",
+          "text": "It has a large population."
+        },
+        {
+          "key": "C",
+          "text": "It purchases equipment from local vendors."
+        },
+        {
+          "key": "D",
+          "text": "It has many four-lane highways."
+        }
+      ],
+      "correctAnswer": "A",
+      "explanation": "Trách nhiệm gồm tổ chức hoạt động dọn tuyết → có tuyết.",
+      "difficulty": "medium"
+    },
+    {
+      "questionNumber": 169,
+      "part": 7,
+      "text": "According to the job description, what should the highway supervisor do if a serious problem with a crew member arises?",
+      "imageUrl": "/images/ets-2026/test-05/passage-q168-171.PNG",
+      "options": [
+        {
+          "key": "A",
+          "text": "Suggest a replacement worker."
+        },
+        {
+          "key": "B",
+          "text": "Restrict the crew member's activities."
+        },
+        {
+          "key": "C",
+          "text": "Notify the division director of the issue."
+        },
+        {
+          "key": "D",
+          "text": "Designate a liaison to explain the matter to management."
+        }
+      ],
+      "correctAnswer": "C",
+      "explanation": "Thông báo cho giám đốc bộ phận về vấn đề nhân sự nghiêm trọng.",
+      "difficulty": "medium"
+    },
+    {
+      "questionNumber": 170,
+      "part": 7,
+      "text": "What is NOT a responsibility of the highway supervisor?",
+      "imageUrl": "/images/ets-2026/test-05/passage-q168-171.PNG",
+      "options": [
+        {
+          "key": "A",
+          "text": "Operating construction equipment"
+        },
+        {
+          "key": "B",
+          "text": "Conducting yearly performance reviews"
+        },
+        {
+          "key": "C",
+          "text": "Managing the monthly budget"
+        },
+        {
+          "key": "D",
+          "text": "Negotiating crew member salaries"
+        }
+      ],
+      "correctAnswer": "D",
+      "explanation": "Mô tả không nhắc đến thương lượng lương.",
+      "difficulty": "hard"
+    },
+    {
+      "questionNumber": 171,
+      "part": 7,
+      "text": "In which of the positions marked [1], [2], [3], and [4] does the following sentence best belong? \"The position features several duties related to staff management.\"",
+      "imageUrl": "/images/ets-2026/test-05/passage-q168-171.PNG",
+      "options": [
+        {
+          "key": "A",
+          "text": "[1]"
+        },
+        {
+          "key": "B",
+          "text": "[2]"
+        },
+        {
+          "key": "C",
+          "text": "[3]"
+        },
+        {
+          "key": "D",
+          "text": "[4]"
+        }
+      ],
+      "correctAnswer": "B",
+      "explanation": "Câu chủ đề cho đoạn nói về tuyển dụng và đào tạo nhân viên.",
+      "difficulty": "hard"
+    },
+    {
+      "questionNumber": 172,
+      "part": 7,
+      "text": "What is the purpose of the conversation?",
+      "imageUrl": "/images/ets-2026/test-05/passage-q172-175.PNG",
+      "options": [
+        {
+          "key": "A",
+          "text": "To inform a homeowner about a construction project"
+        },
+        {
+          "key": "B",
+          "text": "To explain why a repair cannot be completed on time"
+        },
+        {
+          "key": "C",
+          "text": "To discuss the timing of a public event"
+        },
+        {
+          "key": "D",
+          "text": "To coordinate a work schedule"
+        }
+      ],
+      "correctAnswer": "D",
+      "explanation": "Họ điều phối lịch tháo và lắp lại ống dẫn khí.",
+      "difficulty": "medium"
+    },
+    {
+      "questionNumber": 173,
+      "part": 7,
+      "text": "What can be concluded about 210 Leon Drive?",
+      "imageUrl": "/images/ets-2026/test-05/passage-q172-175.PNG",
+      "options": [
+        {
+          "key": "A",
+          "text": "It is a private home."
+        },
+        {
+          "key": "B",
+          "text": "It is an office building."
+        },
+        {
+          "key": "C",
+          "text": "It is an apartment complex."
+        },
+        {
+          "key": "D",
+          "text": "It is an industrial warehouse."
+        }
+      ],
+      "correctAnswer": "A",
+      "explanation": "Nhà của gia đình Brown → nhà riêng.",
+      "difficulty": "medium"
+    },
+    {
+      "questionNumber": 174,
+      "part": 7,
+      "text": "What is suggested about the members of Mr. Gruyter's work crew?",
+      "imageUrl": "/images/ets-2026/test-05/passage-q172-175.PNG",
+      "options": [
+        {
+          "key": "A",
+          "text": "They have added Ms. Kaluza to their group."
+        },
+        {
+          "key": "B",
+          "text": "They are repairing Mr. Gollancz' office."
+        },
+        {
+          "key": "C",
+          "text": "They usually complete jobs in fewer than three days."
+        },
+        {
+          "key": "D",
+          "text": "They have already begun work on Mr. Amadi's apartment."
+        }
+      ],
+      "correctAnswer": "C",
+      "explanation": "Anh ấy nói công việc này khá lớn, 3-4 ngày → bình thường < 3 ngày.",
+      "difficulty": "hard"
+    },
+    {
+      "questionNumber": 175,
+      "part": 7,
+      "text": "At 3:25 P.M., what does Ms. Kaluza most likely mean when she writes, \"You got it\"?",
+      "imageUrl": "/images/ets-2026/test-05/passage-q172-175.PNG",
+      "options": [
+        {
+          "key": "A",
+          "text": "She wants to confirm that Mr. Gollancz understands her."
+        },
+        {
+          "key": "B",
+          "text": "She will be at 210 Leon Drive early Monday morning."
+        },
+        {
+          "key": "C",
+          "text": "She will send Mr. Gruyter a bill for some work."
+        },
+        {
+          "key": "D",
+          "text": "She hopes Mr. Gollancz will contact the Brown family."
+        }
+      ],
+      "correctAnswer": "B",
+      "explanation": "Đồng ý quay lại sáng sớm thứ Hai để lắp lại ống dẫn khí.",
+      "difficulty": "hard"
+    },
+    {
+      "questionNumber": 176,
+      "part": 7,
+      "text": "What is indicated on the Web page?",
+      "imageUrl": "/images/ets-2026/test-05/passage-q176-180-a.PNG;/images/ets-2026/test-05/passage-q176-180-b.PNG",
+      "options": [
+        {
+          "key": "A",
+          "text": "Big Mix is currently not available."
+        },
+        {
+          "key": "B",
+          "text": "Mr. Buddy is the best-selling item."
+        },
+        {
+          "key": "C",
+          "text": "Some items cannot be delivered."
+        },
+        {
+          "key": "D",
+          "text": "All cement mixers have been discounted."
+        }
+      ],
+      "correctAnswer": "C",
+      "explanation": "Easy Star và Big Mix chỉ nhận tại cửa hàng → không giao.",
+      "difficulty": "medium"
+    },
+    {
+      "questionNumber": 177,
+      "part": 7,
+      "text": "What item did Mr. Weaver order from JJ's Home and Garden Suppliers?",
+      "imageUrl": "/images/ets-2026/test-05/passage-q176-180-a.PNG;/images/ets-2026/test-05/passage-q176-180-b.PNG",
+      "options": [
+        {
+          "key": "A",
+          "text": "Easy Star"
+        },
+        {
+          "key": "B",
+          "text": "Concretizer"
+        },
+        {
+          "key": "C",
+          "text": "Big Mix"
+        },
+        {
+          "key": "D",
+          "text": "Max for Pros"
+        }
+      ],
+      "correctAnswer": "B",
+      "explanation": "Máy 4 feet khối → đối chiếu bảng là Concretizer.",
+      "difficulty": "medium"
+    },
+    {
+      "questionNumber": 178,
+      "part": 7,
+      "text": "In the e-mail, the word \"full\" in paragraph 1, line 7, is closest in meaning to",
+      "imageUrl": "/images/ets-2026/test-05/passage-q176-180-a.PNG;/images/ets-2026/test-05/passage-q176-180-b.PNG",
+      "options": [
+        {
+          "key": "A",
+          "text": "supplied"
+        },
+        {
+          "key": "B",
+          "text": "occupied"
+        },
+        {
+          "key": "C",
+          "text": "complete"
+        },
+        {
+          "key": "D",
+          "text": "abundant"
+        }
+      ],
+      "correctAnswer": "C",
+      "explanation": "full refund = hoàn tiền toàn bộ → complete.",
+      "difficulty": "medium"
+    },
+    {
+      "questionNumber": 179,
+      "part": 7,
+      "text": "What is suggested about JJ's Home and Garden Suppliers?",
+      "imageUrl": "/images/ets-2026/test-05/passage-q176-180-a.PNG;/images/ets-2026/test-05/passage-q176-180-b.PNG",
+      "options": [
+        {
+          "key": "A",
+          "text": "It specializes in the sale of large construction equipment."
+        },
+        {
+          "key": "B",
+          "text": "It sells most of its products online."
+        },
+        {
+          "key": "C",
+          "text": "It offers free delivery on all products."
+        },
+        {
+          "key": "D",
+          "text": "It has stores in more than one location."
+        }
+      ],
+      "correctAnswer": "D",
+      "explanation": "Có cửa hàng tại New Gralen hoặc Paloner → nhiều chi nhánh.",
+      "difficulty": "hard"
+    },
+    {
+      "questionNumber": 180,
+      "part": 7,
+      "text": "What is the cost of a model CVY-XU cement mixer at Alliance Hardware Store?",
+      "imageUrl": "/images/ets-2026/test-05/passage-q176-180-a.PNG;/images/ets-2026/test-05/passage-q176-180-b.PNG",
+      "options": [
+        {
+          "key": "A",
+          "text": "$189"
+        },
+        {
+          "key": "B",
+          "text": "$359"
+        },
+        {
+          "key": "C",
+          "text": "$499"
+        },
+        {
+          "key": "D",
+          "text": "$629"
+        }
+      ],
+      "correctAnswer": "B",
+      "explanation": "CVY-XU là Mr. Buddy ($359), email nói Alliance bán cùng mức giá.",
+      "difficulty": "hard"
+    },
+    {
+      "questionNumber": 181,
+      "part": 7,
+      "text": "What does the Web page indicate about guidelines for international trade?",
+      "imageUrl": "/images/ets-2026/test-05/passage-q181-185-a.PNG;/images/ets-2026/test-05/passage-q181-185-b.PNG",
+      "options": [
+        {
+          "key": "A",
+          "text": "They are different for each country."
+        },
+        {
+          "key": "B",
+          "text": "They often serve multiple purposes."
+        },
+        {
+          "key": "C",
+          "text": "They are updated on a regular basis."
+        },
+        {
+          "key": "D",
+          "text": "They are stricter than they once were."
+        }
+      ],
+      "correctAnswer": "A",
+      "explanation": "Hướng dẫn khác nhau giữa các quốc gia.",
+      "difficulty": "medium"
+    },
+    {
+      "questionNumber": 182,
+      "part": 7,
+      "text": "What does the Web page mention about the cost of a monthly retainer?",
+      "imageUrl": "/images/ets-2026/test-05/passage-q181-185-a.PNG;/images/ets-2026/test-05/passage-q181-185-b.PNG",
+      "options": [
+        {
+          "key": "A",
+          "text": "It cannot be negotiated."
+        },
+        {
+          "key": "B",
+          "text": "It costs $329 per month."
+        },
+        {
+          "key": "C",
+          "text": "It is set during an initial meeting."
+        },
+        {
+          "key": "D",
+          "text": "It may be waived based on client needs."
+        }
+      ],
+      "correctAnswer": "C",
+      "explanation": "Phí được thương lượng trong buổi tư vấn ban đầu.",
+      "difficulty": "medium"
+    },
+    {
+      "questionNumber": 183,
+      "part": 7,
+      "text": "Why does Mr. Yadav provide information about his company in the e-mail?",
+      "imageUrl": "/images/ets-2026/test-05/passage-q181-185-a.PNG;/images/ets-2026/test-05/passage-q181-185-b.PNG",
+      "options": [
+        {
+          "key": "A",
+          "text": "He is responding to a request from a prospective colleague."
+        },
+        {
+          "key": "B",
+          "text": "He forgot to include the information on a form."
+        },
+        {
+          "key": "C",
+          "text": "He is following an established process."
+        },
+        {
+          "key": "D",
+          "text": "He is unsure whether a questionnaire he completed was received."
+        }
+      ],
+      "correctAnswer": "D",
+      "explanation": "Không nhận email xác nhận nên không chắc biểu mẫu đã gửi thành công.",
+      "difficulty": "medium"
+    },
+    {
+      "questionNumber": 184,
+      "part": 7,
+      "text": "Who will Mr. Yadav most likely work with?",
+      "imageUrl": "/images/ets-2026/test-05/passage-q181-185-a.PNG;/images/ets-2026/test-05/passage-q181-185-b.PNG",
+      "options": [
+        {
+          "key": "A",
+          "text": "Ms. Giordano"
+        },
+        {
+          "key": "B",
+          "text": "Mr. Woodrow"
+        },
+        {
+          "key": "C",
+          "text": "Ms. Wong"
+        },
+        {
+          "key": "D",
+          "text": "Mr. Fadel"
+        }
+      ],
+      "correctAnswer": "B",
+      "explanation": "Công ty máy giặt/máy sấy = thiết bị gia dụng → Jonah Woodrow.",
+      "difficulty": "hard"
+    },
+    {
+      "questionNumber": 185,
+      "part": 7,
+      "text": "What is mentioned in the e-mail about Isvarani Ltd.?",
+      "imageUrl": "/images/ets-2026/test-05/passage-q181-185-a.PNG;/images/ets-2026/test-05/passage-q181-185-b.PNG",
+      "options": [
+        {
+          "key": "A",
+          "text": "It wants its suppliers to remain confidential."
+        },
+        {
+          "key": "B",
+          "text": "It violated an international policy by accident."
+        },
+        {
+          "key": "C",
+          "text": "It has plans to expand its operations."
+        },
+        {
+          "key": "D",
+          "text": "It needs more information about domestic cargo requirements."
+        }
+      ],
+      "correctAnswer": "C",
+      "explanation": "Mong muốn mở rộng sang thương mại quốc tế tại châu Âu.",
+      "difficulty": "medium"
+    },
+    {
+      "questionNumber": 186,
+      "part": 7,
+      "text": "What is mentioned about Sonfaya Mutual's financial education programs?",
+      "imageUrl": "/images/ets-2026/test-05/passage-q186-190-a.PNG;/images/ets-2026/test-05/passage-q186-190-b.PNG;/images/ets-2026/test-05/passage-q186-190-c.PNG",
+      "options": [
+        {
+          "key": "A",
+          "text": "They are offered for free."
+        },
+        {
+          "key": "B",
+          "text": "They are held once a month."
+        },
+        {
+          "key": "C",
+          "text": "They are led by account managers."
+        },
+        {
+          "key": "D",
+          "text": "They are held in partnership with AFR."
+        }
+      ],
+      "correctAnswer": "A",
+      "explanation": "Trừ dịch vụ hỗ trợ thuế, tất cả quyền lợi (gồm giáo dục) đều miễn phí.",
+      "difficulty": "medium"
+    },
+    {
+      "questionNumber": 187,
+      "part": 7,
+      "text": "What is indicated in the article about Sonfaya Mutual?",
+      "imageUrl": "/images/ets-2026/test-05/passage-q186-190-a.PNG;/images/ets-2026/test-05/passage-q186-190-b.PNG;/images/ets-2026/test-05/passage-q186-190-c.PNG",
+      "options": [
+        {
+          "key": "A",
+          "text": "It raised the amount for opening a BASA."
+        },
+        {
+          "key": "B",
+          "text": "It will continue to add customer privileges."
+        },
+        {
+          "key": "C",
+          "text": "It updated its Web site recently."
+        },
+        {
+          "key": "D",
+          "text": "It is an international company."
+        }
+      ],
+      "correctAnswer": "D",
+      "explanation": "Trụ sở Kigali và văn phòng tại Tanzania, Uganda, Zambia → công ty quốc tế.",
+      "difficulty": "medium"
+    },
+    {
+      "questionNumber": 188,
+      "part": 7,
+      "text": "Why is Ms. Chabinga looking for a previous AFR issue?",
+      "imageUrl": "/images/ets-2026/test-05/passage-q186-190-a.PNG;/images/ets-2026/test-05/passage-q186-190-b.PNG;/images/ets-2026/test-05/passage-q186-190-c.PNG",
+      "options": [
+        {
+          "key": "A",
+          "text": "To learn about the offerings of Sonfaya Mutual's competitors"
+        },
+        {
+          "key": "B",
+          "text": "To know more about current customer-centric trends"
+        },
+        {
+          "key": "C",
+          "text": "To learn about the history of Sonfaya Mutual"
+        },
+        {
+          "key": "D",
+          "text": "To know more about Sonfaya Mutual's BASA"
+        }
+      ],
+      "correctAnswer": "C",
+      "explanation": "Số tháng Một có bài về nguồn gốc và lịch sử Sonfaya.",
+      "difficulty": "hard"
+    },
+    {
+      "questionNumber": 189,
+      "part": 7,
+      "text": "What is suggested about Ms. Nirere?",
+      "imageUrl": "/images/ets-2026/test-05/passage-q186-190-a.PNG;/images/ets-2026/test-05/passage-q186-190-b.PNG;/images/ets-2026/test-05/passage-q186-190-c.PNG",
+      "options": [
+        {
+          "key": "A",
+          "text": "She will not have to pay the BASA monthly fee for six months."
+        },
+        {
+          "key": "B",
+          "text": "She did not receive her debit card in a timely fashion."
+        },
+        {
+          "key": "C",
+          "text": "She is a new Sonfaya Mutual customer."
+        },
+        {
+          "key": "D",
+          "text": "She met with Mr. Akanmanzi recently."
+        }
+      ],
+      "correctAnswer": "A",
+      "explanation": "Khách BASA mới được miễn phí hằng tháng 6 tháng đầu.",
+      "difficulty": "hard"
+    },
+    {
+      "questionNumber": 190,
+      "part": 7,
+      "text": "What is a purpose of the letter?",
+      "imageUrl": "/images/ets-2026/test-05/passage-q186-190-a.PNG;/images/ets-2026/test-05/passage-q186-190-b.PNG;/images/ets-2026/test-05/passage-q186-190-c.PNG",
+      "options": [
+        {
+          "key": "A",
+          "text": "To explain the benefits of investing"
+        },
+        {
+          "key": "B",
+          "text": "To describe the options for managing funds"
+        },
+        {
+          "key": "C",
+          "text": "To explain how online stock trading works"
+        },
+        {
+          "key": "D",
+          "text": "To provide a department's contact information"
+        }
+      ],
+      "correctAnswer": "B",
+      "explanation": "Mô tả các cách quản lý tài khoản: chuyển tiền, rút ATM, giao dịch chứng khoán.",
+      "difficulty": "medium"
+    },
+    {
+      "questionNumber": 191,
+      "part": 7,
+      "text": "What can be concluded about Valley Road Bed and Breakfast?",
+      "imageUrl": "/images/ets-2026/test-05/passage-q191-195-a.PNG;/images/ets-2026/test-05/passage-q191-195-b.PNG;/images/ets-2026/test-05/passage-q191-195-c.PNG",
+      "options": [
+        {
+          "key": "A",
+          "text": "It does not serve breakfast before 7:00 A.M."
+        },
+        {
+          "key": "B",
+          "text": "It provides a shuttle service to the airport."
+        },
+        {
+          "key": "C",
+          "text": "It is located next to the Ivor Hotel and Conference Center."
+        },
+        {
+          "key": "D",
+          "text": "It is no longer accepting reservations for April."
+        }
+      ],
+      "correctAnswer": "A",
+      "explanation": "Cô ấy phải ăn sáng tại Eileen's Diner thay vì B&B → B&B không phục vụ sớm.",
+      "difficulty": "hard"
+    },
+    {
+      "questionNumber": 192,
+      "part": 7,
+      "text": "According to the form, what are employees expected to do?",
+      "imageUrl": "/images/ets-2026/test-05/passage-q191-195-a.PNG;/images/ets-2026/test-05/passage-q191-195-b.PNG;/images/ets-2026/test-05/passage-q191-195-c.PNG",
+      "options": [
+        {
+          "key": "A",
+          "text": "Seek permission to travel from the finance department"
+        },
+        {
+          "key": "B",
+          "text": "Present their work at a conference"
+        },
+        {
+          "key": "C",
+          "text": "E-mail expense reports to a manager"
+        },
+        {
+          "key": "D",
+          "text": "Submit receipts within 30 days of travel"
+        }
+      ],
+      "correctAnswer": "D",
+      "explanation": "Tải hóa đơn lên TravelNow trong 30 ngày.",
+      "difficulty": "medium"
+    },
+    {
+      "questionNumber": 193,
+      "part": 7,
+      "text": "What is most likely true about the Digital Graphic Designers Conference?",
+      "imageUrl": "/images/ets-2026/test-05/passage-q191-195-a.PNG;/images/ets-2026/test-05/passage-q191-195-b.PNG;/images/ets-2026/test-05/passage-q191-195-c.PNG",
+      "options": [
+        {
+          "key": "A",
+          "text": "It lasted three days."
+        },
+        {
+          "key": "B",
+          "text": "It began on April 28."
+        },
+        {
+          "key": "C",
+          "text": "It was held in Santa Clara."
+        },
+        {
+          "key": "D",
+          "text": "It provided meals to participants."
+        }
+      ],
+      "correctAnswer": "C",
+      "explanation": "Eileen's Diner ở Santa Clara, nằm trong Ivor Conference Center → hội nghị tại Santa Clara.",
+      "difficulty": "hard"
+    },
+    {
+      "questionNumber": 194,
+      "part": 7,
+      "text": "Based on the form, what is true about Ms. Park?",
+      "imageUrl": "/images/ets-2026/test-05/passage-q191-195-a.PNG;/images/ets-2026/test-05/passage-q191-195-b.PNG;/images/ets-2026/test-05/passage-q191-195-c.PNG",
+      "options": [
+        {
+          "key": "A",
+          "text": "She is a financial analyst."
+        },
+        {
+          "key": "B",
+          "text": "She organizes conferences."
+        },
+        {
+          "key": "C",
+          "text": "She is a department manager."
+        },
+        {
+          "key": "D",
+          "text": "She owns a bed-and-breakfast."
+        }
+      ],
+      "correctAnswer": "C",
+      "explanation": "Phê duyệt biểu mẫu → trưởng bộ phận.",
+      "difficulty": "medium"
+    },
+    {
+      "questionNumber": 195,
+      "part": 7,
+      "text": "What is indicated on the receipt about Eileen's Diner?",
+      "imageUrl": "/images/ets-2026/test-05/passage-q191-195-a.PNG;/images/ets-2026/test-05/passage-q191-195-b.PNG;/images/ets-2026/test-05/passage-q191-195-c.PNG",
+      "options": [
+        {
+          "key": "A",
+          "text": "It is open 24 hours a day."
+        },
+        {
+          "key": "B",
+          "text": "It offers daily breakfast specials."
+        },
+        {
+          "key": "C",
+          "text": "It has locations around the country."
+        },
+        {
+          "key": "D",
+          "text": "It has been in business for more than twenty years."
+        }
+      ],
+      "correctAnswer": "D",
+      "explanation": "Do gia đình sở hữu và điều hành hơn 20 năm.",
+      "difficulty": "medium"
+    },
+    {
+      "questionNumber": 196,
+      "part": 7,
+      "text": "What is the purpose of the first e-mail?",
+      "imageUrl": "/images/ets-2026/test-05/passage-q196-200-a.PNG;/images/ets-2026/test-05/passage-q196-200-b.PNG;/images/ets-2026/test-05/passage-q196-200-c.PNG",
+      "options": [
+        {
+          "key": "A",
+          "text": "To verify an equipment order"
+        },
+        {
+          "key": "B",
+          "text": "To request machinery repair"
+        },
+        {
+          "key": "C",
+          "text": "To report on a monthly inspection"
+        },
+        {
+          "key": "D",
+          "text": "To encourage increased production"
+        }
+      ],
+      "correctAnswer": "B",
+      "explanation": "Yêu cầu cử kỹ thuật viên kiểm tra máy Quinar 5000.",
+      "difficulty": "easy"
+    },
+    {
+      "questionNumber": 197,
+      "part": 7,
+      "text": "What has Mr. Nahm decided to do to solve the problem in Building F?",
+      "imageUrl": "/images/ets-2026/test-05/passage-q196-200-a.PNG;/images/ets-2026/test-05/passage-q196-200-b.PNG;/images/ets-2026/test-05/passage-q196-200-c.PNG",
+      "options": [
+        {
+          "key": "A",
+          "text": "Employ additional workers"
+        },
+        {
+          "key": "B",
+          "text": "Hire an outside company"
+        },
+        {
+          "key": "C",
+          "text": "Lease a new building"
+        },
+        {
+          "key": "D",
+          "text": "Purchase a new machine"
+        }
+      ],
+      "correctAnswer": "B",
+      "explanation": "Thuê Konner Services (công ty ngoài) đến kiểm tra và sửa.",
+      "difficulty": "medium"
+    },
+    {
+      "questionNumber": 198,
+      "part": 7,
+      "text": "Who most likely is Mr. Nadiner?",
+      "imageUrl": "/images/ets-2026/test-05/passage-q196-200-a.PNG;/images/ets-2026/test-05/passage-q196-200-b.PNG;/images/ets-2026/test-05/passage-q196-200-c.PNG",
+      "options": [
+        {
+          "key": "A",
+          "text": "The director of maintenance"
+        },
+        {
+          "key": "B",
+          "text": "The lead technician"
+        },
+        {
+          "key": "C",
+          "text": "A line worker"
+        },
+        {
+          "key": "D",
+          "text": "A line manager"
+        }
+      ],
+      "correctAnswer": "D",
+      "explanation": "Người được CC để sắp xếp công nhân làm thêm giờ → quản lý dây chuyền.",
+      "difficulty": "hard"
+    },
+    {
+      "questionNumber": 199,
+      "part": 7,
+      "text": "What company does Ms. Landon most likely work for?",
+      "imageUrl": "/images/ets-2026/test-05/passage-q196-200-a.PNG;/images/ets-2026/test-05/passage-q196-200-b.PNG;/images/ets-2026/test-05/passage-q196-200-c.PNG",
+      "options": [
+        {
+          "key": "A",
+          "text": "Quinar Machines"
+        },
+        {
+          "key": "B",
+          "text": "Altran Motors"
+        },
+        {
+          "key": "C",
+          "text": "Konner Services"
+        },
+        {
+          "key": "D",
+          "text": "Haverford Industries"
+        }
+      ],
+      "correctAnswer": "D",
+      "explanation": "Báo cáo Konner ghi địa điểm là Haverford Industries → cô ấy là quản lý sản xuất ở đó.",
+      "difficulty": "hard"
+    },
+    {
+      "questionNumber": 200,
+      "part": 7,
+      "text": "Based on the report, what test resulted in the replacement of a machine part?",
+      "imageUrl": "/images/ets-2026/test-05/passage-q196-200-a.PNG;/images/ets-2026/test-05/passage-q196-200-b.PNG;/images/ets-2026/test-05/passage-q196-200-c.PNG",
+      "options": [
+        {
+          "key": "A",
+          "text": "102"
+        },
+        {
+          "key": "B",
+          "text": "393"
+        },
+        {
+          "key": "C",
+          "text": "477"
+        },
+        {
+          "key": "D",
+          "text": "488"
+        }
+      ],
+      "correctAnswer": "C",
+      "explanation": "Test 477: công tắc Baum X33 bị lỗi → đã thay thế.",
+      "difficulty": "medium"
+    }
+  ]
+}
