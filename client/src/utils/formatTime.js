@@ -38,6 +38,64 @@ export function formatDuration(totalSeconds) {
 }
 
 /**
+ * Format thời lượng hiển thị đầy đủ ngày + giờ + phút (tối đa 3 đơn vị).
+ * Khác `formatDuration` ở chỗ KHÔNG cắt còn 2 đơn vị — dùng khi KPI tổng tích
+ * luỹ cần thấy cả 3 mốc (vd `3d 20h 45p` thay vì `3d 20h`).
+ *   - < 1 phút  → "0p"
+ *   - < 1 giờ   → "12p"
+ *   - < 1 ngày  → "2h" hoặc "2h 15p"
+ *   - ≥ 1 ngày  → "3d", "3d 20h", "3d 45p", hoặc "3d 20h 45p"
+ */
+export function formatDurationFull(totalSeconds) {
+  const s = Math.max(0, Math.floor(totalSeconds));
+  const totalMinutes = Math.floor(s / 60);
+  if (totalMinutes < 60) return `${totalMinutes}p`;
+
+  const totalHours = Math.floor(totalMinutes / 60);
+  const minutes = totalMinutes % 60;
+  if (totalHours < 24) {
+    return minutes === 0 ? `${totalHours}h` : `${totalHours}h ${minutes}p`;
+  }
+
+  const days = Math.floor(totalHours / 24);
+  const hours = totalHours % 24;
+  const parts = [`${days}d`];
+  if (hours > 0) parts.push(`${hours}h`);
+  if (minutes > 0) parts.push(`${minutes}p`);
+  return parts.join(" ");
+}
+
+/**
+ * Format thời lượng kiểu tiếng Việt đầy đủ ngày + giờ + phút (tối đa 3 đơn vị).
+ * Khác `formatDurationVi` ở chỗ KHÔNG cắt còn 2 đơn vị — dùng khi KPI tổng tích
+ * luỹ cần thấy cả 3 mốc (vd `3 ngày 20 giờ 58 phút`).
+ *   - < 1 phút  → "0 phút"
+ *   - < 1 giờ   → "12 phút"
+ *   - < 1 ngày  → "2 giờ" hoặc "2 giờ 15 phút"
+ *   - ≥ 1 ngày  → "3 ngày", "3 ngày 20 giờ", "3 ngày 45 phút", hoặc "3 ngày 20 giờ 45 phút"
+ */
+export function formatDurationViFull(totalSeconds) {
+  const s = Math.max(0, Math.floor(totalSeconds));
+  const totalMinutes = Math.floor(s / 60);
+  if (totalMinutes < 60) return `${totalMinutes} phút`;
+
+  const totalHours = Math.floor(totalMinutes / 60);
+  const minutes = totalMinutes % 60;
+  if (totalHours < 24) {
+    return minutes === 0
+      ? `${totalHours} giờ`
+      : `${totalHours} giờ ${minutes} phút`;
+  }
+
+  const days = Math.floor(totalHours / 24);
+  const hours = totalHours % 24;
+  const parts = [`${days} ngày`];
+  if (hours > 0) parts.push(`${hours} giờ`);
+  if (minutes > 0) parts.push(`${minutes} phút`);
+  return parts.join(" ");
+}
+
+/**
  * Format thời lượng kiểu tiếng Việt đầy đủ — dùng cho KPI lớn hoặc câu mô tả,
  * nơi có chỗ để hiển thị từ ngữ rõ ràng (thay vì viết tắt d/h/p/s).
  *   - < 1 phút  → "45 giây"

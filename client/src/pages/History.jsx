@@ -31,7 +31,7 @@ import {
 import { KpiCard } from "@/components/common/KpiCard";
 import { EmptyState } from "@/components/common/EmptyState";
 import { resultService } from "@/services/resultService";
-import { formatDuration } from "@/utils/formatTime";
+import { formatDuration, formatDurationFull } from "@/utils/formatTime";
 import { ROUTES } from "@/constants/routes";
 import { cn } from "@/lib/utils";
 
@@ -149,7 +149,7 @@ export default function History() {
             label="Tổng thời gian"
             value={
               stats.totalDurationSec
-                ? formatDuration(stats.totalDurationSec)
+                ? formatDurationFull(stats.totalDurationSec)
                 : "0p"
             }
             bordered={false}
