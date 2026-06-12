@@ -43,10 +43,20 @@ export const resultService = {
     const graded = gradeTest({ gradedAnswers: gradedInput, testType: test.type });
 
     const submittedAt = new Date();
-    const durationSec = Math.max(
+    const rawDurationSec = Math.max(
       0,
       Math.round((submittedAt.getTime() - new Date(startedAt).getTime()) / 1000),
     );
+    // Cap chống dữ liệu phi lý khi client gửi startedAt cũ (draft tồn tại nhiều
+    // ngày → auto-submit / submit lại). Full Test có Timer auto-submit khi hết
+    // durationMinutes nên cap = durationMinutes*60 + 5 phút buffer cho mạng.
+    // Practice count-up không auto-submit → cho gấp 4 lần durationMinutes hoặc
+    // 4 giờ (số nào lớn hơn) — đủ rộng cho người làm chậm, vẫn chặn outlier.
+    const maxDurationSec =
+      test.type === 'full'
+        ? test.durationMinutes * 60 + 300
+        : Math.max(test.durationMinutes * 60 * 4, 4 * 3600);
+    const durationSec = Math.min(rawDurationSec, maxDurationSec);
 
     const result = await Result.create({
       userId,

@@ -36,6 +36,9 @@ export default function PracticeDetail() {
   // Per-question time tracking
   const timeSpentRef = useRef({});
   const lastTickRef = useRef(Date.now());
+  // Đánh dấu đã nộp bài → cleanup autosave KHÔNG re-create draft đã bị xoá
+  // trong handleSubmit (cleanup chạy sau navigate gây resurrect draft cũ).
+  const submittedRef = useRef(false);
 
   // 1. Load test
   useEffect(() => {
@@ -71,17 +74,36 @@ export default function PracticeDetail() {
           }
         }
 
-        // Practice (elapsed): timer chỉ đếm thời gian user thực sự đang ở trang.
-        // Khôi phục startedAt = NOW - elapsedSec đã lưu → Timer wall-clock liền
-        // mạch với thời lượng đã làm trước đó, KHÔNG cộng dồn thời gian rời trang.
-        //
-        // Full Test (countdown): giữ nguyên startedAt gốc — thi thật vẫn phải
-        // đếm cả khi user rời tab (auto-submit nếu hết giờ).
+        // 3 chế độ:
+        // 1. Full Test thật (countdown): giữ nguyên startedAt gốc — thi thật phải
+        //    đếm cả khi user rời tab (auto-submit nếu hết giờ). Nếu draft quá hạn
+        //    durationMinutes → coi như hết giờ, xoá draft + bắt đầu ván mới để
+        //    tránh auto-submit bài rỗng.
+        // 2. Full Test mode=practice (count-up): cùng logic như Practice — chỉ đếm
+        //    thời gian user thực sự ở trang. KHÔNG dùng startedAt gốc của draft
+        //    (sẽ countup ra hàng chục giờ nếu draft cũ).
+        // 3. Practice (count-up): khôi phục startedAt = NOW - elapsedSec đã lưu
+        //    → Timer wall-clock liền mạch, KHÔNG cộng dồn thời gian rời trang.
         const isFullTest = t.type === 'full';
+        const isFullTestExam = isFullTest && !isPracticeMode;
+        const isFullTestDraftExpired =
+          isFullTestExam &&
+          draftStartedAt &&
+          Date.now() - new Date(draftStartedAt).getTime() >= t.durationMinutes * 60 * 1000;
+        if (isFullTestDraftExpired) {
+          localStorage.removeItem(draftKey(userId, testId));
+          draftStartedAt = null;
+          draftAnswers = {};
+          draftFlagged = [];
+          draftCurrentIndex = 0;
+          draftTimeSpent = {};
+          draftElapsedSec = 0;
+        }
+
         let startTime;
-        if (isFullTest) {
+        if (isFullTestExam) {
           startTime = draftStartedAt ? new Date(draftStartedAt) : new Date();
-        } else if (draftRaw && draftElapsedSec > 0) {
+        } else if (draftElapsedSec > 0) {
           startTime = new Date(Date.now() - draftElapsedSec * 1000);
         } else {
           startTime = new Date();
@@ -102,7 +124,7 @@ export default function PracticeDetail() {
     return () => {
       cancelled = true;
     };
-  }, [testId, userId]);
+  }, [testId, userId, isPracticeMode]);
 
   const questions = test?.questions || [];
   const currentQuestion = questions[currentIndex];
@@ -160,9 +182,12 @@ export default function PracticeDetail() {
     const id = setInterval(saveDraft, 10000);
     // Save 1 lần nữa khi unmount (user navigate đi) để giảm độ trễ giữa 2 lần
     // autosave 10s. Tránh trường hợp user làm thêm 5s rồi back ra → chỉ mất 5s.
+    // Nhưng nếu đã nộp bài (submittedRef) thì KHÔNG save — handleSubmit đã xoá
+    // draft, save lại sẽ resurrect với elapsedSec phình to → lần sau vào "Làm
+    // lại đề" thấy timer 65h.
     return () => {
       clearInterval(id);
-      saveDraft();
+      if (!submittedRef.current) saveDraft();
     };
   }, [test, startedAt, answers, flagged, currentIndex, testId, userId]);
 
@@ -243,7 +268,8 @@ export default function PracticeDetail() {
 
     try {
       const res = await resultService.submit(payload);
-      // Clear draft
+      // Clear draft + đánh dấu submitted để cleanup autosave KHÔNG resurrect draft
+      submittedRef.current = true;
       localStorage.removeItem(draftKey(userId, testId));
       // Navigate to result detail
       navigate(`/results/${res.data.result._id}`);
