@@ -135,6 +135,7 @@ export function buildNotifications({ results = [], tests = [], user = {} }) {
       title: "Có đề thi mới",
       description: `${t.title} đã được thêm vào hệ thống.`,
       time: formatDateTimeVi(t.createdAt),
+      timestamp: new Date(t.createdAt).getTime(),
       to: `/tests/${t._id}`,
     });
   });
@@ -153,6 +154,7 @@ export function buildNotifications({ results = [], tests = [], user = {} }) {
         title: `Đã ${daysInactive} ngày bạn chưa luyện tập`,
         description: "Quay lại học vài câu để giữ phong độ nhé.",
         time: `Bài gần nhất ${timeAgo(latestResult.submittedAt).toLowerCase()}`,
+        timestamp: new Date(latestResult.submittedAt).getTime(),
         to: ROUTES.PRACTICE,
       });
     }
@@ -164,6 +166,7 @@ export function buildNotifications({ results = [], tests = [], user = {} }) {
       iconColor: "text-primary-600 bg-primary-100",
       title: "Hãy thử bài luyện tập đầu tiên",
       description: "Chọn một Part bất kỳ để bắt đầu hành trình TOEIC của bạn.",
+      timestamp: now,
       to: ROUTES.PRACTICE,
     });
   }
@@ -177,6 +180,9 @@ export function buildNotifications({ results = [], tests = [], user = {} }) {
       iconColor: "text-orange-600 bg-orange-100",
       title: `Chuỗi ${streak} ngày liên tiếp 🔥`,
       description: "Bạn đang giữ phong độ rất tốt — đừng phá chuỗi nhé!",
+      timestamp: latestResult
+        ? new Date(latestResult.submittedAt).getTime()
+        : now,
       to: ROUTES.STATISTICS,
     });
   }
@@ -192,6 +198,9 @@ export function buildNotifications({ results = [], tests = [], user = {} }) {
       iconColor: "text-secondary-600 bg-secondary-100",
       title: "Thử Full Test để biết điểm hiện tại",
       description: "Mô phỏng 200 câu, 120 phút — chuẩn như đề thi thật.",
+      timestamp: latestResult
+        ? new Date(latestResult.submittedAt).getTime()
+        : now,
       to: ROUTES.FULL_TEST,
     });
   }
@@ -209,6 +218,7 @@ export function buildNotifications({ results = [], tests = [], user = {} }) {
       iconColor: "text-amber-600 bg-amber-100",
       title: `Chúc mừng! Bạn đã đạt mục tiêu ${target}`,
       description: `Điểm gần nhất ${latestFullScore} — hãy đặt mục tiêu cao hơn để tiếp tục thử thách.`,
+      timestamp: new Date(fullResult.submittedAt).getTime(),
       to: ROUTES.PROFILE,
     });
   } else if (
@@ -224,6 +234,7 @@ export function buildNotifications({ results = [], tests = [], user = {} }) {
       iconColor: "text-secondary-600 bg-secondary-100",
       title: `Chỉ còn ${target - latestFullScore} điểm nữa là đạt mục tiêu!`,
       description: `Điểm gần nhất: ${latestFullScore} / mục tiêu ${target}.`,
+      timestamp: new Date(fullResult.submittedAt).getTime(),
       to: ROUTES.STATISTICS,
     });
   }
@@ -245,6 +256,7 @@ export function buildNotifications({ results = [], tests = [], user = {} }) {
         title: `Kỷ lục cá nhân mới: ${latest.scoreTotal} điểm 👑`,
         description: `Vượt qua kỷ lục cũ ${previousMax} điểm. Tuyệt vời!`,
         time: timeAgo(latest.submittedAt),
+        timestamp: new Date(latest.submittedAt).getTime(),
         to: `/results/${latest._id}`,
       });
     }
@@ -268,9 +280,15 @@ export function buildNotifications({ results = [], tests = [], user = {} }) {
         recentFullTest.testId?.title || "bài Full Test gần nhất"
       }".`,
       time: timeAgo(recentFullTest.submittedAt),
+      timestamp: new Date(recentFullTest.submittedAt).getTime(),
       to: `/results/${recentFullTest._id}`,
     });
   }
+
+  // Sort mới nhất lên trên cùng. Mỗi loại đều gắn `timestamp` đại diện cho mốc
+  // thời gian gốc (createdAt của đề / submittedAt của bài). Thông báo không có
+  // gốc thời gian rõ ràng (no-results) gắn `now` để hiện gần đầu.
+  notifications.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
 
   return notifications;
 }
