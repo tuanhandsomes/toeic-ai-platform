@@ -15,17 +15,20 @@ import { ApiError } from '../utils/ApiError.js';
 // và `*.PNG` ràng buộc cứng). Chỉ allow đúng 2 format này để tránh false
 // promise — admin upload WAV/JPG sẽ pass mimetype filter nhưng fail naming
 // convention sau đó, gây confusion.
-const ALLOWED_AUDIO = new Set([
+/** @internal — exported for tests */
+export const ALLOWED_AUDIO = new Set([
   'audio/mpeg', // .mp3 chuẩn (RFC 3003)
   'audio/mp3',  // .mp3 fallback một số browser/OS gửi
 ]);
 
-const ALLOWED_IMAGE = new Set([
+/** @internal — exported for tests */
+export const ALLOWED_IMAGE = new Set([
   'image/png',
   'image/jpeg',
 ]);
 
-const makeFilter = (allowed, kind) => (_req, file, cb) => {
+/** @internal — exported for tests */
+export const makeFilter = (allowed, kind) => (_req, file, cb) => {
   if (allowed.has(file.mimetype)) return cb(null, true);
   cb(ApiError.badRequest(`Định dạng file không hợp lệ cho ${kind}: ${file.mimetype}`));
 };

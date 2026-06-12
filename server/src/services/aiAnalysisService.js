@@ -86,7 +86,8 @@ function pickOptionText(options, key) {
  * @param {Array} questions    - Question docs (lean) cho các questionId xuất hiện
  * @returns {{ errorBreakdown: Object, wrongQuestionDetails: Array, strongPatterns: Object }}
  */
-function buildErrorPatterns(answers, questions) {
+/** @internal — exported for unit testing only */
+export function buildErrorPatterns(answers, questions) {
   if (!answers?.length || !questions?.length) {
     return { errorBreakdown: {}, wrongQuestionDetails: [], strongPatterns: {} };
   }
@@ -275,7 +276,8 @@ const EMPTY_ATTEMPT_ACCURACY = 5;          // hoặc accuracy <5%
  * điểm mạnh/yếu thực sự — sẽ bịa nội dung. Tốt hơn là short-circuit + trả
  * thông điệp rõ ràng yêu cầu user làm lại nghiêm túc.
  */
-function detectEmptyAttempt(result) {
+/** @internal — exported for unit testing only */
+export function detectEmptyAttempt(result) {
   const total = result.totalQuestions || 0;
   if (total === 0) return { isEmpty: true, answeredCount: 0, total: 0 };
   const answeredCount = (result.answers || []).filter(
@@ -287,7 +289,8 @@ function detectEmptyAttempt(result) {
   return { isEmpty, answeredCount, total };
 }
 
-function buildEmptyAttemptAnalysis({ answeredCount, total }) {
+/** @internal — exported for unit testing only */
+export function buildEmptyAttemptAnalysis({ answeredCount, total }) {
   const blank = total - answeredCount;
   return {
     strengths: [],

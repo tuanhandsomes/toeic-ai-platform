@@ -36,7 +36,8 @@ const AUDIO_NAME_REGEX = /^E26-T(\d{2})-(\d{2})(?:-(\d{2,3}))?\.mp3$/i;
 const IMAGE_PART1_REGEX = /^(0[1-9]|10)\.(png|jpe?g)$/i;
 const IMAGE_PASSAGE_REGEX = /^(graphic|passage)-q\d+-\d+(-[a-c])?\.(png|jpe?g)$/i;
 
-function deriveTestCode(test) {
+/** @internal — exported for unit testing only */
+export function deriveTestCode(test) {
   const match = test.title?.match(/Test\s+(\d+)/i);
   if (!match) {
     throw ApiError.badRequest(
@@ -46,7 +47,8 @@ function deriveTestCode(test) {
   return `T${match[1].padStart(2, '0')}`;
 }
 
-function testCodeToFolder(testCode) {
+/** @internal — exported for unit testing only */
+export function testCodeToFolder(testCode) {
   return `test-${testCode.slice(1).padStart(2, '0')}`;
 }
 
@@ -54,7 +56,8 @@ function testCodeToFolder(testCode) {
  * Validate filename + compute the local URL it should match in Question docs.
  * Throws ApiError.badRequest on invalid name (caller catches and reports).
  */
-function buildLocalUrl(filename, testCode, folder) {
+/** @internal — exported for unit testing only */
+export function buildLocalUrl(filename, testCode, folder) {
   if (AUDIO_EXT_REGEX.test(filename)) {
     const m = AUDIO_NAME_REGEX.exec(filename);
     if (!m) {

@@ -14,7 +14,10 @@
     "migrate:cloudinary": "node scripts/migrateToCloudinary.js",
     "migrate:cloudinary:dry": "node scripts/migrateToCloudinary.js --dry-run",
     "diagrams": "node scripts/renderDiagrams.js",
-    "diagrams:svg": "node scripts/renderDiagrams.js --svg"
+    "diagrams:svg": "node scripts/renderDiagrams.js --svg",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
@@ -34,6 +37,8 @@
     "winston": "^3.19.0"
   },
   "devDependencies": {
-    "nodemon": "^3.1.7"
+    "@vitest/coverage-v8": "^4.1.8",
+    "nodemon": "^3.1.7",
+    "vitest": "^4.1.8"
   }
 }

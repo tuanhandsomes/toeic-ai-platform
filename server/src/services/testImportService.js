@@ -38,7 +38,8 @@ const PART_META = {
  * Derive testCode (e.g. "T02") from title "ETS 2026 — Full Test 02" if not
  * provided explicitly in testInfo.
  */
-function resolveTestCode(testInfo) {
+/** @internal — exported for unit testing only */
+export function resolveTestCode(testInfo) {
   if (testInfo.testCode) return testInfo.testCode.toUpperCase();
   const match = testInfo.title?.match(/Test\s+(\d+)/i);
   if (!match) {
@@ -49,8 +50,8 @@ function resolveTestCode(testInfo) {
   return `T${match[1].padStart(2, "0")}`;
 }
 
-/** "T02" → "test-02" for folder naming */
-function testCodeToFolder(testCode) {
+/** "T02" → "test-02" for folder naming. @internal — exported for tests */
+export function testCodeToFolder(testCode) {
   return `test-${testCode.slice(1).padStart(2, "0")}`;
 }
 
@@ -58,7 +59,8 @@ function testCodeToFolder(testCode) {
  * Audio URL auto-fill — only for listening parts (1-4).
  * Pattern matches what migrate scripts and Cloudinary uploads expect.
  */
-function buildAudioUrl(qNum, testCode, folder) {
+/** @internal — exported for unit testing only */
+export function buildAudioUrl(qNum, testCode, folder) {
   if (qNum >= 1 && qNum <= 31) {
     const padded = String(qNum).padStart(2, "0");
     return `/audio/ets-2026/${folder}/E26-${testCode}-${padded}.mp3`;
@@ -77,7 +79,8 @@ function buildAudioUrl(qNum, testCode, folder) {
 }
 
 /** Image URL auto-fill ONLY for Part 1 photo. Part 3/4 graphic and Part 6/7 passages must have explicit imageUrl in JSON. */
-function buildPart1ImageUrl(qNum, folder) {
+/** @internal — exported for unit testing only */
+export function buildPart1ImageUrl(qNum, folder) {
   if (qNum >= 1 && qNum <= 6) {
     return `/images/ets-2026/${folder}/${String(qNum).padStart(2, "0")}.PNG`;
   }

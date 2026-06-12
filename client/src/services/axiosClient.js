@@ -18,7 +18,9 @@ let refreshQueue = [];
 // 401 from these endpoints means wrong credentials / invalid refresh token,
 // NOT an expired access token — skip the refresh-and-retry flow.
 const AUTH_PATHS = ['/auth/login', '/auth/register', '/auth/refresh'];
-const isAuthEndpoint = (url = '') => AUTH_PATHS.some((p) => url.includes(p));
+/** @internal — exported for tests */
+export const isAuthEndpoint = (url = '') =>
+  AUTH_PATHS.some((p) => url.includes(p));
 
 // Redirect tới /login kèm reason để Login page hiển thị message thân thiện
 // thay vì để user bối rối với raw error từ BE.
@@ -26,7 +28,8 @@ const isAuthEndpoint = (url = '') => AUTH_PATHS.some((p) => url.includes(p));
 // CHỈ xóa key auth — KHÔNG dùng localStorage.clear() vì sẽ wipe luôn
 // `notif-read:{userId}`, exam drafts, v.v. (user mất state đã đọc khi
 // đăng nhập lại).
-function redirectToLogin(reason = 'session-expired') {
+/** @internal — exported for tests */
+export function redirectToLogin(reason = 'session-expired') {
   localStorage.removeItem('accessToken');
   localStorage.removeItem('refreshToken');
   localStorage.removeItem('auth-storage');
@@ -40,7 +43,8 @@ function redirectToLogin(reason = 'session-expired') {
 // Fallback về error gốc nếu không có response (network error, timeout, ...).
 // MỌI chỗ reject trong file này PHẢI đi qua hàm này để FE không nhận raw
 // axios Error có .message kiểu "Request failed with status code 401".
-const extractError = (err) => err?.response?.data || err;
+/** @internal — exported for tests */
+export const extractError = (err) => err?.response?.data || err;
 
 // Error chung khi phiên đăng nhập kết thúc (refresh token revoked/expired/missing).
 // Dùng thay cho BE message technical (vd: "Refresh token đã bị thu hồi") vì
