@@ -32,16 +32,64 @@ const PART_TIPS = {
   7: 'Luyện đọc hiểu: kỹ năng skim/scan, paraphrase, suy luận; tăng tốc đọc.',
 };
 
+// Câu đầu tiên (toàn cục) của mỗi Part trong đề TOEIC 200 câu. Khớp với
+// PART_OFFSETS ở client/src/constants/toeic.js — UI cũng đánh số câu theo
+// thang 1-200 để khớp đề thi thật (Practice Part 7 hiển thị câu 147-200).
+const PART_OFFSETS = { 1: 1, 2: 7, 3: 32, 4: 71, 5: 101, 6: 131, 7: 147 };
+
+const MAX_WRONG_DETAILS = 25; // Cap câu sai chi tiết để giữ token budget
+const STEM_SNIPPET_LEN = 90;  // Cap độ dài stem snippet mỗi câu
+const OPTION_SNIPPET_LEN = 80; // Cap option text mỗi đáp án
+
+const STOP_TAGS = new Set(['ets', 'hackers', 'ets-2026']);
+function isUsefulTag(t) {
+  if (!t) return false;
+  if (/^part\d+$/i.test(t)) return false;     // 'part3' redundant với Part field
+  if (/^test-?\d+$/i.test(t)) return false;   // 'test-04' redundant
+  if (STOP_TAGS.has(t.toLowerCase())) return false;
+  return true;
+}
+
+function shortStem(text) {
+  if (!text) return '';
+  const cleaned = text.replace(/\s+/g, ' ').trim();
+  if (cleaned.length <= STEM_SNIPPET_LEN) return cleaned;
+  return cleaned.slice(0, STEM_SNIPPET_LEN - 1) + '…';
+}
+
+function shortOption(text) {
+  if (!text) return '';
+  const cleaned = text.replace(/\s+/g, ' ').trim();
+  if (cleaned.length <= OPTION_SNIPPET_LEN) return cleaned;
+  return cleaned.slice(0, OPTION_SNIPPET_LEN - 1) + '…';
+}
+
+function pickOptionText(options, key) {
+  if (!options?.length || !key) return '';
+  const o = options.find((opt) => opt.key === key);
+  return shortOption(o?.text || '');
+}
+
 /**
- * Quét answers + questions để build per-Part error patterns cho prompt.
- * Shape: { [partNum]: { wrongCount, totalCount, tagCounts, difficultyCounts, slowCount } }
+ * Quét answers + questions để build error patterns đầy đủ cho prompt:
+ *   - errorBreakdown: per-Part wrong stats (tags, difficulty, slow count) — giữ nguyên
+ *     để section CHI TIẾT LỖI TỪNG PART tiếp tục work.
+ *   - wrongQuestionDetails: top 15 câu sai informative nhất (sort theo độ khó +
+ *     slow) để prompt ép AI reference số câu cụ thể.
+ *   - strongPatterns: per-Part top 3 tag mà user làm ĐÚNG nhiều lần → AI khen
+ *     cụ thể theo subskill thay vì chung chung.
  *
- * @param {Array} answers      - result.answers (mỗi item: {questionId, selected, isCorrect, timeSpentSec})
+ * Số câu toàn cục (globalNum) compute từ PART_OFFSETS + thứ tự xuất hiện
+ * trong cùng Part — match cách FE đánh số 1-200.
+ *
+ * @param {Array} answers      - result.answers (theo thứ tự test)
  * @param {Array} questions    - Question docs (lean) cho các questionId xuất hiện
- * @returns {Object} errorBreakdown
+ * @returns {{ errorBreakdown: Object, wrongQuestionDetails: Array, strongPatterns: Object }}
  */
-function buildErrorBreakdown(answers, questions) {
-  if (!answers?.length || !questions?.length) return {};
+function buildErrorPatterns(answers, questions) {
+  if (!answers?.length || !questions?.length) {
+    return { errorBreakdown: {}, wrongQuestionDetails: [], strongPatterns: {} };
+  }
 
   const qMap = new Map(questions.map((q) => [String(q._id), q]));
 
@@ -58,35 +106,92 @@ function buildErrorBreakdown(answers, questions) {
     partAvgTime[p] = arr.reduce((s, x) => s + x, 0) / arr.length;
   });
 
-  const breakdown = {};
+  // Counter per-Part để gán globalNum theo thứ tự xuất hiện trong cùng Part.
+  // Practice có 1 Part (vd Part 3) → globalNum bắt đầu từ 32. Full Test → 1-200.
+  const partCounter = {};
+
+  const errorBreakdown = {};
+  const wrongDetails = [];
+  const correctTagCounts = {}; // { [part]: { tag: count } }
+
   answers.forEach((a) => {
     const q = qMap.get(String(a.questionId));
     if (!q) return;
     const p = q.part;
-    breakdown[p] ??= {
+    partCounter[p] = (partCounter[p] || 0) + 1;
+    const globalNum = (PART_OFFSETS[p] || 1) + partCounter[p] - 1;
+
+    errorBreakdown[p] ??= {
       wrongCount: 0,
       totalCount: 0,
       tagCounts: {},
       difficultyCounts: { easy: 0, medium: 0, hard: 0 },
       slowCount: 0,
     };
-    breakdown[p].totalCount += 1;
-    if (a.isCorrect) return;
+    errorBreakdown[p].totalCount += 1;
 
-    breakdown[p].wrongCount += 1;
-    const diff = q.difficulty || 'medium';
-    breakdown[p].difficultyCounts[diff] =
-      (breakdown[p].difficultyCounts[diff] || 0) + 1;
-    (q.tags || []).forEach((t) => {
-      if (!t) return;
-      breakdown[p].tagCounts[t] = (breakdown[p].tagCounts[t] || 0) + 1;
-    });
-    if (a.timeSpentSec && partAvgTime[p] && a.timeSpentSec >= 1.5 * partAvgTime[p]) {
-      breakdown[p].slowCount += 1;
+    const isSlow =
+      a.timeSpentSec && partAvgTime[p] && a.timeSpentSec >= 1.5 * partAvgTime[p];
+
+    if (a.isCorrect) {
+      // Strong patterns: count đúng theo tag (chỉ tag hữu ích)
+      correctTagCounts[p] ??= {};
+      (q.tags || []).filter(isUsefulTag).forEach((t) => {
+        correctTagCounts[p][t] = (correctTagCounts[p][t] || 0) + 1;
+      });
+      return;
     }
+
+    // Aggregate wrong
+    errorBreakdown[p].wrongCount += 1;
+    const diff = q.difficulty || 'medium';
+    errorBreakdown[p].difficultyCounts[diff] += 1;
+    (q.tags || []).filter(isUsefulTag).forEach((t) => {
+      errorBreakdown[p].tagCounts[t] = (errorBreakdown[p].tagCounts[t] || 0) + 1;
+    });
+    if (isSlow) errorBreakdown[p].slowCount += 1;
+
+    // Detail-level for top-K wrong reference
+    const usefulTags = (q.tags || []).filter(isUsefulTag);
+    wrongDetails.push({
+      globalNum,
+      part: p,
+      difficulty: diff,
+      isSlow: Boolean(isSlow),
+      timeSpentSec: a.timeSpentSec || 0,
+      selected: a.selected || null,
+      correct: q.correctAnswer,
+      selectedText: pickOptionText(q.options, a.selected),
+      correctText: pickOptionText(q.options, q.correctAnswer),
+      primaryTag: usefulTags[0] || '',
+      stemSnippet: shortStem(q.content?.text),
+    });
   });
 
-  return breakdown;
+  // Sort wrong details theo điểm informativeness: hard + slow ưu tiên cao
+  // (hard=3, medium=2, easy=1; slow +2). Trong cùng score, ưu tiên globalNum
+  // tăng dần để AI tham chiếu theo thứ tự đề.
+  const diffWeight = { hard: 3, medium: 2, easy: 1 };
+  wrongDetails.sort((a, b) => {
+    const sa = (diffWeight[a.difficulty] || 2) + (a.isSlow ? 2 : 0);
+    const sb = (diffWeight[b.difficulty] || 2) + (b.isSlow ? 2 : 0);
+    if (sb !== sa) return sb - sa;
+    return a.globalNum - b.globalNum;
+  });
+  const wrongQuestionDetails = wrongDetails.slice(0, MAX_WRONG_DETAILS);
+
+  // Strong patterns: per-Part top 3 tag có correctCount >= 2 (lọc noise)
+  const strongPatterns = {};
+  Object.entries(correctTagCounts).forEach(([p, tags]) => {
+    const top = Object.entries(tags)
+      .filter(([, n]) => n >= 2)
+      .sort(([, a], [, b]) => b - a)
+      .slice(0, 3)
+      .map(([tag, count]) => ({ tag, count }));
+    if (top.length > 0) strongPatterns[p] = top;
+  });
+
+  return { errorBreakdown, wrongQuestionDetails, strongPatterns };
 }
 
 /**
@@ -161,6 +266,47 @@ async function attachSuggestedTests(recommendations, result) {
   });
 }
 
+const EMPTY_ATTEMPT_ANSWERED_RATIO = 0.2; // <20% câu trả lời → coi là bài rỗng
+const EMPTY_ATTEMPT_ACCURACY = 5;          // hoặc accuracy <5%
+
+/**
+ * Phát hiện bài rỗng — user bỏ trống đại đa số câu hoặc gần như không câu nào
+ * đúng. Trong trường hợp này, AI/heuristic đều không có signal để phân tích
+ * điểm mạnh/yếu thực sự — sẽ bịa nội dung. Tốt hơn là short-circuit + trả
+ * thông điệp rõ ràng yêu cầu user làm lại nghiêm túc.
+ */
+function detectEmptyAttempt(result) {
+  const total = result.totalQuestions || 0;
+  if (total === 0) return { isEmpty: true, answeredCount: 0, total: 0 };
+  const answeredCount = (result.answers || []).filter(
+    (a) => a.selected != null,
+  ).length;
+  const isEmpty =
+    answeredCount < total * EMPTY_ATTEMPT_ANSWERED_RATIO ||
+    (result.accuracy || 0) < EMPTY_ATTEMPT_ACCURACY;
+  return { isEmpty, answeredCount, total };
+}
+
+function buildEmptyAttemptAnalysis({ answeredCount, total }) {
+  const blank = total - answeredCount;
+  return {
+    strengths: [],
+    weaknesses: [
+      `Bạn bỏ trống ${blank}/${total} câu — chưa đủ dữ liệu để phân tích điểm mạnh/yếu thực sự.`,
+    ],
+    recommendations: [
+      {
+        topic: 'Làm lại bài nghiêm túc',
+        action:
+          'Quay lại bài này và làm nghiêm túc (cố gắng trả lời tất cả các câu, kể cả khi không chắc) để hệ thống phân tích chi tiết từng dạng câu sai và đưa lộ trình ôn tập phù hợp.',
+        priority: 'high',
+        targetPart: null,
+      },
+    ],
+    estimatedTargetWeeks: 0,
+  };
+}
+
 function buildHeuristicAnalysis(result, user) {
   const parts = Object.entries(result.partBreakdown || {})
     .filter(([, v]) => v && v.total > 0)
@@ -216,7 +362,13 @@ function buildHeuristicAnalysis(result, user) {
  * @param {Object} [params.errorBreakdown] - Per-Part wrong-answer patterns
  * @returns {Promise<{ payload: Object, tokensUsed: number, rawResponse: string } | null>}
  */
-async function callOpenAI({ result, user, errorBreakdown }) {
+async function callOpenAI({
+  result,
+  user,
+  errorBreakdown,
+  wrongQuestionDetails,
+  strongPatterns,
+}) {
   const client = getOpenAIClient();
   if (!client) return null;
 
@@ -224,6 +376,8 @@ async function callOpenAI({ result, user, errorBreakdown }) {
     result,
     user,
     errorBreakdown,
+    wrongQuestionDetails,
+    strongPatterns,
   });
 
   try {
@@ -234,7 +388,7 @@ async function callOpenAI({ result, user, errorBreakdown }) {
         { role: 'user', content: userPrompt },
       ],
       response_format: ANALYSIS_JSON_SCHEMA,
-      temperature: 0.4,
+      temperature: 0.2,
     });
 
     const choice = completion.choices?.[0];
@@ -277,6 +431,28 @@ export const aiAnalysisService = {
       const existing = await AIAnalysis.findOne({ resultId }).lean();
       if (existing) return existing;
 
+      // Bài rỗng (bỏ trống đại đa số câu / accuracy gần 0) — short-circuit,
+      // KHÔNG gọi AI vì không có signal để phân tích. AI sẽ bịa Part-level
+      // weaknesses ("Dạng X Part 1 — sai 6 câu") dù user không trả lời câu nào.
+      const empty = detectEmptyAttempt(result);
+      if (empty.isEmpty) {
+        const payload = buildEmptyAttemptAnalysis(empty);
+        const doc = await AIAnalysis.create({
+          resultId,
+          userId: result.userId,
+          model: 'empty-attempt-v1',
+          promptVersion: PROMPT_VERSION,
+          strengths: payload.strengths,
+          weaknesses: payload.weaknesses,
+          recommendations: payload.recommendations,
+          estimatedTargetWeeks: payload.estimatedTargetWeeks,
+          rawResponse: '',
+          tokensUsed: 0,
+          isFallback: true,
+        });
+        return doc.toObject();
+      }
+
       // Fetch user for targetScore — used in prompt to ground recommendations.
       const user = await User.findById(result.userId)
         .select('targetScore fullName')
@@ -287,12 +463,19 @@ export const aiAnalysisService = {
       const questionIds = (result.answers || []).map((a) => a.questionId);
       const questions = questionIds.length
         ? await Question.find({ _id: { $in: questionIds } })
-            .select('part tags difficulty')
+            .select('part tags difficulty correctAnswer content.text options')
             .lean()
         : [];
-      const errorBreakdown = buildErrorBreakdown(result.answers, questions);
+      const { errorBreakdown, wrongQuestionDetails, strongPatterns } =
+        buildErrorPatterns(result.answers, questions);
 
-      const aiResponse = await callOpenAI({ result, user, errorBreakdown });
+      const aiResponse = await callOpenAI({
+        result,
+        user,
+        errorBreakdown,
+        wrongQuestionDetails,
+        strongPatterns,
+      });
       const isFallback = !aiResponse;
       const payload = aiResponse?.payload || buildHeuristicAnalysis(result, user);
 

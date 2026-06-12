@@ -358,9 +358,11 @@ function AIAnalysisPanel({ resultId, testType, analysis, onAnalysisUpdate }) {
     <div className="space-y-4">
       <div className="flex items-center justify-between gap-3 flex-wrap">
         <p className="text-xs text-slate-500">
-          {analysis.isFallback
-            ? "Phân tích nội bộ (chưa qua OpenAI)"
-            : `Phân tích bởi ${analysis.model}`}
+          {analysis.model === "empty-attempt-v1"
+            ? "Bài chưa đủ dữ liệu để phân tích"
+            : analysis.isFallback
+              ? "Phân tích nội bộ (chưa qua OpenAI)"
+              : `Phân tích bởi ${analysis.model}`}
           {analysis.createdAt &&
             ` • ${new Date(analysis.createdAt).toLocaleString("vi-VN")}`}
         </p>
@@ -440,7 +442,13 @@ function AIAnalysisTab({ analysis, testType }) {
     recommendations,
     estimatedTargetWeeks,
     isFallback,
+    model,
   } = analysis;
+
+  // Empty attempt = user bỏ trống đại đa số câu. BE đã short-circuit không
+  // gọi OpenAI vì không có signal phân tích. KHÔNG hiện banner "chưa có OpenAI"
+  // vì gây hiểu nhầm — vấn đề là data rỗng, không phải key OpenAI.
+  const isEmptyAttempt = model === "empty-attempt-v1";
 
   // Chỉ hiện card lộ trình cho Full Test — Practice 1 Part không đủ data
   // để ước lượng thời gian đạt mục tiêu tổng. BE prompt cũng đã set 0 cho
@@ -449,7 +457,7 @@ function AIAnalysisTab({ analysis, testType }) {
 
   return (
     <div className="space-y-6">
-      {isFallback && (
+      {isFallback && !isEmptyAttempt && (
         <div className="rounded-lg bg-yellow-50 border border-yellow-200 px-4 py-3 text-sm text-yellow-900">
           Phân tích đang dùng thuật toán nội bộ (chưa có OpenAI). Khi key sẵn
           sàng, phân tích sẽ chi tiết hơn dựa trên LLM.

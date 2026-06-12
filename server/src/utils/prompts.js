@@ -27,9 +27,37 @@
  *     map sang Practice test cụ thể để FE render nút "Luyện ngay"
  *   - Hướng dẫn AI gán targetPart cho rec liên quan đến 1 Part cụ thể, và để
  *     null cho rec chiến lược chung (tốc độ, đa dạng đề, Full Test mô phỏng)
+ *
+ * v1.6 (2026-06-09):
+ *   - Thêm DANH SÁCH CÂU SAI CỤ THỂ: top 15 câu sai informative (số câu toàn cục
+ *     1-200, subskill, đáp án người dùng vs đúng, time, stem snippet) → AI có
+ *     thể reference "câu 23, 45, 67 đều...". Hết hiện tượng phân tích chung chung.
+ *   - Thêm KỸ NĂNG ĐÃ VỮNG (strongPatterns): per-Part top tag user làm đúng
+ *     nhiều → strengths nói tên kỹ năng cụ thể (vd "tag-question") thay vì
+ *     khen Part chung.
+ *   - Full Test prompt thêm phần ƯU TIÊN ĐIỂM ĐỂ ĐẠT MỤC TIÊU: list số câu sai
+ *     × points/câu (~5đ) cho mỗi Part → AI biết drill Part nào trước có leverage
+ *     cao nhất.
+ *   - Schema description ép strengths/weaknesses cite số câu khi có data.
+ *
+ * v1.6.1 (2026-06-09):
+ *   - DANH SÁCH CÂU SAI giờ kèm OPTION TEXT (chọn X="…" vs đúng Y="…") + stem
+ *     riêng dòng → AI có data để SUY LUẬN dạng câu khi tag rỗng (ví dụ thấy
+ *     "successful" vs "success" → word-form). Rule #7 mở rộng ép AI nhóm
+ *     weakness theo DẠNG (không phải Part), với mapping examples để AI biết
+ *     suy luận. Cần thiết vì seed data hiện không tag câu hỏi.
+ *
+ * v1.6.2 (2026-06-10):
+ *   - Rule #7 rewrite mạnh hơn: BAN HẲN format "Part X — sai N câu" với block
+ *     "FORMAT BỊ CẤM" + "FORMAT BẮT BUỘC" + ví dụ ✅/❌ trực diện. Liệt kê
+ *     EXHAUSTIVE 17 dạng câu (Reading + Listening) để AI có thư viện classify
+ *     thay vì tự nghĩ ra tên dạng mơ hồ ("khó khăn trong việc hiểu câu hỏi").
+ *   - Bump MAX_WRONG_DETAILS 15 → 25 để Full Test nhiều câu sai có đủ data
+ *     pattern (trước cap 15 không đủ khi Listening sai 50+ câu).
+ *   - Lower temperature 0.4 → 0.2 để AI bám rule kỹ hơn, ít drift.
  */
 
-export const PROMPT_VERSION = "v1.5";
+export const PROMPT_VERSION = "v1.6.2";
 
 const PART_LABELS = {
   part1: "Part 1 — Mô tả tranh (Listening)",
@@ -118,9 +146,57 @@ NGUYÊN TẮC PHÂN TÍCH — ĐỌC KỸ VÀ TUÂN THỦ:
    - Ví dụ tốt: "Trong các câu sai có 3 câu thuộc 'word-form' và 2 câu 'preposition' — luyện thêm 20 câu Part 5 word-form trong 3 ngày tới."
    - Khi không có subskill cụ thể (tags rỗng) → suy luận từ Part + độ khó là chính, không bịa tag.
 
-7. ĐIỂM MẠNH: dựa trên Part có tỉ lệ cao nhất (tương đối hoặc tuyệt đối), gọi tên kỹ năng cụ thể của Part đó (vd: "Phản xạ nhanh với WH-question trong Part 2", "Nhận diện đúng action verb trong Part 1").
+7. WEAKNESSES PHẢI GROUP THEO DẠNG CÂU — KHÔNG GROUP THEO PART (rule QUAN TRỌNG NHẤT):
 
-8. ĐẦU RA: JSON đúng schema, KHÔNG kèm markdown / text bên ngoài JSON.`;
+   ━━━━━━━ FORMAT BỊ CẤM (TUYỆT ĐỐI KHÔNG VIẾT) ━━━━━━━
+   ❌ "Part 1 — sai 4/6 câu: Câu 1 chọn A đúng D..."
+   ❌ "Part 2 — sai 19/25 câu: cho thấy khó khăn..."
+   ❌ "Part 3 — Đoạn hội thoại (Listening): sai 32/39 câu..."
+   ━━━━━━━ FORMAT BẮT BUỘC ━━━━━━━
+   ✅ "Dạng [TÊN DẠNG CỤ THỂ] — sai N câu (số X, Y, Z): [insight về sai như thế nào]"
+
+   QUY TRÌNH SUY LUẬN DẠNG (BẮT BUỘC làm cho mỗi câu sai):
+   a) Đọc "Chọn X = '...'" vs "Đúng Y = '...'" và stem (nếu có)
+   b) Phân loại câu sai vào 1 trong các DẠNG dưới đây dựa trên Part + nội dung options:
+
+   READING:
+   - Part 5/6 — word-form: chọn "successful"(adj) khi đúng "success"(noun) | "creation"(noun) khi đúng "create"(verb)
+   - Part 5/6 — giới từ: chọn "in" khi đúng "on" | "at" khi đúng "by"
+   - Part 5/6 — liên từ logic: chọn "however" khi đúng "therefore" | "although" khi đúng "because"
+   - Part 5/6 — thì động từ: chọn "had been" khi đúng "has been" | "will" khi đúng "would"
+   - Part 5/6 — đại từ quan hệ: chọn "which" khi đúng "who" | "that" khi đúng "whose"
+   - Part 5/6 — sự hòa hợp chủ-vị: chọn "is" khi đúng "are" | "have" khi đúng "has"
+   - Part 5/6 — collocation/từ vựng: chọn "do business" khi đúng "make business" | từ đồng nghĩa sai ngữ cảnh
+   - Part 6 — chèn câu logic mạch văn: chọn câu đúng ngữ pháp nhưng lạc tone đoạn
+   - Part 7 — paraphrase: chọn từ lặp trong câu hỏi/đoạn thay vì đáp án paraphrase
+   - Part 7 — suy luận chủ ý: chọn chi tiết hiển ngôn thay vì ý gián tiếp
+   - Part 7 — cross-reference (double/triple): chọn đáp án chỉ dùng 1 đoạn khi cần kết hợp 2-3 đoạn
+
+   LISTENING (chỉ có option text, không có stem — vẫn phân loại được dựa trên Part + options):
+   - Part 1 — nhận diện hành động (action verb): chọn động từ khác hành động thực (vd "fixing" thay vì "drinking")
+   - Part 1 — nhận diện chủ thể/vị trí: chọn câu nhầm người/vật hoặc vị trí (in front of vs next to)
+   - Part 1 — bẫy thì/bị động: chọn "is being V-ed" gây nhầm chủ động/bị động
+   - Part 2 — repeat trap: chọn đáp án lặp từ từ câu hỏi (vd câu hỏi "meeting?" chọn đáp án có "meeting")
+   - Part 2 — sai loại câu hỏi: nhầm WH (When/Where/Why) → trả lời Yes/No
+   - Part 2 — bỏ lỡ câu trả lời gián tiếp ("I'm not sure", "Let me check")
+   - Part 3/4 — detail (chi tiết tên/số/ngày): bỏ lỡ thông tin cụ thể
+   - Part 3/4 — gist (chủ đề/mục đích): không nắm được ý chính
+   - Part 3/4 — intent/inference (suy luận ý người nói): chọn nghĩa đen thay vì ý gián tiếp
+
+   c) NHÓM các câu sai có cùng dạng vào CHUNG 1 weakness. Ví dụ:
+      ✅ "Dạng word-form — sai 5 câu (số 105, 118, 123, 134, 141): bạn thường chọn dạng tính từ trong khi vị trí cần danh từ, vd câu 105 chọn 'successful' đáng lý 'success'."
+      ✅ "Dạng nhận diện hành động Part 1 — sai 4 câu (số 1, 3, 5, 6): bạn chọn động từ khác với hành động thực trong tranh, vd câu 1 chọn 'rolling up sleeves' khi đáp án đúng là 'drinking from a mug'."
+      ✅ "Dạng repeat trap Part 2 — sai 8 câu (số 7, 12, 15, 19, 22, 24, 27, 30): bạn chọn đáp án có từ lặp lại từ câu hỏi — đây là bẫy phổ biến nhất Part 2."
+
+   d) BẮT BUỘC: khi có ≥4 câu sai, weaknesses phải có ít nhất 2-3 ý theo format DẠNG ở trên. KHÔNG được mở đầu weakness bằng "Part X —". KHÔNG được viết weakness chỉ liệt kê 1 câu lẻ.
+
+   e) Recommendations phải bám DẠNG nêu trong weaknesses: "Drill 30 câu dạng word-form trong 3 ngày, lấy câu 105/118/123 làm template ôn lại quy tắc loại từ (suffix -tion = noun, -ful = adj, -ly = adv)."
+
+8. STRENGTHS — cite tên kỹ năng cụ thể (KHÔNG khen Part chung):
+   - Khi có KỸ NĂNG ĐÃ VỮNG: cite trực tiếp (vd "Tag question — đúng 4/4 câu").
+   - Khi không có: SUY LUẬN strength từ Part có % cao + các câu đúng, format vẫn theo DẠNG (vd "Nhận diện action verb Part 1 — đúng 5/6 câu" thay vì "Part 1 — đúng 5/6 câu").
+
+9. ĐẦU RA: JSON đúng schema, KHÔNG kèm markdown / text bên ngoài JSON.`;
 
 /**
  * JSON Schema cho Structured Outputs (response_format).
@@ -138,13 +214,13 @@ export const ANALYSIS_JSON_SCHEMA = {
         strengths: {
           type: "array",
           description:
-            "2-5 điểm mạnh CỤ THỂ kèm số liệu, gọi tên kỹ năng của Part. Không khen chung chung.",
+            "2-5 điểm mạnh CỤ THỂ kèm số liệu, gọi tên kỹ năng của Part. Không khen chung chung. Khi có KỸ NĂNG ĐÃ VỮNG, ít nhất 1 ý phải cite subskill cụ thể từ data (vd 'Tag question Part 2 — đúng 4/4 câu').",
           items: { type: "string" },
         },
         weaknesses: {
           type: "array",
           description:
-            "Số lượng phụ thuộc điểm: ≥90% trả [] hoặc 1-2 ý maintenance, 70-89% trả 2-4 ý, <70% trả 3-5 ý. TUYỆT ĐỐI KHÔNG bịa weakness khi điểm cao. Khi có errorBreakdown, tham chiếu subskill thực tế.",
+            "Số lượng phụ thuộc điểm: ≥90% trả [] hoặc 1-2 ý maintenance, 70-89% trả 2-4 ý, <70% trả 3-5 ý. TUYỆT ĐỐI KHÔNG bịa weakness khi điểm cao. Khi có DANH SÁCH CÂU SAI CỤ THỂ + ≥4 câu sai, NHÓM weakness THEO DẠNG CÂU (suy luận từ so sánh chọn vs đúng), KHÔNG theo Part. Mỗi ý format: 'Dạng [tên dạng] — sai N câu (số ...): [insight cụ thể]'. Khi có errorBreakdown, tham chiếu subskill thực tế.",
           items: { type: "string" },
         },
         recommendations: {
@@ -271,6 +347,92 @@ function formatErrorBreakdown(errorBreakdown) {
   return `\nCHI TIẾT LỖI TỪNG PART (bám sát các con số này khi recommend):\n${lines.join("\n")}\n`;
 }
 
+/**
+ * Format danh sách câu sai cụ thể (top informative) thành text. Mỗi entry hiển
+ * thị đầy đủ stem + option text user chọn + option text đúng → AI nhìn vào sự
+ * khác biệt giữa 2 lựa chọn để TỰ SUY LUẬN dạng câu (word-form, giới từ, paraphrase,
+ * v.v.) khi tag rỗng. Ví dụ thấy "chọn 'successful' (adj), đúng 'success' (noun)"
+ * → AI biết đây là dạng word-form.
+ *
+ * Format mỗi câu:
+ *   - Câu 105 [Part 5, hard, 32s] sai
+ *     Stem: "The new manager will be ___ for the marketing team."
+ *     Chọn B: "successful" | Đúng C: "successfully"
+ */
+function formatWrongQuestions(wrongQuestionDetails) {
+  if (!wrongQuestionDetails?.length) return "";
+
+  const lines = wrongQuestionDetails.map((d) => {
+    const flags = [`Part ${d.part}`, d.difficulty];
+    if (d.isSlow) flags.push("chậm");
+    if (d.timeSpentSec) flags.push(`${d.timeSpentSec}s`);
+    const tag = d.primaryTag ? ` | tag: ${d.primaryTag}` : "";
+
+    const selectedLabel = d.selected
+      ? `Chọn ${d.selected}${d.selectedText ? `: "${d.selectedText}"` : ""}`
+      : "Bỏ trống";
+    const correctLabel = `Đúng ${d.correct}${d.correctText ? `: "${d.correctText}"` : ""}`;
+
+    const stemLine = d.stemSnippet ? `\n    Stem: "${d.stemSnippet}"` : "";
+
+    return `- Câu ${d.globalNum} [${flags.join(", ")}]${tag}${stemLine}\n    ${selectedLabel} | ${correctLabel}`;
+  });
+
+  return `\nDANH SÁCH CÂU SAI CỤ THỂ (top ${wrongQuestionDetails.length} — so sánh đáp án chọn vs đúng để SUY LUẬN dạng câu, cite số câu trong weaknesses/recommendations):\n${lines.join("\n")}\n`;
+}
+
+/**
+ * Format kỹ năng (subskill tag) user đã làm đúng nhiều lần per Part:
+ *   - Part 5: word-form (đúng 6 câu), preposition (đúng 4 câu)
+ *
+ * Để AI cite tên subskill cụ thể trong strengths thay vì khen Part chung.
+ */
+function formatStrongPatterns(strongPatterns) {
+  if (!strongPatterns || Object.keys(strongPatterns).length === 0) return "";
+
+  const lines = Object.entries(strongPatterns)
+    .map(([p, tags]) => [Number(p), tags])
+    .sort(([a], [b]) => a - b)
+    .map(([p, tags]) => {
+      const partLabel = PART_LABELS[`part${p}`] || `Part ${p}`;
+      const items = tags.map((t) => `${t.tag} (đúng ${t.count} câu)`).join(", ");
+      return `- ${partLabel}: ${items}`;
+    });
+
+  if (lines.length === 0) return "";
+
+  return `\nKỸ NĂNG ĐÃ VỮNG (subskill làm đúng nhiều lần — cite tên cụ thể trong strengths):\n${lines.join("\n")}\n`;
+}
+
+/**
+ * Ước lượng điểm có thể giành lại nếu drill từng Part. Mỗi câu TOEIC ≈ 5 điểm
+ * (495/100 cho mỗi kỹ năng L+R; sai số do bảng quy đổi non-linear chấp nhận
+ * được). Mục đích: cho AI nhận diện Part nào leverage cao nhất khi gap còn xa
+ * mục tiêu — không phải cứ Part yếu nhất % là ưu tiên drill trước.
+ *
+ * Chỉ dùng cho Full Test.
+ */
+function formatScoringLeverage(partBreakdown) {
+  if (!partBreakdown) return "";
+  const rows = Object.entries(partBreakdown)
+    .map(([k, v]) => [Number(k.replace("part", "")), v])
+    .filter(([, v]) => v && v.total > 0 && v.correct < v.total)
+    .map(([p, v]) => {
+      const wrong = v.total - v.correct;
+      const lostPoints = wrong * 5;
+      return { p, wrong, lostPoints, partLabel: PART_LABELS[`part${p}`] };
+    })
+    .sort((a, b) => b.lostPoints - a.lostPoints);
+
+  if (rows.length === 0) return "";
+
+  const lines = rows.map(
+    (r) => `- ${r.partLabel}: sai ${r.wrong} câu ≈ mất ${r.lostPoints} điểm`,
+  );
+
+  return `\nƯU TIÊN ĐIỂM ĐỂ ĐẠT MỤC TIÊU (sắp theo điểm có thể giành lại, ước lượng 5đ/câu):\n${lines.join("\n")}\nDrill Part có lostPoints lớn nhất trước sẽ tăng tổng điểm nhanh hơn — KHÔNG nhất thiết là Part có % thấp nhất.\n`;
+}
+
 // Mức độ điểm → hướng dẫn phân tích phù hợp (tránh bịa weakness khi điểm cao)
 function scoreTier(accuracy) {
   if (accuracy === 100) return "perfect";
@@ -322,12 +484,25 @@ function buildScoreGuidance(accuracy, isFull) {
  * @param {Object} [params.errorBreakdown] - Per-Part wrong-answer patterns (xem
  *   formatErrorBreakdown). Optional — nếu không có, prompt vẫn build OK với
  *   data Part-level cơ bản.
+ * @param {Array}  [params.wrongQuestionDetails] - Top câu sai informative (số
+ *   toàn cục, subskill, selected vs correct, time, stem snippet). Để AI cite
+ *   số câu cụ thể trong weaknesses/recommendations.
+ * @param {Object} [params.strongPatterns] - Per-Part top subskill làm đúng
+ *   nhiều, để strengths cite tên subskill cụ thể.
  * @returns {{ systemPrompt: string, userPrompt: string }}
  */
-export function buildAnalysisPrompt({ result, user, errorBreakdown }) {
+export function buildAnalysisPrompt({
+  result,
+  user,
+  errorBreakdown,
+  wrongQuestionDetails,
+  strongPatterns,
+}) {
   const targetScore = user?.targetScore ?? 700;
   const partLines = formatPartBreakdown(result.partBreakdown);
   const errorLines = formatErrorBreakdown(errorBreakdown);
+  const wrongDetailLines = formatWrongQuestions(wrongQuestionDetails);
+  const strongLines = formatStrongPatterns(strongPatterns);
   const durationMin = Math.round((result.durationSec || 0) / 60);
   const isFull = result.testType === "full";
 
@@ -339,24 +514,26 @@ export function buildAnalysisPrompt({ result, user, errorBreakdown }) {
         ? Math.round((result.correctCount / result.totalQuestions) * 100)
         : 0;
     const guidance = buildScoreGuidance(overallAccuracy, true);
+    const leverageLines = formatScoringLeverage(result.partBreakdown);
+    const gap = Math.max(0, targetScore - (result.scoreTotal || 0));
 
     userPrompt = `DỮ LIỆU FULL TEST:
 
-- Mục tiêu điểm TOEIC: ${targetScore}
+- Mục tiêu điểm TOEIC: ${targetScore} (gap còn ${gap} điểm)
 - Điểm tổng: ${result.scoreTotal}/990 (Listening ${result.scoreListening}/495, Reading ${result.scoreReading}/495)
 - Tỉ lệ đúng tổng: ${overallAccuracy}% (${result.correctCount}/${result.totalQuestions})
 - Thời gian: ${durationMin}/120 phút
 
 TỈ LỆ ĐÚNG TỪNG PART:
 ${partLines}
-${errorLines}
+${errorLines}${leverageLines}${strongLines}${wrongDetailLines}
 ${guidance}
 
 YÊU CẦU PHÂN TÍCH:
-1. strengths: dựa trên Part có tỉ lệ cao nhất, gọi tên kỹ năng cụ thể của Part đó.
-2. weaknesses: chỉ nêu Part dưới 70% (nếu có); nếu mọi Part ≥ 90% thì trả mảng rỗng. Khi có CHI TIẾT LỖI, tham chiếu subskill thực tế.
-3. recommendations: ưu tiên Part đóng góp điểm cao nhất so với mục tiêu ${targetScore} (Part 1-2 mỗi câu ~7-8 điểm; Part 3-4-7 mỗi câu ~5 điểm). Theo guidance ở trên. Gán targetPart cho rec thuộc 1 Part cụ thể, null cho rec chiến lược chung.
-4. estimatedTargetWeeks: gap so với ${targetScore}, giả định 5 buổi/tuần × 90 phút. Trả 0 nếu đã đạt.
+1. strengths: ưu tiên cite subskill cụ thể từ KỸ NĂNG ĐÃ VỮNG (nếu có). Nếu không có, gọi tên kỹ năng của Part có tỉ lệ cao nhất.
+2. weaknesses: chỉ nêu Part dưới 70% (nếu có); nếu mọi Part ≥ 90% thì trả mảng rỗng. Khi có DANH SÁCH CÂU SAI CỤ THỂ, ít nhất 2 weakness PHẢI cite số câu cụ thể (vd "Câu 23, 45, 67 đều là word-form — bạn chọn B trong khi đúng D"). Khi có CHI TIẾT LỖI, tham chiếu subskill thực tế.
+3. recommendations: dùng ƯU TIÊN ĐIỂM ĐỂ ĐẠT MỤC TIÊU làm ưu tiên — Part nào mất nhiều điểm nhất drill trước (không phải Part % thấp nhất). Mỗi câu ≈ 5đ. Theo guidance ở trên. Gán targetPart cho rec thuộc 1 Part cụ thể, null cho rec chiến lược chung. Khi đề xuất drill, cite số câu trong bài này làm ví dụ ("lấy câu 23/45/67 làm template").
+4. estimatedTargetWeeks: gap còn ${gap} điểm, giả định 5 buổi/tuần × 90 phút (mỗi tuần lên ~40-60 điểm). Trả 0 nếu đã đạt.
 
 Trả về JSON đúng schema.`;
   } else {
@@ -365,24 +542,27 @@ Trả về JSON đúng schema.`;
     const partNum = parts[0];
     const partName = PART_LABELS[`part${partNum}`] || `Part ${partNum}`;
     const guidance = buildScoreGuidance(result.accuracy, false);
+    const wrongCount = result.totalQuestions - result.correctCount;
 
     userPrompt = `DỮ LIỆU PRACTICE — chỉ luyện ${partName}, KHÔNG phải Full Test.
 
 - Mục tiêu điểm TOEIC TỔNG: ${targetScore}
-- Tỉ lệ đúng ${partName}: ${result.accuracy}% (${result.correctCount}/${result.totalQuestions} câu)
+- Tỉ lệ đúng ${partName}: ${result.accuracy}% (${result.correctCount}/${result.totalQuestions} câu, sai ${wrongCount} câu)
 - Thời gian: ${durationMin} phút
-${errorLines}
+${errorLines}${strongLines}${wrongDetailLines}
 ${guidance}
 
 YÊU CẦU PHÂN TÍCH — TẤT CẢ xoay quanh ${partName}, KHÔNG lan sang Part khác:
 
-1. strengths: gọi tên kỹ năng cụ thể của ${partName} mà học viên đang nắm tốt (dựa trên đặc điểm Part đã liệt kê trong KIẾN THỨC NỀN).
+1. strengths: ưu tiên cite subskill cụ thể từ KỸ NĂNG ĐÃ VỮNG. Nếu không có, gọi tên kỹ năng của ${partName} mà học viên đang nắm tốt (dựa trên đặc điểm Part đã liệt kê trong KIẾN THỨC NỀN).
 
-2. weaknesses: TUÂN THỦ guidance ở trên. Nếu ${result.accuracy}% ≥ 90, KHÔNG bịa weakness — trả [] hoặc 1-2 ý "duy trì / sẵn sàng cho Full Test". Khi có CHI TIẾT LỖI, tham chiếu subskill thực tế.
+2. weaknesses: TUÂN THỦ guidance ở trên. Nếu ${result.accuracy}% ≥ 90, KHÔNG bịa weakness — trả [] hoặc 1-2 ý "duy trì / sẵn sàng cho Full Test". Khi có DANH SÁCH CÂU SAI CỤ THỂ, ít nhất 2 weakness PHẢI gọi tên số câu cụ thể (vd "Câu 105, 118 đều mắc bẫy ___ — bạn chọn X trong khi đúng Y"). Khi có CHI TIẾT LỖI, tham chiếu subskill thực tế.
 
 3. recommendations: topic = "Part ${partNum} — [kỹ năng]"; action = ≥20 từ có động từ + số lượng/ngày + phương pháp. Gán targetPart = ${partNum} cho mọi rec luyện thẳng Part đó, null nếu là rec chiến lược (vd thử Full Test).
+   - Bám sát subskill thực tế: nếu CHI TIẾT LỖI cho thấy "3 câu word-form + 2 câu preposition" thì rec phải đề xuất cụ thể số câu drill từng subskill (vd "Tuần 1: 30 câu word-form, Tuần 2: 20 câu preposition").
+   - Cite số câu trong bài làm template khi có DANH SÁCH CÂU SAI (vd "Xem lại câu 105 trong bài này để hiểu pattern").
    - Điểm cao: đa dạng hóa dạng bài + thử Full Test + tăng tốc.
-   - Điểm trung bình/thấp: drill kỹ năng yếu, tham chiếu bẫy phổ biến của Part đã liệt kê + CHI TIẾT LỖI nếu có.
+   - Điểm trung bình/thấp: drill kỹ năng yếu cụ thể với số ngày + số câu/ngày rõ ràng.
 
 4. estimatedTargetWeeks: TRẢ 0.
 
