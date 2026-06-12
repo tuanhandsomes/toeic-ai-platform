@@ -139,7 +139,7 @@ export default function History() {
           <KpiCard
             icon={Calendar}
             color="tertiary"
-            label="Trung bình Full Test"
+            label="Điểm trung bình Full Test"
             value={stats.avgScore || "--"}
             bordered={false}
           />
@@ -243,9 +243,9 @@ export default function History() {
                             </span>
                           ) : (
                             <span className="font-mono font-bold text-slate-900">
-                              {r.correctCount}/{r.totalQuestions}
+                              {r.scoreTotal}
                               <span className="text-xs text-slate-400 ml-1">
-                                ({r.accuracy}%)
+                                /{r.totalQuestions * 5} ({r.accuracy}%)
                               </span>
                             </span>
                           )}

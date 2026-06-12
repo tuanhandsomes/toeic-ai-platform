@@ -194,7 +194,7 @@ export default function ManageMedia() {
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                   <Input
-                    placeholder="Tên file hoặc public ID…"
+                    placeholder="Tìm kiếm theo tên file"
                     value={pending.search}
                     onChange={(e) =>
                       setPending((p) => ({ ...p, search: e.target.value }))

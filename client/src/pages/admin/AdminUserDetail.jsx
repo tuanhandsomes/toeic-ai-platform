@@ -539,7 +539,7 @@ export default function AdminUserDetail() {
               <Trophy className="w-5 h-5 text-amber-500" />
               Bảng xếp hạng điểm số
             </CardTitle>
-            <CardDescription>
+            <CardDescription className="mt-2">
               Top 10 bài làm tốt nhất của {user.fullName}
             </CardDescription>
           </CardHeader>
