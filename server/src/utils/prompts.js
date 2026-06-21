@@ -1,6 +1,5 @@
 /**
  * Prompt templates và JSON schema cho AI analysis của TOEIC result.
- * Spec gốc: KE_HOACH_DO_AN_TOEIC_AI.md §8.2
  *
  * PROMPT_VERSION track mỗi khi đổi nội dung để trace analysis nào từ prompt nào.
  *
@@ -313,7 +312,9 @@ function formatErrorBreakdown(errorBreakdown) {
     .sort(([a], [b]) => a - b)
     .forEach(([partNum, data]) => {
       const partLabel = PART_LABELS[`part${partNum}`] || `Part ${partNum}`;
-      const parts = [`${partLabel}: sai ${data.wrongCount}/${data.totalCount} câu`];
+      const parts = [
+        `${partLabel}: sai ${data.wrongCount}/${data.totalCount} câu`,
+      ];
 
       // Difficulty breakdown — nếu có ≥1 mục, in ra
       const diffEntries = Object.entries(data.difficultyCounts || {})
@@ -336,7 +337,9 @@ function formatErrorBreakdown(errorBreakdown) {
 
       // Slow questions — câu sai mà tiêu tốn thời gian bất thường
       if (data.slowCount > 0) {
-        parts.push(`${data.slowCount} câu sai do quá chậm (≥1.5× thời gian TB)`);
+        parts.push(
+          `${data.slowCount} câu sai do quá chậm (≥1.5× thời gian TB)`,
+        );
       }
 
       lines.push(`- ${parts.join(" | ")}`);
@@ -395,7 +398,9 @@ function formatStrongPatterns(strongPatterns) {
     .sort(([a], [b]) => a - b)
     .map(([p, tags]) => {
       const partLabel = PART_LABELS[`part${p}`] || `Part ${p}`;
-      const items = tags.map((t) => `${t.tag} (đúng ${t.count} câu)`).join(", ");
+      const items = tags
+        .map((t) => `${t.tag} (đúng ${t.count} câu)`)
+        .join(", ");
       return `- ${partLabel}: ${items}`;
     });
 

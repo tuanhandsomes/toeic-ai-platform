@@ -6,8 +6,8 @@ $ErrorActionPreference = 'Stop'
 $base = 'http://localhost:5000/api/v1'
 
 # Edit credentials if needed
-$email = 'dokhactuan2808@gmail.com'
-$password = 'tuan2808'
+$email = 'example@gmail.com'
+$password = 'test@123'
 
 Write-Host ""
 Write-Host "=== TEST 1: Health check ===" -ForegroundColor Cyan

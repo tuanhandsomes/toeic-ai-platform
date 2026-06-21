@@ -9,7 +9,10 @@
     { "key": "accessToken", "value": "" },
     { "key": "refreshToken", "value": "" },
     { "key": "resultId", "value": "REPLACE_WITH_FULL_TEST_RESULT_ID" },
-    { "key": "resetToken", "value": "PASTE_TOKEN_FROM_EMAIL_OR_DB_AFTER_FORGOT" }
+    {
+      "key": "resetToken",
+      "value": "PASTE_TOKEN_FROM_EMAIL_OR_DB_AFTER_FORGOT"
+    }
   ],
   "auth": {
     "type": "bearer",
@@ -24,7 +27,11 @@
           "request": {
             "method": "POST",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "url": { "raw": "{{baseUrl}}/auth/logout", "host": ["{{baseUrl}}"], "path": ["auth", "logout"] },
+            "url": {
+              "raw": "{{baseUrl}}/auth/logout",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "logout"]
+            },
             "body": {
               "mode": "raw",
               "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}"
@@ -37,7 +44,11 @@
             "auth": { "type": "noauth" },
             "method": "POST",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "url": { "raw": "{{baseUrl}}/auth/refresh", "host": ["{{baseUrl}}"], "path": ["auth", "refresh"] },
+            "url": {
+              "raw": "{{baseUrl}}/auth/refresh",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "refresh"]
+            },
             "body": {
               "mode": "raw",
               "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}"
@@ -50,8 +61,15 @@
             "auth": { "type": "noauth" },
             "method": "POST",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "url": { "raw": "{{baseUrl}}/auth/forgot-password", "host": ["{{baseUrl}}"], "path": ["auth", "forgot-password"] },
-            "body": { "mode": "raw", "raw": "{\n  \"email\": \"dokhactuan2808@gmail.com\"\n}" },
+            "url": {
+              "raw": "{{baseUrl}}/auth/forgot-password",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "forgot-password"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"example@gmail.com\"\n}"
+            },
             "description": "Always returns 200 to prevent email enumeration. Check inbox or DB collection passwordresettokens for the actual token."
           }
         },
@@ -61,8 +79,15 @@
             "auth": { "type": "noauth" },
             "method": "POST",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "url": { "raw": "{{baseUrl}}/auth/reset-password", "host": ["{{baseUrl}}"], "path": ["auth", "reset-password"] },
-            "body": { "mode": "raw", "raw": "{\n  \"token\": \"{{resetToken}}\",\n  \"newPassword\": \"NewSecret123\"\n}" },
+            "url": {
+              "raw": "{{baseUrl}}/auth/reset-password",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "reset-password"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"token\": \"{{resetToken}}\",\n  \"newPassword\": \"NewSecret123\"\n}"
+            },
             "description": "Reset password using the token. Also revokes all refresh tokens of the user."
           }
         },
@@ -72,10 +97,14 @@
             "auth": { "type": "noauth" },
             "method": "POST",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "url": { "raw": "{{baseUrl}}/auth/login", "host": ["{{baseUrl}}"], "path": ["auth", "login"] },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "login"]
+            },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"email\": \"dokhactuan2808@gmail.com\",\n  \"password\": \"REPLACE_WITH_YOUR_PASSWORD\"\n}"
+              "raw": "{\n  \"email\": \"example@gmail.com\",\n  \"password\": \"REPLACE_WITH_YOUR_PASSWORD\"\n}"
             }
           },
           "event": [
@@ -107,7 +136,11 @@
           "name": "GET /stats/overview",
           "request": {
             "method": "GET",
-            "url": { "raw": "{{baseUrl}}/stats/overview", "host": ["{{baseUrl}}"], "path": ["stats", "overview"] }
+            "url": {
+              "raw": "{{baseUrl}}/stats/overview",
+              "host": ["{{baseUrl}}"],
+              "path": ["stats", "overview"]
+            }
           }
         },
         {
@@ -118,7 +151,13 @@
               "raw": "{{baseUrl}}/stats/progress?range=30d",
               "host": ["{{baseUrl}}"],
               "path": ["stats", "progress"],
-              "query": [{ "key": "range", "value": "30d", "description": "7d | 30d | 90d | all" }]
+              "query": [
+                {
+                  "key": "range",
+                  "value": "30d",
+                  "description": "7d | 30d | 90d | all"
+                }
+              ]
             }
           }
         },
@@ -130,7 +169,13 @@
               "raw": "{{baseUrl}}/stats/parts?testType=all",
               "host": ["{{baseUrl}}"],
               "path": ["stats", "parts"],
-              "query": [{ "key": "testType", "value": "all", "description": "full | part | all" }]
+              "query": [
+                {
+                  "key": "testType",
+                  "value": "all",
+                  "description": "full | part | all"
+                }
+              ]
             }
           }
         }
@@ -172,21 +217,37 @@
           "name": "GET /tests (user list, only published)",
           "request": {
             "method": "GET",
-            "url": { "raw": "{{baseUrl}}/tests?type=full", "host": ["{{baseUrl}}"], "path": ["tests"], "query": [{ "key": "type", "value": "full", "description": "full | part" }] }
+            "url": {
+              "raw": "{{baseUrl}}/tests?type=full",
+              "host": ["{{baseUrl}}"],
+              "path": ["tests"],
+              "query": [
+                { "key": "type", "value": "full", "description": "full | part" }
+              ]
+            }
           }
         },
         {
           "name": "GET /tests?adminView=true (admin sees all, populated)",
           "request": {
             "method": "GET",
-            "url": { "raw": "{{baseUrl}}/tests?adminView=true", "host": ["{{baseUrl}}"], "path": ["tests"], "query": [{ "key": "adminView", "value": "true" }] }
+            "url": {
+              "raw": "{{baseUrl}}/tests?adminView=true",
+              "host": ["{{baseUrl}}"],
+              "path": ["tests"],
+              "query": [{ "key": "adminView", "value": "true" }]
+            }
           }
         },
         {
           "name": "GET /tests/:id (user, taking mode hides answers)",
           "request": {
             "method": "GET",
-            "url": { "raw": "{{baseUrl}}/tests/REPLACE_TEST_ID", "host": ["{{baseUrl}}"], "path": ["tests", "REPLACE_TEST_ID"] }
+            "url": {
+              "raw": "{{baseUrl}}/tests/REPLACE_TEST_ID",
+              "host": ["{{baseUrl}}"],
+              "path": ["tests", "REPLACE_TEST_ID"]
+            }
           }
         },
         {
@@ -194,8 +255,15 @@
           "request": {
             "method": "POST",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "url": { "raw": "{{baseUrl}}/tests", "host": ["{{baseUrl}}"], "path": ["tests"] },
-            "body": { "mode": "raw", "raw": "{\n  \"title\": \"Test mới\",\n  \"type\": \"part\",\n  \"part\": 1,\n  \"questionIds\": [],\n  \"durationMinutes\": 30\n}" }
+            "url": {
+              "raw": "{{baseUrl}}/tests",
+              "host": ["{{baseUrl}}"],
+              "path": ["tests"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Test mới\",\n  \"type\": \"part\",\n  \"part\": 1,\n  \"questionIds\": [],\n  \"durationMinutes\": 30\n}"
+            }
           }
         }
       ]
@@ -207,7 +275,15 @@
           "name": "GET /questions (admin list)",
           "request": {
             "method": "GET",
-            "url": { "raw": "{{baseUrl}}/questions?part=1&limit=10", "host": ["{{baseUrl}}"], "path": ["questions"], "query": [{ "key": "part", "value": "1" }, { "key": "limit", "value": "10" }] }
+            "url": {
+              "raw": "{{baseUrl}}/questions?part=1&limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["questions"],
+              "query": [
+                { "key": "part", "value": "1" },
+                { "key": "limit", "value": "10" }
+              ]
+            }
           }
         },
         {
@@ -215,8 +291,15 @@
           "request": {
             "method": "POST",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "url": { "raw": "{{baseUrl}}/questions/import", "host": ["{{baseUrl}}"], "path": ["questions", "import"] },
-            "body": { "mode": "raw", "raw": "{\n  \"questions\": [],\n  \"defaultTags\": [\"manual\"]\n}" }
+            "url": {
+              "raw": "{{baseUrl}}/questions/import",
+              "host": ["{{baseUrl}}"],
+              "path": ["questions", "import"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"questions\": [],\n  \"defaultTags\": [\"manual\"]\n}"
+            }
           }
         }
       ]
@@ -228,11 +311,19 @@
           "name": "POST /upload/audio (admin)",
           "request": {
             "method": "POST",
-            "url": { "raw": "{{baseUrl}}/upload/audio", "host": ["{{baseUrl}}"], "path": ["upload", "audio"] },
+            "url": {
+              "raw": "{{baseUrl}}/upload/audio",
+              "host": ["{{baseUrl}}"],
+              "path": ["upload", "audio"]
+            },
             "body": {
               "mode": "formdata",
               "formdata": [
-                { "key": "file", "type": "file", "description": "mp3/wav/m4a/ogg, max 10MB" }
+                {
+                  "key": "file",
+                  "type": "file",
+                  "description": "mp3/wav/m4a/ogg, max 10MB"
+                }
               ]
             },
             "description": "Upload an audio file. Returns Cloudinary secure URL to paste into Question.content.audioUrl."
@@ -242,11 +333,19 @@
           "name": "POST /upload/image (admin)",
           "request": {
             "method": "POST",
-            "url": { "raw": "{{baseUrl}}/upload/image", "host": ["{{baseUrl}}"], "path": ["upload", "image"] },
+            "url": {
+              "raw": "{{baseUrl}}/upload/image",
+              "host": ["{{baseUrl}}"],
+              "path": ["upload", "image"]
+            },
             "body": {
               "mode": "formdata",
               "formdata": [
-                { "key": "file", "type": "file", "description": "jpg/png/webp, max 5MB" }
+                {
+                  "key": "file",
+                  "type": "file",
+                  "description": "jpg/png/webp, max 5MB"
+                }
               ]
             },
             "description": "Upload an image. Returns Cloudinary secure URL."
@@ -261,7 +360,11 @@
           "name": "GET /admin/stats (system-wide)",
           "request": {
             "method": "GET",
-            "url": { "raw": "{{baseUrl}}/admin/stats", "host": ["{{baseUrl}}"], "path": ["admin", "stats"] },
+            "url": {
+              "raw": "{{baseUrl}}/admin/stats",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "stats"]
+            },
             "description": "System stats: user count, test count, question count, recent results. Admin only."
           }
         },
@@ -276,9 +379,24 @@
               "query": [
                 { "key": "page", "value": "1" },
                 { "key": "limit", "value": "20" },
-                { "key": "role", "value": "user", "disabled": true, "description": "user | admin" },
-                { "key": "isActive", "value": "true", "disabled": true, "description": "true | false" },
-                { "key": "search", "value": "", "disabled": true, "description": "search by fullName or email" }
+                {
+                  "key": "role",
+                  "value": "user",
+                  "disabled": true,
+                  "description": "user | admin"
+                },
+                {
+                  "key": "isActive",
+                  "value": "true",
+                  "disabled": true,
+                  "description": "true | false"
+                },
+                {
+                  "key": "search",
+                  "value": "",
+                  "disabled": true,
+                  "description": "search by fullName or email"
+                }
               ]
             }
           }
@@ -287,7 +405,11 @@
           "name": "GET /admin/users/:id (detail)",
           "request": {
             "method": "GET",
-            "url": { "raw": "{{baseUrl}}/admin/users/REPLACE_USER_ID", "host": ["{{baseUrl}}"], "path": ["admin", "users", "REPLACE_USER_ID"] },
+            "url": {
+              "raw": "{{baseUrl}}/admin/users/REPLACE_USER_ID",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "users", "REPLACE_USER_ID"]
+            },
             "description": "Get full user detail by ID. Admin only."
           }
         },
@@ -296,8 +418,15 @@
           "request": {
             "method": "POST",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "url": { "raw": "{{baseUrl}}/admin/users", "host": ["{{baseUrl}}"], "path": ["admin", "users"] },
-            "body": { "mode": "raw", "raw": "{\n  \"fullName\": \"Nguyễn Văn A\",\n  \"email\": \"newuser@example.com\",\n  \"password\": \"secret123\",\n  \"role\": \"user\",\n  \"targetScore\": 700,\n  \"isActive\": true\n}" },
+            "url": {
+              "raw": "{{baseUrl}}/admin/users",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "users"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fullName\": \"Nguyễn Văn A\",\n  \"email\": \"newuser@example.com\",\n  \"password\": \"secret123\",\n  \"role\": \"user\",\n  \"targetScore\": 700,\n  \"isActive\": true\n}"
+            },
             "description": "Create a new user (or admin). role defaults to 'user', targetScore to 700, isActive to true. Email must be unique."
           }
         },
@@ -306,8 +435,15 @@
           "request": {
             "method": "PATCH",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "url": { "raw": "{{baseUrl}}/admin/users/REPLACE_USER_ID", "host": ["{{baseUrl}}"], "path": ["admin", "users", "REPLACE_USER_ID"] },
-            "body": { "mode": "raw", "raw": "{\n  \"fullName\": \"Nguyễn Văn A (updated)\",\n  \"targetScore\": 800,\n  \"role\": \"user\"\n}" },
+            "url": {
+              "raw": "{{baseUrl}}/admin/users/REPLACE_USER_ID",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "users", "REPLACE_USER_ID"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fullName\": \"Nguyễn Văn A (updated)\",\n  \"targetScore\": 800,\n  \"role\": \"user\"\n}"
+            },
             "description": "Partial update. Allowed fields: fullName, email, targetScore, role. Body must have ≥1 field. Changing role revokes all refresh tokens of that user. Cannot change own role. Cannot demote the last active admin."
           }
         },
@@ -315,7 +451,11 @@
           "name": "DELETE /admin/users/:id",
           "request": {
             "method": "DELETE",
-            "url": { "raw": "{{baseUrl}}/admin/users/REPLACE_USER_ID", "host": ["{{baseUrl}}"], "path": ["admin", "users", "REPLACE_USER_ID"] },
+            "url": {
+              "raw": "{{baseUrl}}/admin/users/REPLACE_USER_ID",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "users", "REPLACE_USER_ID"]
+            },
             "description": "Hard delete user + cascade Result, AIAnalysis, RefreshToken, PasswordResetToken. Cannot delete self. Cannot delete the last active admin."
           }
         },
@@ -324,7 +464,11 @@
           "request": {
             "method": "PATCH",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "url": { "raw": "{{baseUrl}}/admin/users/REPLACE_USER_ID/lock", "host": ["{{baseUrl}}"], "path": ["admin", "users", "REPLACE_USER_ID", "lock"] },
+            "url": {
+              "raw": "{{baseUrl}}/admin/users/REPLACE_USER_ID/lock",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "users", "REPLACE_USER_ID", "lock"]
+            },
             "body": { "mode": "raw", "raw": "{\n  \"isActive\": false\n}" },
             "description": "Set isActive=false to lock, true to unlock. Locking also revokes all refresh tokens of that user. Cannot lock the last active admin."
           }
@@ -334,8 +478,15 @@
           "request": {
             "method": "PATCH",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "url": { "raw": "{{baseUrl}}/admin/users/REPLACE_USER_ID/reset-password", "host": ["{{baseUrl}}"], "path": ["admin", "users", "REPLACE_USER_ID", "reset-password"] },
-            "body": { "mode": "raw", "raw": "{\n  \"newPassword\": \"newSecret123\"\n}" },
+            "url": {
+              "raw": "{{baseUrl}}/admin/users/REPLACE_USER_ID/reset-password",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "users", "REPLACE_USER_ID", "reset-password"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"newPassword\": \"newSecret123\"\n}"
+            },
             "description": "Admin force-resets a user's password. Revokes all refresh tokens of that user to force re-login."
           }
         }
